@@ -14,5 +14,15 @@
             "email": "jose@josesanmartin.net"
         }
     ],
-    "require": {}
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SlashId\\Laravel\\Providers\\AuthServiceProvider"
+            ],
+            "aliases": {
+                "slashid_group": "SlashId\\Laravel\\Middleware\\GroupAccess"
+            }
+        }
+    }
 }
