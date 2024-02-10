@@ -18,7 +18,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "SlashId\\Laravel\\Providers\\AuthServiceProvider"
+                "SlashId\\Laravel\\Providers\\SlashIdServiceProvider"
             ],
             "aliases": {
                 "slashid_group": "SlashId\\Laravel\\Middleware\\GroupAccess"
