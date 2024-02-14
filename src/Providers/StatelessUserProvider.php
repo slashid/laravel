@@ -7,8 +7,9 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use SlashId\Laravel\SlashIdUser;
 
-class SessionUserProvider implements UserProvider
+class StatelessUserProvider implements UserProvider
 {
+
     protected array $localCacheUsers = [];
 
     public function retrieveById($identifier)
