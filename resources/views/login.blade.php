@@ -31,24 +31,25 @@
                 }
             )
             .then(user => {
-                console.log(user);
-
                 // Do the login.
                 fetch("/login/callback", {
                         method: "POST",
-                        mode: "cors",
                         cache: "no-cache",
-                        //credentials: 'same-origin',
-                        credentials: 'include',
                         headers: {
+                            "Accept": "application/json",
                             "Content-Type": "application/x-www-form-urlencoded",
-                            "X-CSRF-TOKEN": "@php print csrf_token(); @endphp"
+                            "X-CSRF-Token": "@php print csrf_token(); @endphp",
                         },
                         body: "token=" + user._token
                     })
                     .then(async (response) => {
                         const jsonResponse = await response.json();
-                        document.location = jsonResponse.redirect;
+                        if (jsonResponse.success) {
+                            document.location = jsonResponse.redirect;
+                        }
+                        else {
+                            alert('Login failed!');
+                        }
                     });
             })
     });
