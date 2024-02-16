@@ -31,9 +31,7 @@ class SlashIdServiceProvider extends ServiceProvider
             return new StatelessUserProvider();
         });
 
-        $auth->extend('slashid_stateless_guard', function ($app, $name, array $config) {
-            return new StatelessGuard();
-        });
+        $auth->extend('slashid_stateless_guard', fn($app, $name, array $config) => new StatelessGuard($auth->createUserProvider($config['provider'])));
 
         // @todo Move routes to a controller
         // @todo Make it configurable whether to add Routes or not
