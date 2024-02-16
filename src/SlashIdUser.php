@@ -39,4 +39,20 @@ final class SlashIdUser implements Authenticatable {
         return $this->values;
     }
 
+    public function hasGroup(string $group): bool {
+        return in_array($group, $this->getGroups());
+    }
+
+    public function hasAnyGroup(array $groups): bool {
+        return (bool) count(array_intersect($groups, $this->getGroups()));
+    }
+
+    public function hasAllGroups(array $groups): bool {
+        return !count(array_diff($groups, $this->getGroups()));
+    }
+
+    public function getGroups(): array {
+        return $this->values['groups'] ?? [];
+    }
+
 }

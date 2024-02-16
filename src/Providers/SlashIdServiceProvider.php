@@ -6,11 +6,13 @@ use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
+use SlashId\Laravel\Middleware\GroupMiddleware;
 
 class SlashIdServiceProvider extends ServiceProvider
 {
@@ -20,6 +22,7 @@ class SlashIdServiceProvider extends ServiceProvider
      */
     public function boot(
         AuthManager $auth,
+        Router $router,
     )
     {
         $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'slashid');
@@ -60,6 +63,8 @@ class SlashIdServiceProvider extends ServiceProvider
         });
 
         $auth->extend('slashid_stateless_guard', fn($app, $name, array $config) => new StatelessGuard($auth->createUserProvider($config['provider'])));
+
+        $router->aliasMiddleware('slashid_group', GroupMiddleware::class);
 
         // @todo Move routes to a controller
         // @todo Make it configurable whether to add Routes or not
