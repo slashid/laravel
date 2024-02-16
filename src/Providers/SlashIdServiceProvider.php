@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use SlashId\Laravel\Auth\StatelessGuard;
 
 class SlashIdServiceProvider extends ServiceProvider
 {
@@ -22,9 +23,15 @@ class SlashIdServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'slashid');
 
-        $auth->provider('slashid_users', function (Application $app) {
+        $auth->provider('slashid_session_user', function (Application $app) {
             return new SessionUserProvider();
         });
+
+        $auth->provider('slashid_stateless_user', function (Application $app) {
+            return new StatelessUserProvider();
+        });
+
+        $auth->extend('slashid_stateless_guard', fn($app, $name, array $config) => new StatelessGuard($auth->createUserProvider($config['provider'])));
 
         // @todo Move routes to a controller
         // @todo Make it configurable whether to add Routes or not
