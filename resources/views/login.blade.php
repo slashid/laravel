@@ -1,6 +1,6 @@
 <div class="mb-3">
     <label for="email" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="email" value="jose@josesanmartin.net" required />
+    <input type="email" class="form-control" id="email" value="" required />
 </div>
 <div class="mb-3">
     <button class="btn btn-success" id="go-login">Web session login</button>
@@ -17,9 +17,8 @@
     });
     const emailField = document.getElementById("email");
     const loginButton = document.getElementById("go-login");
-    let loginType = 'session';
 
-    const loginCallback = () => {
+    loginButton.addEventListener("click", () => {
         loginButton.disabled = true;
         emailField.disabled = true;
 
@@ -52,10 +51,5 @@
                         document.location = jsonResponse.redirect;
                     });
             })
-    };
-
-    loginButton.addEventListener("click", () => {
-        loginType = 'session';
-        loginCallback();
     });
 </script>

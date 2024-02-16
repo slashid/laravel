@@ -14,14 +14,13 @@ class StatelessGuard implements Guard
 
     use CreatesUserProviders;
 
-    protected UserProvider $userProvider;
     protected ?SlashIdUser $user = NULL;
     protected bool $authenticated;
 
-    public function __construct()
-    {
-        $this->userProvider = $this->createUserProvider('slashid_stateless_user');
-    }
+    public function __construct(
+        protected UserProvider $userProvider,
+    )
+    {}
 
     /**
      * Determine if the current user is authenticated.
