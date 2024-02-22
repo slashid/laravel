@@ -2,6 +2,10 @@
 
 namespace SlashId\Laravel\Providers;
 
+use Firebase\JWT\CachedKeySet;
+use Firebase\JWT\JWT;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
@@ -68,7 +72,7 @@ class SlashIdServiceProvider extends ServiceProvider
 
         // @todo Move routes to a controller
         // @todo Make it configurable whether to add Routes or not
-        // @todo Make routes configurable
+        // @todo Make route paths configurable
         Route::get('/login', function () {
             if (Auth::check()) {
                 // @todo Make redirect page a configurable route
@@ -89,6 +93,40 @@ class SlashIdServiceProvider extends ServiceProvider
                 'redirect' => '/'
             ]);
         })->middleware('web')->name('login.callback');
+
+        Route::get('/logout', function () {
+            Auth::logout();
+
+            // @todo Make redirect page a configurable route
+            return redirect('/');
+        })->middleware('web')->name('logout');
+
+
+        Route::post('/slashid/webhook', function (Request $request) {
+            $jwt = $request->getContent();
+
+            // Create an HTTP client (can be any PSR-7 compatible HTTP client)
+            $httpClient = new Client([
+                'headers' => [
+                    'SlashID-OrgID' => $GLOBALS['slashid_oid'],
+                ],
+            ]);
+
+            // Create an HTTP request factory (can be any PSR-17 compatible HTTP request factory)
+            $httpFactory = new HttpFactory();
+
+            $keySet = new CachedKeySet(
+                'https://api.sandbox.slashid.com/organizations/webhooks/verification-jwks',
+                $httpClient,
+                $httpFactory,
+                app('cache.psr6'),
+                null, // $expiresAfter int seconds to set the JWKS to expire
+                true  // $rateLimit    true to enable rate limit of 10 RPS on lookup of invalid keys
+            );
+
+            $decoded = JWT::decode($jwt, $keySet);
+            print_r($decoded);
+        })->name('slashid_webhook');
     }
 
 }
