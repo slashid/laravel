@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
+use SlashId\Laravel\Commands\CreateWebhook;
+use SlashId\Laravel\Commands\ListWebhooks;
 use SlashId\Laravel\Middleware\GroupMiddleware;
 use SlashId\Php\SlashIdSdk;
 
@@ -70,6 +72,13 @@ class SlashIdServiceProvider extends ServiceProvider
         $auth->extend('slashid_stateless_guard', fn($app, $name, array $config) => new StatelessGuard($auth->createUserProvider($config['provider'])));
 
         $router->aliasMiddleware('slashid_group', GroupMiddleware::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                CreateWebhook::class,
+                ListWebhooks::class,
+            ]);
+        }
 
         // @todo Move routes to a controller
         // @todo Make it configurable whether to add Routes or not
@@ -127,7 +136,7 @@ class SlashIdServiceProvider extends ServiceProvider
 
             $decoded = JWT::decode($jwt, $keySet);
             print_r($decoded);
-        })->name('slashid_webhook');
+        })->name('slashid.webhook');
     }
 
     public function register()
