@@ -2,15 +2,20 @@
 
 namespace SlashId\Laravel\Providers;
 
-use GuzzleHttp\Client;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use SlashId\Laravel\SlashIdUser;
+use SlashId\Php\SlashIdSdk;
 
 class StatelessUserProvider implements UserProvider
 {
 
     protected array $localCacheUsers = [];
+
+    public function __construct(
+        protected SlashIdSdk $sdk,
+    )
+    {}
 
     public function retrieveById($identifier)
     {
@@ -53,32 +58,18 @@ class StatelessUserProvider implements UserProvider
     }
 
     protected function validateSlashIdToken(string $token) {
-        $response = (new Client())
-            ->request('POST', 'https://api.sandbox.slashid.com/token/validate', [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    'SlashID-API-Key' => $GLOBALS['slashid_api_key'],
-                ],
-                'body' => json_encode(['token' => $token]),
-            ]);
-        $parsedResponse = \json_decode(((string) $response->getBody()));
-        return !empty($parsedResponse->result->valid);
+        return app(SlashIdSdk::class)
+            ->post('/token/validate', ['token' => $token])['valid'];
     }
 
     protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser {
-        // @todo Move request to SDK
-        $response = (new Client())
-            ->request('GET', 'https://api.sandbox.slashid.com/persons/' . $identifier . '/?fields=handles,groups,attributes', [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'SlashID-API-Key' => $GLOBALS['slashid_api_key'],
-                    'SlashID-OrgID' => $GLOBALS['slashid_oid'],
-                ],
-            ]);
-
-
-        return new SlashIdUser($identifier, \json_decode($response->getBody(), TRUE)['result']);
+        return new SlashIdUser(
+            $identifier,
+            app(SlashIdSdk::class)
+                ->get('/persons/' . $identifier, [
+                    'fields' => ['handles', 'groups', 'attributes'],
+                ])
+        );
     }
 
 }
