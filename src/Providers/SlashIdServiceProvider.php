@@ -17,6 +17,7 @@ use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
 use SlashId\Laravel\Middleware\GroupMiddleware;
+use SlashId\Php\SlashIdSdk;
 
 class SlashIdServiceProvider extends ServiceProvider
 {
@@ -32,11 +33,11 @@ class SlashIdServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'slashid');
 
         $auth->provider('slashid_session_user', function (Application $app) {
-            return new SessionUserProvider();
+            return new SessionUserProvider(app(SlashIdSdk::class));
         });
 
         $auth->provider('slashid_stateless_user', function (Application $app) {
-            return new StatelessUserProvider();
+            return new StatelessUserProvider(app(SlashIdSdk::class));
         });
 
         $auth->extend('slashid_session_guard', function (Application $app, $name, array $config) use ($auth) {
@@ -127,6 +128,17 @@ class SlashIdServiceProvider extends ServiceProvider
             $decoded = JWT::decode($jwt, $keySet);
             print_r($decoded);
         })->name('slashid_webhook');
+    }
+
+    public function register()
+    {
+        $this->app->singleton(SlashIdSdk::class, function (): SlashIdSdk {
+            return new SlashIdSdk(
+                env('SLASHID_ENVIRONMENT'),
+                env('SLASHID_ORGANIZATION_ID'),
+                env('SLASHID_API_KEY'),
+            );
+        });
     }
 
 }
