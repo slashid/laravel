@@ -75,6 +75,9 @@ class SlashIdServiceProvider extends ServiceProvider
 
         Route::post('/login/callback', [LoginController::class, 'loginCallback'])
             ->middleware('web')->name('login.callback');
+
+        Route::get('/logout', [LoginController::class, 'logout'])
+            ->middleware('web')->name('logout');
     }
 
     public function register()

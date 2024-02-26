@@ -31,4 +31,11 @@ class LoginController {
         ]);
     }
 
+    function logout(): RedirectResponse {
+        Auth::logout();
+
+        // @todo Make redirect page a configurable route
+        return redirect('/');
+    }
+
 }
