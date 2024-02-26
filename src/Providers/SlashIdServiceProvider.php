@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
+use SlashId\Laravel\Controllers\LoginController;
 use SlashId\Laravel\Middleware\GroupMiddleware;
 use SlashId\Php\SlashIdSdk;
 
@@ -67,29 +68,13 @@ class SlashIdServiceProvider extends ServiceProvider
 
         $router->aliasMiddleware('slashid_group', GroupMiddleware::class);
 
-        // @todo Move routes to a controller
         // @todo Make it configurable whether to add Routes or not
         // @todo Make routes configurable
-        Route::get('/login', function () {
-            if (Auth::check()) {
-                // @todo Make redirect page a configurable route
-                return redirect('/');
-            }
+        Route::get('/login', [LoginController::class, 'login'])
+            ->middleware('web')->name('login');
 
-            return view('slashid::login');
-        })->middleware('web')->name('login');
-
-        Route::post('/login/callback', function (Request $request) {
-            // @todo Fix session regeneration
-            #$request->session()->regenerate();
-            $success = Auth::attempt(['token' => $request->request->get('token')]);
-
-            return new JsonResponse([
-                'success' => $success,
-                // @todo Make redirect page a configurable route
-                'redirect' => '/'
-            ]);
-        })->middleware('web')->name('login.callback');
+        Route::post('/login/callback', [LoginController::class, 'loginCallback'])
+            ->middleware('web')->name('login.callback');
     }
 
     public function register()
