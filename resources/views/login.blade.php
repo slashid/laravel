@@ -32,7 +32,7 @@
             )
             .then(user => {
                 // Do the login.
-                fetch("/login/callback", {
+                fetch("@php print route('login.callback', [], false); @endphp", {
                         method: "POST",
                         cache: "no-cache",
                         headers: {
