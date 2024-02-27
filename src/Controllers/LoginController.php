@@ -12,8 +12,7 @@ class LoginController {
 
     public function login(): View|RedirectResponse {
         if (Auth::check()) {
-            // @todo Make redirect page a configurable route
-            return redirect('/');
+            return redirect($this->getRedirectionPath('login'));
         }
 
         return view('slashid::login');
@@ -26,16 +25,18 @@ class LoginController {
 
         return new JsonResponse([
             'success' => $success,
-            // @todo Make redirect page a configurable route
-            'redirect' => '/'
+            'redirect' => url($this->getRedirectionPath('login')),
         ]);
     }
 
     public function logout(): RedirectResponse {
         Auth::logout();
 
-        // @todo Make redirect page a configurable route
-        return redirect('/');
+        return redirect($this->getRedirectionPath('logout'));
+    }
+
+    protected function getRedirectionPath(string $redirectAfter): string {
+        return config('slashid.web_redirect_after_' . $redirectAfter);
     }
 
 }
