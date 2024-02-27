@@ -19,7 +19,7 @@ class LoginController {
         return view('slashid::login');
     }
 
-    function loginCallback(Request $request): JsonResponse {
+    public function loginCallback(Request $request): JsonResponse {
         // @todo Fix session regeneration
         #$request->session()->regenerate();
         $success = Auth::attempt(['token' => $request->request->get('token')]);
@@ -31,7 +31,7 @@ class LoginController {
         ]);
     }
 
-    function logout(): RedirectResponse {
+    public function logout(): RedirectResponse {
         Auth::logout();
 
         // @todo Make redirect page a configurable route
