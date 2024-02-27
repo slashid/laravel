@@ -10,7 +10,7 @@
 <script>
     // @todo Move Javascript to a file
     // @todo Properly add OID as an environment variable
-    const MY_OID = "@php print $GLOBALS['slashid_oid']; @endphp";
+    const MY_OID = "@php print env('SLASHID_ORGANIZATION_ID'); @endphp";
     const sid = new slashid.SlashID({
         baseURL: "https://api.sandbox.slashid.com",
         oid: MY_OID,
@@ -32,7 +32,7 @@
             )
             .then(user => {
                 // Do the login.
-                fetch("/login/callback", {
+                fetch("@php print route('login.callback', [], false); @endphp", {
                         method: "POST",
                         cache: "no-cache",
                         headers: {
