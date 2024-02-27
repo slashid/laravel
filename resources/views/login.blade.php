@@ -1,56 +1,30 @@
-<div class="mb-3">
-    <label for="email" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="email" value="" required />
-</div>
-<div class="mb-3">
-    <button class="btn btn-success" id="go-login">Web session login</button>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex,nofollow"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <!-- @todo Make title configurable -->
+    <title>Login</title>
+</head>
+<body>
+    <!-- @todo Inject OID and base API URL properly -->
+    <slashid-form
+        factors='[{ "method": "email_link" }]'
+        oid="@php print env('SLASHID_ORGANIZATION_ID'); @endphp"
+        base-api-url="https://api.sandbox.slashid.com"
+        token-storage="memory"
+        on-success="sidOnSuccess"
+        analytics-enabled
+    ></slashid-form>
 
-<script src="https://cdn.slashid.com/slashid.js"></script>
-<script>
-    // @todo Move Javascript to a file
-    // @todo Properly add OID as an environment variable
-    const MY_OID = "@php print env('SLASHID_ORGANIZATION_ID'); @endphp";
-    const sid = new slashid.SlashID({
-        baseURL: "https://api.sandbox.slashid.com",
-        oid: MY_OID,
-    });
-    const emailField = document.getElementById("email");
-    const loginButton = document.getElementById("go-login");
+    <script>
+        function sidOnSuccess() {
+            alert('Success!')
+        }
+    </script>
 
-    loginButton.addEventListener("click", () => {
-        loginButton.disabled = true;
-        emailField.disabled = true;
-
-        sid.id(
-                MY_OID, {
-                    type: "email_address",
-                    value: emailField.value,
-                }, {
-                    method: "email_link",
-                }
-            )
-            .then(user => {
-                // Do the login.
-                fetch("@php print route('login.callback', [], false); @endphp", {
-                        method: "POST",
-                        cache: "no-cache",
-                        headers: {
-                            "Accept": "application/json",
-                            "Content-Type": "application/x-www-form-urlencoded",
-                            "X-CSRF-Token": "@php print csrf_token(); @endphp",
-                        },
-                        body: "token=" + user._token
-                    })
-                    .then(async (response) => {
-                        const jsonResponse = await response.json();
-                        if (jsonResponse.success) {
-                            document.location = jsonResponse.redirect;
-                        }
-                        else {
-                            alert('Login failed!');
-                        }
-                    });
-            })
-    });
-</script>
+    <!-- @todo Add script properly -->
+    <script type="module" src="/vendor/slashid/bundled-form/main.js"></script>
+</body>
+</html>
