@@ -29,6 +29,10 @@ class SlashIdServiceProvider extends ServiceProvider
         ]);
         $this->mergeConfigFrom(__DIR__.'/../../config/slashid.php', 'slashid');
 
+        $this->publishes([
+            __DIR__.'/../../public' => public_path('vendor/slashid'),
+        ], 'public');
+
         if (config('slashid.web_register_user_provider')) {
             $auth->provider('slashid_session_user', function (Application $app) {
                 return new SessionUserProvider(app(SlashIdSdk::class));
