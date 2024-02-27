@@ -4,27 +4,32 @@
     <meta charset="utf-8">
     <meta name="robots" content="noindex,nofollow"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link rel="stylesheet" href="/vendor/slashid/bundled-form/style.css">
     <!-- @todo Make title configurable -->
     <title>Login</title>
 </head>
 <body>
     <!-- @todo Inject OID and base API URL properly -->
+    <!-- @todo Make the form configurable -->
+    <!-- @todo Break the template down in parts -->
     <slashid-form
-        factors='[{ "method": "email_link" }]'
+        factors='[{ "method": "webauthn" }, { "method": "email_link" }]'
         oid="@php print env('SLASHID_ORGANIZATION_ID'); @endphp"
         base-api-url="https://api.sandbox.slashid.com"
         token-storage="memory"
-        on-success="sidOnSuccess"
+        on-success="slashIdLoginSuccessCallback"
         analytics-enabled
     ></slashid-form>
 
     <script>
-        function sidOnSuccess() {
-            alert('Success!')
-        }
+        SlashIdSettings = {
+            loginCallbackUrl: "@php print route('login.callback', [], false); @endphp",
+            csfrToken: "@php print csrf_token(); @endphp"
+        };
     </script>
 
-    <!-- @todo Add script properly -->
+    <!-- @todo Add scripts properly -->
+    <script src="/vendor/slashid/slashid.laravel-web-login.js"></script>
     <script type="module" src="/vendor/slashid/bundled-form/main.js"></script>
 </body>
 </html>
