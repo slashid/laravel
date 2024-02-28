@@ -14,4 +14,7 @@ return [
     'api_register_guard' => true,
 
     'group_register_middleware' => true,
+
+    'webhook_enable' => true,
+    'webhook_route_path' => '/slashid/webhook',
 ];

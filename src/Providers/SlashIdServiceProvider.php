@@ -12,6 +12,7 @@ use SlashId\Laravel\Auth\StatelessGuard;
 use SlashId\Laravel\Commands\CreateWebhook;
 use SlashId\Laravel\Commands\ListWebhooks;
 use SlashId\Laravel\Controllers\LoginController;
+use SlashId\Laravel\Controllers\WebhookController;
 use SlashId\Laravel\Middleware\GroupMiddleware;
 use SlashId\Php\SlashIdSdk;
 
@@ -91,40 +92,22 @@ class SlashIdServiceProvider extends ServiceProvider
         if (config('slashid.web_register_routes')) {
             $this->loadViewsFrom(__DIR__.'/../../resources/views', 'slashid');
             Route::get(config('slashid.web_route_path_login'), [LoginController::class, 'login'])
-                ->middleware('web')->name('login');
+                ->middleware('web')
+                ->name('login');
 
             Route::post(config('slashid.web_route_path_login_callback'), [LoginController::class, 'loginCallback'])
-                ->middleware('web')->name('login.callback');
+                ->middleware('web')
+                ->name('login.callback');
 
             Route::get(config('slashid.web_route_path_logout'), [LoginController::class, 'logout'])
-                ->middleware('web')->name('logout');
+                ->middleware('web')
+                ->name('logout');
         }
 
-        Route::post('/slashid/webhook', function (Request $request) {
-            $jwt = $request->getContent();
-
-            // Create an HTTP client (can be any PSR-7 compatible HTTP client)
-            $httpClient = new Client([
-                'headers' => [
-                    'SlashID-OrgID' => $GLOBALS['slashid_oid'],
-                ],
-            ]);
-
-            // Create an HTTP request factory (can be any PSR-17 compatible HTTP request factory)
-            $httpFactory = new HttpFactory();
-
-            $keySet = new CachedKeySet(
-                'https://api.sandbox.slashid.com/organizations/webhooks/verification-jwks',
-                $httpClient,
-                $httpFactory,
-                app('cache.psr6'),
-                null, // $expiresAfter int seconds to set the JWKS to expire
-                true  // $rateLimit    true to enable rate limit of 10 RPS on lookup of invalid keys
-            );
-
-            $decoded = JWT::decode($jwt, $keySet);
-            print_r($decoded);
-        })->name('slashid.webhook');
+        if (config('slashid.webhook_enable')) {
+            Route::post(config('slashid.webhook_route_path'), [WebhookController::class, 'listen'])
+                ->name('slashid.webhook');
+        }
     }
 
     public function register()
