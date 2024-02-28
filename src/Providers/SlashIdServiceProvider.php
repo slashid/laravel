@@ -9,7 +9,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
+use SlashId\Laravel\Commands\DeleteWebhook;
+use SlashId\Laravel\Commands\ListWebhooks;
+use SlashId\Laravel\Commands\RegisterWebhook;
 use SlashId\Laravel\Controllers\LoginController;
+use SlashId\Laravel\Controllers\WebhookController;
 use SlashId\Laravel\Middleware\GroupMiddleware;
 use SlashId\Php\SlashIdSdk;
 
@@ -31,6 +35,13 @@ class SlashIdServiceProvider extends ServiceProvider
             __DIR__.'/../../public' => public_path('vendor/slashid'),
         ], 'public');
 
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                DeleteWebhook::class,
+                ListWebhooks::class,
+                RegisterWebhook::class,
+            ]);
+        }
         if (config('slashid.web_register_user_provider')) {
             $auth->provider('slashid_session_user', function (Application $app) {
                 return new SessionUserProvider(app(SlashIdSdk::class));
@@ -83,13 +94,21 @@ class SlashIdServiceProvider extends ServiceProvider
         if (config('slashid.web_register_routes')) {
             $this->loadViewsFrom(__DIR__.'/../../resources/views', 'slashid');
             Route::get(config('slashid.web_route_path_login'), [LoginController::class, 'login'])
-                ->middleware('web')->name('login');
+                ->middleware('web')
+                ->name('login');
 
             Route::post(config('slashid.web_route_path_login_callback'), [LoginController::class, 'loginCallback'])
-                ->middleware('web')->name('login.callback');
+                ->middleware('web')
+                ->name('login.callback');
 
             Route::get(config('slashid.web_route_path_logout'), [LoginController::class, 'logout'])
-                ->middleware('web')->name('logout');
+                ->middleware('web')
+                ->name('logout');
+        }
+
+        if (config('slashid.webhook_enable')) {
+            Route::post(config('slashid.webhook_route_path'), [WebhookController::class, 'listen'])
+                ->name('slashid.webhook');
         }
     }
 
