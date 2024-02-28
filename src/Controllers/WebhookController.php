@@ -4,35 +4,43 @@ namespace SlashId\Laravel\Controllers;
 
 use Firebase\JWT\CachedKeySet;
 use Firebase\JWT\JWT;
+use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use Illuminate\Http\Request;
+use SlashId\Laravel\Events\WebhookEvent;
+use SlashId\Php\SlashIdSdk;
 
 class WebhookController
 {
-    public function listen(Request $request)
+    public function listen(Request $request, SlashIdSdk $sdk)
     {
         $jwt = $request->getContent();
 
-        // Create an HTTP client (can be any PSR-7 compatible HTTP client)
         $httpClient = new Client([
             'headers' => [
-                'SlashID-OrgID' => $GLOBALS['slashid_oid'],
+                'SlashID-OrgID' => $sdk->getOrganizationId(),
             ],
         ]);
 
-        // Create an HTTP request factory (can be any PSR-17 compatible HTTP request factory)
-        $httpFactory = new HttpFactory();
-
         $keySet = new CachedKeySet(
-            'https://api.sandbox.slashid.com/organizations/webhooks/verification-jwks',
+            $sdk->getApiUrl() . '/organizations/webhooks/verification-jwks',
             $httpClient,
-            $httpFactory,
+            new HttpFactory(),
             app('cache.psr6'),
             null, // $expiresAfter int seconds to set the JWKS to expire
             true  // $rateLimit    true to enable rate limit of 10 RPS on lookup of invalid keys
         );
 
         $decoded = JWT::decode($jwt, $keySet);
-        print_r($decoded);
+
+        // Convert to array.
+        $decoded = \json_decode(\json_encode($decoded), TRUE);
+
+        // Dispatch an event with the webhook event.
+        WebhookEvent::dispatch(
+            $decoded['trigger_content']['event_metadata']['event_name'],
+            $decoded['trigger_content']['event_metadata']['event_id'],
+            $decoded['trigger_content'],
+        );
     }
 }

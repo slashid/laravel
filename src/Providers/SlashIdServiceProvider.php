@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
-use SlashId\Laravel\Commands\CreateWebhook;
 use SlashId\Laravel\Commands\ListWebhooks;
+use SlashId\Laravel\Commands\RegisterWebhook;
 use SlashId\Laravel\Controllers\LoginController;
 use SlashId\Laravel\Controllers\WebhookController;
 use SlashId\Laravel\Middleware\GroupMiddleware;
@@ -36,8 +36,8 @@ class SlashIdServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
-                CreateWebhook::class,
                 ListWebhooks::class,
+                RegisterWebhook::class,
             ]);
         }
         if (config('slashid.web_register_user_provider')) {
