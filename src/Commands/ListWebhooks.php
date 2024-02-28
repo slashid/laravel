@@ -27,13 +27,14 @@ class ListWebhooks extends Command
             $rows[] = [
                 $webhook['id'],
                 $webhook['name'],
-                implode(',', $sdk->webhook()->getWebhookTriggers('name')),
+                $webhook['target_url'],
+                implode(',', $sdk->webhook()->getWebhookTriggers($webhook['id'])),
             ];
         }
 
         if (!empty($rows)) {
             $this->info('Webhooks for organization ' . $sdk->getOrganizationId());
-            $this->table(['ID', 'Name', 'Triggers'], $rows);
+            $this->table(['ID', 'Name', 'URL', 'Triggers'], $rows);
         }
         else {
             $this->info('No webhooks found for organization ' . $sdk->getOrganizationId());
