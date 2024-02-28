@@ -11,25 +11,27 @@ use SlashId\Laravel\SlashIdUser;
 
 class StatelessGuard implements Guard
 {
-
     use CreatesUserProviders;
 
-    protected ?SlashIdUser $user = NULL;
+    protected ?SlashIdUser $user = null;
+
     protected bool $authenticated;
 
     public function __construct(
         protected UserProvider $userProvider,
-    )
-    {}
+    ) {
+    }
 
     /**
      * Determine if the current user is authenticated.
      *
      * @return bool
      */
-    public function check() {
-      $user = $this->user();
-      return !empty($user);
+    public function check()
+    {
+        $user = $this->user();
+
+        return ! empty($user);
     }
 
     /**
@@ -37,8 +39,10 @@ class StatelessGuard implements Guard
      *
      * @return bool
      */
-    public function guest() {
+    public function guest()
+    {
         $user = $this->user();
+
         return empty($user);
     }
 
@@ -47,15 +51,16 @@ class StatelessGuard implements Guard
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
-    public function user() {
-        if (!isset($this->authenticated)) {
-            $this->authenticated = FALSE;
+    public function user()
+    {
+        if (! isset($this->authenticated)) {
+            $this->authenticated = false;
 
             $credentials = ['token' => $this->getToken()];
             $user = $this->userProvider->retrieveByCredentials($credentials);
 
             if ($user && $this->userProvider->validateCredentials($user, $credentials)) {
-                $this->authenticated = TRUE;
+                $this->authenticated = true;
                 $this->user = $user;
             }
 
@@ -69,18 +74,20 @@ class StatelessGuard implements Guard
      *
      * @return int|string|null
      */
-    public function id() {
-      return $this->user ? $this->user->getAuthIdentifier() : NULL;
+    public function id()
+    {
+        return $this->user ? $this->user->getAuthIdentifier() : null;
     }
 
     /**
      * Validate a user's credentials.
      *
-     * @param  array  $credentials
      * @return bool
      */
-    public function validate(array $credentials = []) {
+    public function validate(array $credentials = [])
+    {
         $user = $this->userProvider->retrieveByCredentials($credentials);
+
         return $user && $this->userProvider->validateCredentials($user, $credentials);
     }
 
@@ -89,30 +96,31 @@ class StatelessGuard implements Guard
      *
      * @return bool
      */
-    public function hasUser() {
-      return $this->authenticated;
+    public function hasUser()
+    {
+        return $this->authenticated;
     }
 
     /**
      * Set the current user.
      *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
      * @return void
      */
-    public function setUser(Authenticatable $user) {
-      $this->user = $user;
+    public function setUser(Authenticatable $user)
+    {
+        $this->user = $user;
     }
 
     /**
      * Gets the token.
      */
-    protected function getToken(): ?string {
+    protected function getToken(): ?string
+    {
         $header = Request::header('Authorization');
         if ($header && strpos($header, 'Bearer ') === 0) {
             return substr($header, strlen('Bearer '));
         }
 
-        return NULL;
+        return null;
     }
-
 }

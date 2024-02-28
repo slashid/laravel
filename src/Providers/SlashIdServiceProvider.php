@@ -15,15 +15,13 @@ use SlashId\Php\SlashIdSdk;
 
 class SlashIdServiceProvider extends ServiceProvider
 {
-
     /**
      * {@inheritdoc}
      */
     public function boot(
         AuthManager $auth,
         Router $router,
-    )
-    {
+    ) {
         $this->publishes([
             __DIR__.'/../../config/slashid.php' => config_path('slashid.php'),
         ]);
@@ -75,7 +73,7 @@ class SlashIdServiceProvider extends ServiceProvider
         }
 
         if (config('slashid.api_register_guard')) {
-            $auth->extend('slashid_stateless_guard', fn($app, $name, array $config) => new StatelessGuard($auth->createUserProvider($config['provider'])));
+            $auth->extend('slashid_stateless_guard', fn ($app, $name, array $config) => new StatelessGuard($auth->createUserProvider($config['provider'])));
         }
 
         if (config('slashid.group_register_middleware')) {
@@ -83,7 +81,7 @@ class SlashIdServiceProvider extends ServiceProvider
         }
 
         if (config('slashid.web_register_routes')) {
-            $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'slashid');
+            $this->loadViewsFrom(__DIR__.'/../../resources/views', 'slashid');
             Route::get(config('slashid.web_route_path_login'), [LoginController::class, 'login'])
                 ->middleware('web')->name('login');
 
@@ -105,5 +103,4 @@ class SlashIdServiceProvider extends ServiceProvider
             );
         });
     }
-
 }
