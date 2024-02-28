@@ -27,5 +27,14 @@
                 "slashid_group": "SlashId\\Laravel\\Middleware\\GroupAccess"
             }
         }
+    },
+    "repositories": [
+      {
+          "type": "vcs",
+          "url": "https://github.com/zsanmartin/slashid-php"
+      }
+  ],
+    "require-dev": {
+        "laravel/pint": "^1.14"
     }
 }
