@@ -33,23 +33,21 @@ class RegisterWebhook extends Command
         // If the --webhook-url is informed, we use it.
         $webhookRoute = $this->option('webhook-url');
         // If not, we use the internal URL /slashid/webhook.
-        if (!$webhookRoute && config('slashid.webhook_enable')) {
+        if (! $webhookRoute && config('slashid.webhook_enable')) {
             // --base-url is used when Laravel is behind a proxy. We concatenate the internal URL with the base URL.
             if ($baseUrl = $this->option('base-url')) {
-                $webhookRoute = $baseUrl . route('slashid.webhook', [], false);
-            }
-            else {
+                $webhookRoute = $baseUrl.route('slashid.webhook', [], false);
+            } else {
                 $webhookRoute = route('slashid.webhook');
             }
-        }
-        elseif (!$webhookRoute) {
+        } elseif (! $webhookRoute) {
             $this->error('Webhooks are not enable for this installation. Either add "webhook_enable" => true to config/slashid.php or define a full URL with --webhook-url.');
+
             return;
         }
 
-        $this->info('Creating webhook "' . $name . '" for URL '.$webhookRoute.' with triggers '.implode(', ', $triggers));
+        $this->info('Creating webhook "'.$name.'" for URL '.$webhookRoute.' with triggers '.implode(', ', $triggers));
 
         $sdk->webhook()->register($webhookRoute, $name, $triggers);
     }
-
 }

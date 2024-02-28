@@ -17,17 +17,21 @@ class WebhookEvent
         protected $eventName,
         protected $eventId,
         protected $triggerContent,
-    ) {}
+    ) {
+    }
 
-    public function getEventName(): string {
+    public function getEventName(): string
+    {
         return $this->eventName;
     }
 
-    public function getEventId(): string {
+    public function getEventId(): string
+    {
         return $this->eventId;
     }
 
-    public function getTriggerContent(): array {
+    public function getTriggerContent(): array
+    {
         return $this->triggerContent;
     }
 }

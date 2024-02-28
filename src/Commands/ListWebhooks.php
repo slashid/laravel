@@ -32,13 +32,11 @@ class ListWebhooks extends Command
             ];
         }
 
-        if (!empty($rows)) {
-            $this->info('Webhooks for organization ' . $sdk->getOrganizationId());
+        if (! empty($rows)) {
+            $this->info('Webhooks for organization '.$sdk->getOrganizationId());
             $this->table(['ID', 'Name', 'URL', 'Triggers'], $rows);
-        }
-        else {
-            $this->info('No webhooks found for organization ' . $sdk->getOrganizationId());
+        } else {
+            $this->info('No webhooks found for organization '.$sdk->getOrganizationId());
         }
     }
-
 }
