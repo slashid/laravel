@@ -29,12 +29,15 @@
         }
     },
     "repositories": [
-      {
-          "type": "vcs",
-          "url": "https://github.com/zsanmartin/slashid-php"
-      }
-  ],
+        {
+            "type": "vcs",
+            "url": "https://github.com/zsanmartin/slashid-php"
+        }
+    ],
     "require-dev": {
         "laravel/pint": "^1.14"
+    },
+    "scripts": {
+        "test-pint": "./vendor/bin/pint --test"
     }
 }
