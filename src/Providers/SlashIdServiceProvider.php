@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
+use SlashId\Laravel\Commands\DeleteWebhook;
 use SlashId\Laravel\Commands\ListWebhooks;
 use SlashId\Laravel\Commands\RegisterWebhook;
 use SlashId\Laravel\Controllers\LoginController;
@@ -36,6 +37,7 @@ class SlashIdServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
+                DeleteWebhook::class,
                 ListWebhooks::class,
                 RegisterWebhook::class,
             ]);
