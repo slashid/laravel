@@ -22,7 +22,22 @@ class ListWebhooks extends Command
      */
     public function handle(SlashIdSdk $sdk): void
     {
-        print_r($sdk->get('/organizations/webhooks'));
+        $rows = [];
+        foreach ($sdk->webhook()->findAll() as $webhook) {
+            $rows[] = [
+                $webhook['id'],
+                $webhook['name'],
+                implode(',', $sdk->webhook()->getWebhookTriggers('name')),
+            ];
+        }
+
+        if (!empty($rows)) {
+            $this->info('Webhooks for organization ' . $sdk->getOrganizationId());
+            $this->table(['ID', 'Name', 'Triggers'], $rows);
+        }
+        else {
+            $this->info('No webhooks found for organization ' . $sdk->getOrganizationId());
+        }
     }
 
 }
