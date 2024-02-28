@@ -8,9 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class LoginController {
-
-    public function login(): View|RedirectResponse {
+class LoginController
+{
+    public function login(): View|RedirectResponse
+    {
         if (Auth::check()) {
             return redirect($this->getRedirectionPath('login'));
         }
@@ -18,9 +19,10 @@ class LoginController {
         return view('slashid::login');
     }
 
-    public function loginCallback(Request $request): JsonResponse {
+    public function loginCallback(Request $request): JsonResponse
+    {
         // @todo Fix session regeneration
-        #$request->session()->regenerate();
+        //$request->session()->regenerate();
         $success = Auth::attempt(['token' => $request->request->get('token')]);
 
         return new JsonResponse([
@@ -29,14 +31,15 @@ class LoginController {
         ]);
     }
 
-    public function logout(): RedirectResponse {
+    public function logout(): RedirectResponse
+    {
         Auth::logout();
 
         return redirect($this->getRedirectionPath('logout'));
     }
 
-    protected function getRedirectionPath(string $redirectAfter): string {
-        return config('slashid.web_redirect_after_' . $redirectAfter);
+    protected function getRedirectionPath(string $redirectAfter): string
+    {
+        return config('slashid.web_redirect_after_'.$redirectAfter);
     }
-
 }
