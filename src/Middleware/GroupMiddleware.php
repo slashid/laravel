@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-class GroupMiddleware {
-
+class GroupMiddleware
+{
     public function handle(Request $request, \Closure $next, string $group): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             throw new AuthenticationException('Unauthenticated.', [Auth::guard()], $this->redirectTo($request));
         }
 
@@ -27,20 +27,17 @@ class GroupMiddleware {
 
         if (str_contains($group, '|')) {
             $groups = explode('|', $group);
-            if (!$user->hasAnyGroup($groups)) {
-                throw new AccessDeniedHttpException('User is required to be in any of the following groups: "' . implode('", "', $groups) . '"');
+            if (! $user->hasAnyGroup($groups)) {
+                throw new AccessDeniedHttpException('User is required to be in any of the following groups: "'.implode('", "', $groups).'"');
             }
-        }
-        elseif (str_contains($group, '&')) {
+        } elseif (str_contains($group, '&')) {
             $groups = explode('&', $group);
-            if (!$user->hasAllGroups($groups)) {
-                throw new AccessDeniedHttpException('User is required to be in all of the following groups: "' . implode('", "', $groups) . '"');
+            if (! $user->hasAllGroups($groups)) {
+                throw new AccessDeniedHttpException('User is required to be in all of the following groups: "'.implode('", "', $groups).'"');
             }
+        } elseif (! $user->hasGroup($group)) {
+            throw new AccessDeniedHttpException('User is required to be in the group: "'.$group.'"');
         }
-        elseif (!$user->hasGroup($group)) {
-            throw new AccessDeniedHttpException('User is required to be in the group: "' . $group . '"');
-        }
-
 
         return $next($request);
     }
@@ -52,5 +49,4 @@ class GroupMiddleware {
     {
         return $request->expectsJson() ? null : route('login');
     }
-
 }

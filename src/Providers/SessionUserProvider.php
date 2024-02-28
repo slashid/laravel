@@ -7,15 +7,13 @@ use SlashId\Laravel\SlashIdUser;
 
 class SessionUserProvider extends StatelessUserProvider
 {
-
     public function retrieveById($identifier)
     {
-        if (!array_key_exists($identifier, $this->localCacheUsers)) {
+        if (! array_key_exists($identifier, $this->localCacheUsers)) {
             $sessionUser = $this->retrieveSessionUser($identifier);
             if ($sessionUser && $sessionUser->getAuthIdentifier() === $identifier) {
                 $this->localCacheUsers[$identifier] = $sessionUser;
-            }
-            else {
+            } else {
                 $this->localCacheUsers[$identifier] = $this->retrieveByIdFromApi($identifier);
             }
         }
@@ -23,12 +21,13 @@ class SessionUserProvider extends StatelessUserProvider
         return $this->localCacheUsers[$identifier];
     }
 
-    protected function retrieveSessionUser($identifier): ?SlashIdUser {
+    protected function retrieveSessionUser($identifier): ?SlashIdUser
+    {
         $session = Request::session();
-        if ($session->has('slashid_user_' . $identifier)) {
-            return $session->get('slashid_user_' . $identifier);
+        if ($session->has('slashid_user_'.$identifier)) {
+            return $session->get('slashid_user_'.$identifier);
         }
-        return NULL;
-    }
 
+        return null;
+    }
 }

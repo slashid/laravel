@@ -9,17 +9,16 @@ use SlashId\Php\SlashIdSdk;
 
 class StatelessUserProvider implements UserProvider
 {
-
     protected array $localCacheUsers = [];
 
     public function __construct(
         protected SlashIdSdk $sdk,
-    )
-    {}
+    ) {
+    }
 
     public function retrieveById($identifier)
     {
-        if (!array_key_exists($identifier, $this->localCacheUsers)) {
+        if (! array_key_exists($identifier, $this->localCacheUsers)) {
             $this->localCacheUsers[$identifier] = $this->retrieveByIdFromApi($identifier);
         }
 
@@ -38,12 +37,13 @@ class StatelessUserProvider implements UserProvider
     public function retrieveByCredentials(array $credentials)
     {
         // @todo Add exceptions for malformed tokens
-        if (empty($credentials['token']) || !str_contains($credentials['token'], '.')) {
-            return NULL;
+        if (empty($credentials['token']) || ! str_contains($credentials['token'], '.')) {
+            return null;
         }
 
         [, $userDataTokenPart] = explode('.', $credentials['token']);
-        $userData = json_decode(base64_decode($userDataTokenPart), TRUE);
+        $userData = json_decode(base64_decode($userDataTokenPart), true);
+
         return new SlashIdUser($userData['person_id'], $userData);
     }
 
@@ -51,25 +51,26 @@ class StatelessUserProvider implements UserProvider
     {
         $userFromToken = $this->retrieveByCredentials($credentials);
         if ($user->getAuthIdentifier() !== $userFromToken->getAuthIdentifier()) {
-            return FALSE;
+            return false;
         }
 
         return $this->validateSlashIdToken($credentials['token']);
     }
 
-    protected function validateSlashIdToken(string $token) {
+    protected function validateSlashIdToken(string $token)
+    {
         return app(SlashIdSdk::class)
             ->post('/token/validate', ['token' => $token])['valid'];
     }
 
-    protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser {
+    protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser
+    {
         return new SlashIdUser(
             $identifier,
             app(SlashIdSdk::class)
-                ->get('/persons/' . $identifier, [
+                ->get('/persons/'.$identifier, [
                     'fields' => ['handles', 'groups', 'attributes'],
                 ])
         );
     }
-
 }
