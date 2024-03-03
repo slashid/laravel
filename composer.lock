@@ -671,12 +671,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:zsanmartin/slashid-php.git",
-                "reference": "5632c8cfd440c102f0ee077eb163e44d8599dd0a"
+                "reference": "b7382c61d8aa8177a098684dfcd4165b5f8c16d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zsanmartin/slashid-php/zipball/5632c8cfd440c102f0ee077eb163e44d8599dd0a",
-                "reference": "5632c8cfd440c102f0ee077eb163e44d8599dd0a",
+                "url": "https://api.github.com/repos/zsanmartin/slashid-php/zipball/b7382c61d8aa8177a098684dfcd4165b5f8c16d2",
+                "reference": "b7382c61d8aa8177a098684dfcd4165b5f8c16d2",
                 "shasum": ""
             },
             "require": {
