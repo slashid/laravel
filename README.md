@@ -4,7 +4,7 @@
 
 1. Install the Laravel SlashID packaged with composer:
 
-```bash
+```
 composer require slashid/laravel-slashid
 ```
 
@@ -21,7 +21,7 @@ SLASHID_API_KEY=z0dlY-nluiq8mcvm8YTolSkJV6e9
 
 3. Run the following artisan command to publish the resources:
 
-```php
+```
 php artisan vendor:publish --provider="SlashId\Laravel\Providers\SlashIdServiceProvider"
 ```
 
@@ -147,3 +147,143 @@ You can also use the `hasGroup` / `hasAnyGroup` / `hasAllGroups` methods do buil
 
 @endif
 ```
+
+## Webhooks
+
+See [SlashID documentation on Webhooks](https://developer.slashid.dev/docs/access/guides/webhooks/introduction).
+
+### Artisan webhook commands
+
+To use webhooks, you need first to register your URL with SlashID. Webhooks are managed via API, but this package provides three Artisan commands to help you manage them.
+
+#### How to register webhooks
+
+To register a new webhook for the current website use the following command. You are required to define a unique name for it, in this example we're using `my_laravel_webhook`.
+
+```
+php artisan slashid:webhook:register my_laravel_webhook
+```
+
+By default, the webhook is registered with the triggers: `PersonDeleted_v1`, `PersonLoggedOut_v1` and `PasswordChanged_v1`. You can specify which triggers to register, listing the triggers separated by space:
+
+```
+php artisan slashid:webhook:register my_laravel_webhook PasswordChanged_v1 VirtualPageLoaded_v1 AuthenticationFailed_v1
+```
+
+You can run `slashid:webhook:register` as many times as you want, if there is already a webhook registered to that URL, it will be updated and the list of triggers will be overriden.
+
+
+#### How to test webhooks locally
+
+You can test webhooks in your local development environment with a tool such as [ngrok](https://ngrok.com/), then use the option `--base-url` to register a webhook with the proxy.
+
+For instance, if you are running Laravel on port 8080, you can proxy you local environment with ngrok with:
+
+```
+ngrok http 8000
+```
+
+The ngrok comamnd-line will then display data about your proxy, such as:
+
+```
+Forwarding                    https://2f45-2804-14c-483-983f-b323-32f2-4714-1609.ngrok-free.app -> http://localhost:8000
+```
+
+Then, you can register a webservice to the proxy URL, with the following command:
+
+```
+php artisan slashid:webhook:register proxied_webhook PasswordChanged_v1 --base-url=https://2f45-2804-14c-483-983f-b323-32f2-4714-1609.ngrok-free.app
+```
+
+#### How to register webhooks for other applications
+
+You can use the artisan command to register webhooks with any arbitrary URL:
+
+```
+php artisan slashid:webhook:register proxied_webhook PasswordChanged_v1 --webhook-url=https://someotherapplication.example.com/some-arbitrary-url
+```
+
+### How to see existing webhooks
+
+You can see all webhooks registered to your SlashID organization with the command:
+
+```
+php artisan slashid:webhook:list
+```
+
+#### How to delete a webhook
+
+You can delete a webhook by its ID.
+
+```
+php artisan slashid:webhook:delete 065e5237-c1c4-7a96-ab00-783ef0cbd002
+```
+
+To learn a webhook ID, use the `slashid:webhook:list` command.
+
+### Listening to events
+
+Any received webhook will be made available to developer as a Laravel event.
+
+To listen to webhook events in your Laravel application, create a class in the `app/Listeners` folder of your application. In the example below, we are naming it `WebhookListener`, but you can name it as you like.
+
+```php
+// app/Listeners/WebhookListener.php
+<?php
+
+namespace App\Listeners;
+
+use SlashId\Laravel\Events\WebhookEvent;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+
+class WebhookListener
+{
+    /**
+     * Handle the event.
+     */
+    public function handle(WebhookEvent $event): void
+    {
+        print_r([
+            $event->getEventName(),
+            $event->getEventId(),
+            $event->getTriggerContent(),
+        ]);
+    }
+}
+```
+
+After creating the listener class, you need to let Laravel know it exists by editing the file `app/Providers/EventServiceProvider.php`. On the `$listen` property, add your class, such as:
+
+```php
+// app/Providers/EventServiceProvider.php
+<?php
+
+namespace App\Providers;
+
+use App\Listeners\WebhookListener;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use SlashId\Laravel\Events\WebhookEvent;
+
+class EventServiceProvider extends ServiceProvider
+{
+    /**
+     * The event to listener mappings for the application.
+     *
+     * @var array<class-string, array<int, class-string>>
+     */
+    protected $listen = [
+        WebhookEvent::class => [
+            WebhookListener::class,
+        ],
+    ];
+
+    // ... rest of the class provided by Laravel ...
+}
+```
+
+The listener will receive the event of class `\SlashId\Laravel\Events\WebhookEvent`. It has three methods you can use to extract information about the webhook call:
+
+* `$event->getEventName()` will return the trigger name, such as `AuthenticationFailed_v1`, that is, `->trigger_content->event_metadata->event_name` in the JSON sent to the webhook.
+* `$event->getEventId()` will return the event ID, such as `68a850ca-b2ee-46ce-8592-410813037739`, that is, `->trigger_content->event_metadata->event_id` in the JSON sent to the webhook.
+* `$event->getTriggerContent()` will return the full content of the webhook call, that is, `->trigger_content` in the JSON sent to the webhook.
