@@ -59,7 +59,7 @@ class StatelessUserProvider implements UserProvider
 
     protected function validateSlashIdToken(string $token)
     {
-        return app(SlashIdSdk::class)
+        return $this->sdk
             ->post('/token/validate', ['token' => $token])['valid'];
     }
 
@@ -67,7 +67,7 @@ class StatelessUserProvider implements UserProvider
     {
         return new SlashIdUser(
             $identifier,
-            app(SlashIdSdk::class)
+            $this->sdk
                 ->get('/persons/'.$identifier, [
                     'fields' => ['handles', 'groups', 'attributes'],
                 ])
