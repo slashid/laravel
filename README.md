@@ -1,5 +1,51 @@
 # Laravel SlashID integration
 
+## Installation
+
+1. Install the Laravel SlashID packaged with composer:
+
+```bash
+composer require slashid/laravel-slashid
+```
+
+2. Edit your environment file, `.env`, adding the following variables to the end of the file:
+    * `SLASHID_ENVIRONMENT`, either `sandbox` or `production`
+    * `SLASHID_ORGANIZATION_ID`, your organization's ID. You'll find it your SlashID console (https://console.slashid.dev/ for production, https://console.sandbox.slashid.dev/ for sandbox), in the "Settings" tab, on the top of the page.
+    * `SLASHID_ORGANIZATION_ID`, your organization's ID. You'll also find it your SlashID console, in the "Settings" tab, on the very bottom of the page.
+
+```conf
+SLASHID_ENVIRONMENT=sandbox
+SLASHID_ORGANIZATION_ID=412edb57-ae26-f2aa-9999-770021ed52d1
+SLASHID_API_KEY=z0dlY-nluiq8mcvm8YTolSkJV6e9
+```
+
+3. Run the following artisan command to publish the resources:
+
+```php
+php artisan vendor:publish --provider="SlashId\Laravel\Providers\SlashIdServiceProvider"
+```
+
+You're ready! Now access `/login` in your website and enjoy your new login with SlashID :)
+
+## Configuration
+
+There several configurations in this package, that you can edit on `config/slashid.php`. The configurations more likely for you to override are `web_redirect_after_login` and `web_redirect_after_logout`.
+
+| Configuration                   | Default value        | Description                                                                                                                    |
+|---------------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `web_register_user_provider`    | `true`               | Whether to register the session-based user provider. Turn off if you want to use *exclusively* API-based authentication.       |
+| `web_register_guard`            | `true`               | Whether to register the session-based authentication. Turn off if you want to use *exclusively* API-based authentication.      |
+| `web_register_routes`           | `true`               | Whether to register the web routes (`/login`, `/login/callback`, `/logout`). Turn off if you want to register your own routes. |
+| `web_route_path_login`          | `'/login'`           | The URL for the login page.                                                                                                    |
+| `web_route_path_login_callback` | `'/login/callback'`  | The URL for the login callback page (you probaby don't want to override it).                                                   |
+| `web_route_path_logout`         | `'/logout'`          | The URL for the logout page.                                                                                                   |
+| `web_redirect_after_login`      | `'/'`                | Where to redirect the user after login.                                                                                        |
+| `web_redirect_after_logout`     | `'/'`                | Where to redirect the user after logout.                                                                                       |
+| `api_register_user_provider`    | `true`               | Whether to register the stateless user provider. Turn off if you want to use *exclusively* web authentication.                 |
+| `api_register_guard`            | `true`               | Whether to register the stateless authentication. Turn off if you want to use *exclusively* web authentication.                |
+| `group_register_middleware`     | `true`               | Whether to register the group middleware (see the section "Group-based access check in routes")                                |
+| `webhook_enable`                | `true`               | Whether to enable webhooks (see the section "Webhooks")                                                                        |
+| `webhook_route_path`            | `'/slashid/webhook'` | The URL for the webhook route (you probaby don't want to override it).                                                         |
 
 ## Groups
 
