@@ -43,12 +43,25 @@ class SlashIdServiceProvider extends ServiceProvider
             ]);
         }
         if (config('slashid.web_register_user_provider')) {
+            config([
+                'auth.providers.slashid_session_user' => [
+                    'driver' => 'slashid_session_user',
+                ],
+            ]);
+
             $auth->provider('slashid_session_user', function (Application $app) {
                 return new SessionUserProvider(app(SlashIdSdk::class));
             });
         }
 
         if (config('slashid.web_register_guard')) {
+            config([
+                'auth.guards.web' => [
+                    'driver' => 'slashid_session_guard',
+                    'provider' => 'slashid_session_user',
+                ],
+            ]);
+
             $auth->extend('slashid_session_guard', function (Application $app, $name, array $config) use ($auth) {
                 $provider = $auth->createUserProvider($config['provider'] ?? null);
 
@@ -78,12 +91,25 @@ class SlashIdServiceProvider extends ServiceProvider
         }
 
         if (config('slashid.api_register_user_provider')) {
+            config([
+                'auth.providers.slashid_stateless_user' => [
+                    'driver' => 'slashid_stateless_user',
+                ],
+            ]);
+
             $auth->provider('slashid_stateless_user', function (Application $app) {
                 return new StatelessUserProvider(app(SlashIdSdk::class));
             });
         }
 
         if (config('slashid.api_register_guard')) {
+            config([
+                'auth.guards.api' => [
+                    'driver' => 'slashid_stateless_guard',
+                    'provider' => 'slashid_stateless_user',
+                ],
+            ]);
+
             $auth->extend('slashid_stateless_guard', fn ($app, $name, array $config) => new StatelessGuard($auth->createUserProvider($config['provider'])));
         }
 
