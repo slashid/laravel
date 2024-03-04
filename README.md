@@ -1,0 +1,289 @@
+# Laravel SlashID integration
+
+## Installation
+
+1. Install the Laravel SlashID packaged with composer:
+
+```
+composer require slashid/laravel-slashid
+```
+
+2. Edit your environment file, `.env`, adding the following variables to the end of the file:
+    * `SLASHID_ENVIRONMENT`, either `sandbox` or `production`
+    * `SLASHID_ORGANIZATION_ID`, your organization's ID. You'll find it your SlashID console (https://console.slashid.dev/ for production, https://console.sandbox.slashid.dev/ for sandbox), in the "Settings" tab, on the top of the page.
+    * `SLASHID_ORGANIZATION_ID`, your organization's ID. You'll also find it your SlashID console, in the "Settings" tab, on the very bottom of the page.
+
+```conf
+SLASHID_ENVIRONMENT=sandbox
+SLASHID_ORGANIZATION_ID=412edb57-ae26-f2aa-9999-770021ed52d1
+SLASHID_API_KEY=z0dlY-nluiq8mcvm8YTolSkJV6e9
+```
+
+3. Run the following artisan command to publish the resources:
+
+```
+php artisan vendor:publish --provider="SlashId\Laravel\Providers\SlashIdServiceProvider"
+```
+
+You're ready! Now access `/login` in your website and enjoy your new login with SlashID :)
+
+## Configuration
+
+There several configurations in this package, that you can edit on `config/slashid.php`. The configurations more likely for you to override are `web_redirect_after_login` and `web_redirect_after_logout`.
+
+| Configuration                   | Default value        | Description                                                                                                                    |
+|---------------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `web_register_user_provider`    | `true`               | Whether to register the session-based user provider. Turn off if you want to use *exclusively* API-based authentication.       |
+| `web_register_guard`            | `true`               | Whether to register the session-based authentication. Turn off if you want to use *exclusively* API-based authentication.      |
+| `web_register_routes`           | `true`               | Whether to register the web routes (`/login`, `/login/callback`, `/logout`). Turn off if you want to register your own routes. |
+| `web_route_path_login`          | `'/login'`           | The URL for the login page.                                                                                                    |
+| `web_route_path_login_callback` | `'/login/callback'`  | The URL for the login callback page (you probaby don't want to override it).                                                   |
+| `web_route_path_logout`         | `'/logout'`          | The URL for the logout page.                                                                                                   |
+| `web_redirect_after_login`      | `'/'`                | Where to redirect the user after login.                                                                                        |
+| `web_redirect_after_logout`     | `'/'`                | Where to redirect the user after logout.                                                                                       |
+| `api_register_user_provider`    | `true`               | Whether to register the stateless user provider. Turn off if you want to use *exclusively* web authentication.                 |
+| `api_register_guard`            | `true`               | Whether to register the stateless authentication. Turn off if you want to use *exclusively* web authentication.                |
+| `group_register_middleware`     | `true`               | Whether to register the group middleware (see the section "Group-based access check in routes")                                |
+| `webhook_enable`                | `true`               | Whether to enable webhooks (see the section "Webhooks")                                                                        |
+| `webhook_route_path`            | `'/slashid/webhook'` | The URL for the webhook route (you probaby don't want to override it).                                                         |
+
+## Groups
+
+### Group-based access check in routes
+
+You can use the `slashid_group` middleware to restrict certain routes to people of a given group. For instance, if you want to create a route `/content-management` that only people within the "Editor" group can access, and a route `/admin` that only people within the "Admin" group can access, you can do it like this:
+
+```php
+// web.php
+
+Route::get('/content-management', function () {
+    // Route that only someone in the group "Editor" can access.
+})->middleware('slashid_group:Editor');
+
+Route::get('/admin', function () {
+    // Route that only someone in the group "Admin" can access.
+})->middleware('slashid_group:Admin');
+```
+
+If the user is not logged in, they will be redirected to the login page. If the user is logged in, they will receive an Access Denied exception.
+
+:warning: **Note**: group names are case-sensitive, please make sure you are using the correct group names.
+
+You can also combine different groups in your route checking! For instance, if you want the `/dashboard` page to be accessible for anyone in ANY of the groups "Admin", "Editor" or "Reviewer", you can use `|` to combine different group names in an `OR` conjunction:
+
+```php
+// web.php
+
+Route::get('/group/Admin-OR-Editor', function () {
+    // Route that someone in the group "Admin", OR in the group "Editor", OR in the group "Reviewer" can access.
+})->middleware('slashid_group:Admin|Editor|Reviewer');
+```
+
+You can also use `&` to combine groups in an `AND` conjunction:
+
+```php
+Route::get('/very-secure-page', function () {
+    // Route that is only accessed by someone *both* in the "Admin" and "Editor" groups.
+})->middleware('slashid_group:Admin&Editor');
+```
+
+:warning: **Note**: you cannot combine `|` and `&` in a same route, e.g. `->middleware('slashid_group:Admin&Editor|Reviewer')` is an invalid declaration and will raise an exception.
+
+### Group-checking in custom code
+
+If you want to check the groups of a user in your custom code, you can use any of the group-related methods of the `\SlashId\Laravel\SlashIdUser` class, e.g.:
+
+```php
+if ($user->hasGroup('Editor')) {
+    // Do things that only an "Editor" user can do.
+}
+
+if ($user->hasAnyGroup(['Admin', 'Editor', 'Reviewer'])) {
+    // Do things that someone in the group "Admin", OR in the group "Editor", OR
+    // in the group "Reviewer" can do.
+}
+
+if ($user->hasAllGroups(['Admin', 'Editor'])) {
+    // Do things that only someone that is in *both* "Admin" and "Editor" groups
+    // can do.
+}
+
+// Shows the user groups as a list of strings.
+var_dump($user->getGroups());
+```
+
+### Group-checking in Blade
+
+You can also use the `hasGroup` / `hasAnyGroup` / `hasAllGroups` methods do build templates in Blade that display different things depending on the groups the user belongs to.
+
+```php
+// some-template.blade.php
+
+@if (auth()->user())
+
+    <p>You are logged in</p>
+
+    @if (auth()->user()->hasGroup('Editor'))
+
+        <p>Information Editors can access.</p>
+
+    @endif
+
+    @if (auth()->user()->hasGroup('Admin'))
+
+        <p>Information Admins can access.</p>
+
+    @endif
+
+    @if (auth()->user()->hasAnyGroup(['Admin', 'Editor']))
+
+        <p>Information both Editors & Admins can access.</p>
+
+    @endif
+
+@else
+
+    <p>You are NOT logged in</p>
+
+@endif
+```
+
+## Webhooks
+
+See [SlashID documentation on Webhooks](https://developer.slashid.dev/docs/access/guides/webhooks/introduction).
+
+### Artisan webhook commands
+
+To use webhooks, you need first to register your URL with SlashID. Webhooks are managed via API, but this package provides three Artisan commands to help you manage them.
+
+#### How to register webhooks
+
+To register a new webhook for the current website use the following command. You are required to define a unique name for it, in this example we're using `my_laravel_webhook`.
+
+```
+php artisan slashid:webhook:register my_laravel_webhook
+```
+
+By default, the webhook is registered with the triggers: `PersonDeleted_v1`, `PersonLoggedOut_v1` and `PasswordChanged_v1`. You can specify which triggers to register, listing the triggers separated by space:
+
+```
+php artisan slashid:webhook:register my_laravel_webhook PasswordChanged_v1 VirtualPageLoaded_v1 AuthenticationFailed_v1
+```
+
+You can run `slashid:webhook:register` as many times as you want, if there is already a webhook registered to that URL, it will be updated and the list of triggers will be overriden.
+
+
+#### How to test webhooks locally
+
+You can test webhooks in your local development environment with a tool such as [ngrok](https://ngrok.com/), then use the option `--base-url` to register a webhook with the proxy.
+
+For instance, if you are running Laravel on port 8080, you can proxy you local environment with ngrok with:
+
+```
+ngrok http 8000
+```
+
+The ngrok comamnd-line will then display data about your proxy, such as:
+
+```
+Forwarding                    https://2f45-2804-14c-483-983f-b323-32f2-4714-1609.ngrok-free.app -> http://localhost:8000
+```
+
+Then, you can register a webservice to the proxy URL, with the following command:
+
+```
+php artisan slashid:webhook:register proxied_webhook PasswordChanged_v1 --base-url=https://2f45-2804-14c-483-983f-b323-32f2-4714-1609.ngrok-free.app
+```
+
+#### How to register webhooks for other applications
+
+You can use the artisan command to register webhooks with any arbitrary URL:
+
+```
+php artisan slashid:webhook:register proxied_webhook PasswordChanged_v1 --webhook-url=https://someotherapplication.example.com/some-arbitrary-url
+```
+
+### How to see existing webhooks
+
+You can see all webhooks registered to your SlashID organization with the command:
+
+```
+php artisan slashid:webhook:list
+```
+
+#### How to delete a webhook
+
+You can delete a webhook by its ID.
+
+```
+php artisan slashid:webhook:delete 065e5237-c1c4-7a96-ab00-783ef0cbd002
+```
+
+To learn a webhook ID, use the `slashid:webhook:list` command.
+
+### Listening to events
+
+Any received webhook will be made available to developer as a Laravel event.
+
+To listen to webhook events in your Laravel application, create a class in the `app/Listeners` folder of your application. In the example below, we are naming it `WebhookListener`, but you can name it as you like.
+
+```php
+// app/Listeners/WebhookListener.php
+<?php
+
+namespace App\Listeners;
+
+use SlashId\Laravel\Events\WebhookEvent;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+
+class WebhookListener
+{
+    /**
+     * Handle the event.
+     */
+    public function handle(WebhookEvent $event): void
+    {
+        print_r([
+            $event->getEventName(),
+            $event->getEventId(),
+            $event->getTriggerContent(),
+        ]);
+    }
+}
+```
+
+After creating the listener class, you need to let Laravel know it exists by editing the file `app/Providers/EventServiceProvider.php`. On the `$listen` property, add your class, such as:
+
+```php
+// app/Providers/EventServiceProvider.php
+<?php
+
+namespace App\Providers;
+
+use App\Listeners\WebhookListener;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use SlashId\Laravel\Events\WebhookEvent;
+
+class EventServiceProvider extends ServiceProvider
+{
+    /**
+     * The event to listener mappings for the application.
+     *
+     * @var array<class-string, array<int, class-string>>
+     */
+    protected $listen = [
+        WebhookEvent::class => [
+            WebhookListener::class,
+        ],
+    ];
+
+    // ... rest of the class provided by Laravel ...
+}
+```
+
+The listener will receive the event of class `\SlashId\Laravel\Events\WebhookEvent`. It has three methods you can use to extract information about the webhook call:
+
+* `$event->getEventName()` will return the trigger name, such as `AuthenticationFailed_v1`, that is, `->trigger_content->event_metadata->event_name` in the JSON sent to the webhook.
+* `$event->getEventId()` will return the event ID, such as `68a850ca-b2ee-46ce-8592-410813037739`, that is, `->trigger_content->event_metadata->event_id` in the JSON sent to the webhook.
+* `$event->getTriggerContent()` will return the full content of the webhook call, that is, `->trigger_content` in the JSON sent to the webhook.
