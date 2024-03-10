@@ -5,6 +5,7 @@ namespace SlashId\Laravel\Providers;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use SlashId\Laravel\SlashIdUser;
+use SlashId\Php\Exception\IdNotFoundException;
 use SlashId\Php\SlashIdSdk;
 
 class StatelessUserProvider implements UserProvider
@@ -16,7 +17,7 @@ class StatelessUserProvider implements UserProvider
     ) {
     }
 
-    public function retrieveById($identifier)
+    public function retrieveById($identifier): ?SlashIdUser
     {
         if (! array_key_exists($identifier, $this->localCacheUsers)) {
             $this->localCacheUsers[$identifier] = $this->retrieveByIdFromApi($identifier);
@@ -65,12 +66,16 @@ class StatelessUserProvider implements UserProvider
 
     protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser
     {
-        return new SlashIdUser(
-            $identifier,
-            $this->sdk
-                ->get('/persons/'.$identifier, [
-                    'fields' => ['handles', 'groups', 'attributes'],
-                ])
-        );
+        try {
+            return new SlashIdUser(
+                $identifier,
+                $this->sdk
+                    ->get('/persons/'.$identifier, [
+                        'fields' => ['handles', 'groups', 'attributes'],
+                    ])
+            );
+        } catch (IdNotFoundException $exception) {
+            return NULL;
+        }
     }
 }
