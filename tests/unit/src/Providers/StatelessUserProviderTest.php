@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\Providers\StatelessUserProvider;
+use SlashId\Laravel\SlashIdUser;
 use SlashId\Php\Exception\IdNotFoundException;
 use SlashId\Php\SlashIdSdk;
 
@@ -59,5 +60,98 @@ class StatelessUserProviderTest extends TestCase
         } else {
             $this->assertNull($user);
         }
+    }
+
+    /**
+     * Tests retrieveByToken() updateRememberToken().
+     */
+    public function testsNullFunctions()
+    {
+        /** @var \SlashId\Php\SlashIdSdk&\PHPUnit\Framework\MockObject\MockObject */
+        $sdkMock = $this->createMock(SlashIdSdk::class);
+        $userProvider = new StatelessUserProvider($sdkMock);
+        $user = new SlashIdUser('0000-0000-0000', []);
+
+        $this->assertNull($userProvider->retrieveByToken($user, 'token'));
+        $this->assertNull($userProvider->updateRememberToken($user, 'token'));
+    }
+
+    /**
+     * Data provider for testRetrieveByCredentials().
+     */
+    public static function dataProviderTestRetrieveByCredentials(): array
+    {
+        return [
+            [[], FALSE],
+            [['token' => NULL], FALSE],
+            [['token' => 'token'], FALSE],
+            [['token' => 'aaaa.bbbb'], FALSE],
+            [['token' => 'aaaa.' . base64_encode('NOT JSON') . '.cccc'], FALSE],
+            [['token' => 'aaaa.' . base64_encode(json_encode(['invalid' => 'token'])) . '.cccc'], FALSE],
+            [['token' => 'aaaa.' . base64_encode(json_encode(['person_id' => '9999-9999-9999'])) . '.cccc'], TRUE],
+        ];
+    }
+
+    /**
+     * Tests retrieveByCredentials().
+     *
+     * @dataProvider dataProviderTestRetrieveByCredentials
+     */
+    public function testRetrieveByCredentials(array $credentials, bool $hasUser): void
+    {
+        /** @var \SlashId\Php\SlashIdSdk&\PHPUnit\Framework\MockObject\MockObject */
+        $sdkMock = $this->createMock(SlashIdSdk::class);
+        $userProvider = new StatelessUserProvider($sdkMock);
+
+        $user = $userProvider->retrieveByCredentials($credentials);
+
+        if (!$hasUser) {
+            $this->assertNull($user);
+        }
+        else {
+            $this->assertEquals('9999-9999-9999', $user->getAuthIdentifier());
+        }
+    }
+
+    /**
+     * Data provider for testValidateCredentials().
+     */
+    public static function dataProviderTestValidateCredentials(): array
+    {
+        $validCredentials = ['token' => 'aaaa.' . base64_encode(json_encode(['person_id' => '9999-9999-9999'])) . '.cccc'];
+        return [
+            ['0000-0000-0000', $validCredentials, false, false, false],
+            ['9999-9999-9999', $validCredentials, true, false, false],
+            ['9999-9999-9999', $validCredentials, true, true, true],
+        ];
+    }
+
+    /**
+     * Tests validateCredentials().
+     *
+     * @dataProvider dataProviderTestValidateCredentials
+     */
+    public function testValidateCredentials(string $id, array $credentials, bool $willCallWs, bool $wsResponse, bool $expectedResult): void
+    {
+        /** @var \SlashId\Php\SlashIdSdk&\PHPUnit\Framework\MockObject\MockObject */
+        $sdkMock = $this->createMock(SlashIdSdk::class);
+
+        if ($willCallWs) {
+            $sdkMock->expects($this->once())
+                ->method('post')
+                ->with($this->identicalTo('/token/validate'), $this->identicalTo([
+                    'token' => $credentials['token'],
+                ]))
+                ->willReturn(['valid' => $wsResponse]);
+        } else {
+            $sdkMock->expects($this->never())
+                ->method('post');
+        }
+
+        $userProvider = new StatelessUserProvider($sdkMock);
+        $user = new SlashIdUser($id, []);
+
+        $isValid = $userProvider->validateCredentials($user, $credentials);
+        $this->assertEquals($expectedResult, $isValid);
     }
 }
