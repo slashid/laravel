@@ -5,6 +5,7 @@ namespace SlashId\Laravel\Middleware;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use SlashId\Laravel\Exception\InvalidGroupMiddlewareDefinitionException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -18,8 +19,7 @@ class GroupMiddleware
 
         $checkMode = 'AND';
         if (str_contains($group, '&') && str_contains($group, '|')) {
-            // @todo Implement exception for Middleware definition.
-            throw new \Exception('You can either define an AND list of roles with comma (,) or an OR list of roles with pipe (|), but not both.');
+            throw new InvalidGroupMiddlewareDefinitionException('You can either define an AND list of roles with comma (,) or an OR list of roles with pipe (|), but not both.');
         }
 
         /** @var \App\SlashId\SlashIdUser */
