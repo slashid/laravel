@@ -31,24 +31,33 @@ class StatelessUserProvider implements UserProvider
         return null;
     }
 
-    public function updateRememberToken(Authenticatable $user, $token)
+    public function updateRememberToken(Authenticatable $user, $token): void
     {
     }
 
-    public function retrieveByCredentials(array $credentials)
+    public function retrieveByCredentials(array $credentials): ?SlashIdUser
     {
-        // @todo Add exceptions for malformed tokens
         if (empty($credentials['token']) || ! str_contains($credentials['token'], '.')) {
             return null;
         }
 
-        [, $userDataTokenPart] = explode('.', $credentials['token']);
+        $tokenParts = explode('.', $credentials['token']);
+
+        if (count($tokenParts) !== 3) {
+            return null;
+        }
+
+        [, $userDataTokenPart] = $tokenParts;
         $userData = json_decode(base64_decode($userDataTokenPart), true);
+
+        if (!$userData || empty($userData['person_id'])) {
+            return null;
+        }
 
         return new SlashIdUser($userData['person_id'], $userData);
     }
 
-    public function validateCredentials(Authenticatable $user, array $credentials)
+    public function validateCredentials(Authenticatable $user, array $credentials): bool
     {
         $userFromToken = $this->retrieveByCredentials($credentials);
         if ($user->getAuthIdentifier() !== $userFromToken->getAuthIdentifier()) {
@@ -58,10 +67,10 @@ class StatelessUserProvider implements UserProvider
         return $this->validateSlashIdToken($credentials['token']);
     }
 
-    protected function validateSlashIdToken(string $token)
+    protected function validateSlashIdToken(string $token): bool
     {
         return $this->sdk
-            ->post('/token/validate', ['token' => $token])['valid'];
+            ->post('/token/validate', ['token' => $token])['valid'] ?? FALSE;
     }
 
     protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser
