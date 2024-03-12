@@ -57,7 +57,7 @@ class StatelessGuard implements Guard
         if (! isset($this->authenticated)) {
             $this->authenticated = false;
 
-            $credentials = ['token' => $this->getToken()];
+            $credentials = ['token' => $this->request->bearerToken()];
             $user = $this->userProvider->retrieveByCredentials($credentials);
 
             if ($user && $this->userProvider->validateCredentials($user, $credentials)) {
@@ -111,18 +111,5 @@ class StatelessGuard implements Guard
     {
         $this->user = $user;
         $this->authenticated = TRUE;
-    }
-
-    /**
-     * Gets the token.
-     */
-    protected function getToken(): ?string
-    {
-        $header = $this->request->header('Authorization');
-        if ($header && strpos($header, 'Bearer ') === 0) {
-            return substr($header, strlen('Bearer '));
-        }
-
-        return null;
     }
 }
