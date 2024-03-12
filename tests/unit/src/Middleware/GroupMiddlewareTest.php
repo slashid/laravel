@@ -3,15 +3,10 @@
 namespace SlashId\Test\Laravel\Middleware;
 
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Auth\AuthManager;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\Exception\InvalidGroupMiddlewareDefinitionException;
 use SlashId\Laravel\Middleware\GroupMiddleware;
 use SlashId\Laravel\SlashIdUser;
-use SlashId\Test\Laravel\LaravelMockTestTrait;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -24,15 +19,16 @@ class GroupMiddlewareTest extends SlashIdTestCaseBase
     public static function dataProviderTestHandle(): array
     {
         $groups = ['Editor', 'Admin'];
+
         return [
-            [FALSE, 'Editor', [], AuthenticationException::class],
-            [TRUE, 'Editor|Admin&Manager', [], InvalidGroupMiddlewareDefinitionException::class],
-            [TRUE, 'Editor', [], AccessDeniedHttpException::class],
-            [TRUE, 'Editor|Admin', [], AccessDeniedHttpException::class],
-            [TRUE, 'Editor&Admin', [], AccessDeniedHttpException::class],
-            [TRUE, 'Editor', $groups, NULL],
-            [TRUE, 'Editor|Admin', $groups, NULL],
-            [TRUE, 'Editor&Admin', $groups, NULL],
+            [false, 'Editor', [], AuthenticationException::class],
+            [true, 'Editor|Admin&Manager', [], InvalidGroupMiddlewareDefinitionException::class],
+            [true, 'Editor', [], AccessDeniedHttpException::class],
+            [true, 'Editor|Admin', [], AccessDeniedHttpException::class],
+            [true, 'Editor&Admin', [], AccessDeniedHttpException::class],
+            [true, 'Editor', $groups, null],
+            [true, 'Editor|Admin', $groups, null],
+            [true, 'Editor&Admin', $groups, null],
         ];
     }
 
@@ -59,17 +55,15 @@ class GroupMiddlewareTest extends SlashIdTestCaseBase
         $request
             ->expects($this->any())
             ->method('expectsJson')
-            ->willReturn(TRUE);
+            ->willReturn(true);
 
         if ($expectedException) {
             $this->expectException($expectedException);
         }
 
         $expectedResponse = new Response();
-        $actualResponse = (new GroupMiddleware)->handle($request, fn() => $expectedResponse, $group);
+        $actualResponse = (new GroupMiddleware)->handle($request, fn () => $expectedResponse, $group);
 
         $this->assertEquals($expectedResponse, $actualResponse);
     }
-
-
 }

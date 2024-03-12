@@ -34,10 +34,9 @@ class StatelessUserProviderTest extends TestCase
         // The $this->once() tests that the static cache works.
         $expectations = $sdkMock->expects($this->once())
             ->method('get')
-            ->with($this->identicalTo('/persons/' . $identifier), $this->identicalTo([
+            ->with($this->identicalTo('/persons/'.$identifier), $this->identicalTo([
                 'fields' => ['handles', 'groups', 'attributes'],
             ]));
-
 
         if ($identifier === '9999-9999-9999') {
             $expectations->willReturn([
@@ -45,7 +44,7 @@ class StatelessUserProviderTest extends TestCase
                 'region' => 'us-iowa',
             ]);
         } else {
-            $expectations->willThrowException(new IdNotFoundException('Not found', new ClientException('Not found', new Request('GET', '/person/' . $identifier), new Response(404))));
+            $expectations->willThrowException(new IdNotFoundException('Not found', new ClientException('Not found', new Request('GET', '/person/'.$identifier), new Response(404))));
         }
 
         $userProvider = new StatelessUserProvider($sdkMock);
@@ -82,13 +81,13 @@ class StatelessUserProviderTest extends TestCase
     public static function dataProviderTestRetrieveByCredentials(): array
     {
         return [
-            [[], FALSE],
-            [['token' => NULL], FALSE],
-            [['token' => 'token'], FALSE],
-            [['token' => 'aaaa.bbbb'], FALSE],
-            [['token' => 'aaaa.' . base64_encode('NOT JSON') . '.cccc'], FALSE],
-            [['token' => 'aaaa.' . base64_encode(json_encode(['invalid' => 'token'])) . '.cccc'], FALSE],
-            [['token' => 'aaaa.' . base64_encode(json_encode(['person_id' => '9999-9999-9999'])) . '.cccc'], TRUE],
+            [[], false],
+            [['token' => null], false],
+            [['token' => 'token'], false],
+            [['token' => 'aaaa.bbbb'], false],
+            [['token' => 'aaaa.'.base64_encode('NOT JSON').'.cccc'], false],
+            [['token' => 'aaaa.'.base64_encode(json_encode(['invalid' => 'token'])).'.cccc'], false],
+            [['token' => 'aaaa.'.base64_encode(json_encode(['person_id' => '9999-9999-9999'])).'.cccc'], true],
         ];
     }
 
@@ -105,10 +104,9 @@ class StatelessUserProviderTest extends TestCase
 
         $user = $userProvider->retrieveByCredentials($credentials);
 
-        if (!$hasUser) {
+        if (! $hasUser) {
             $this->assertNull($user);
-        }
-        else {
+        } else {
             $this->assertEquals('9999-9999-9999', $user->getAuthIdentifier());
         }
     }
@@ -118,7 +116,8 @@ class StatelessUserProviderTest extends TestCase
      */
     public static function dataProviderTestValidateCredentials(): array
     {
-        $validCredentials = ['token' => 'aaaa.' . base64_encode(json_encode(['person_id' => '9999-9999-9999'])) . '.cccc'];
+        $validCredentials = ['token' => 'aaaa.'.base64_encode(json_encode(['person_id' => '9999-9999-9999'])).'.cccc'];
+
         return [
             ['0000-0000-0000', $validCredentials, false, false, false],
             ['9999-9999-9999', $validCredentials, true, false, false],

@@ -50,7 +50,7 @@ class StatelessUserProvider implements UserProvider
         [, $userDataTokenPart] = $tokenParts;
         $userData = json_decode(base64_decode($userDataTokenPart), true);
 
-        if (!$userData || empty($userData['person_id'])) {
+        if (! $userData || empty($userData['person_id'])) {
             return null;
         }
 
@@ -70,7 +70,7 @@ class StatelessUserProvider implements UserProvider
     protected function validateSlashIdToken(string $token): bool
     {
         return $this->sdk
-            ->post('/token/validate', ['token' => $token])['valid'] ?? FALSE;
+            ->post('/token/validate', ['token' => $token])['valid'] ?? false;
     }
 
     protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser
@@ -84,7 +84,7 @@ class StatelessUserProvider implements UserProvider
                     ])
             );
         } catch (IdNotFoundException $exception) {
-            return NULL;
+            return null;
         }
     }
 }

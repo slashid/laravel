@@ -12,23 +12,23 @@ use Illuminate\Support\Facades\Auth;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\Auth\SessionGuard;
-use SlashId\Laravel\Auth\StatelessGuard;
 
 class SlashIdTestCaseBase extends TestCase
 {
     protected ?Container $container;
+
     protected array $instances;
 
     protected function tearDown(): void
     {
-        $this->container = NULL;
+        $this->container = null;
         $this->instances = [];
-        Container::setInstance(NULL);
+        Container::setInstance(null);
     }
 
     protected function mockContainer(): Container&MockObject
     {
-        if (!isset($this->container)) {
+        if (! isset($this->container)) {
             $this->container = $this->createMock(Container::class);
             Container::setInstance($this->container);
         }
@@ -47,6 +47,7 @@ class SlashIdTestCaseBase extends TestCase
     protected function mockConfig(): ConfigRepository&MockObject
     {
         $this->instances['config'] = $this->createMock(ConfigRepository::class);
+
         return $this->instances['config'];
     }
 
@@ -72,18 +73,21 @@ class SlashIdTestCaseBase extends TestCase
     protected function mockRedirect(): Redirector&MockObject
     {
         $this->instances['redirect'] = $this->createMock(Redirector::class);
+
         return $this->instances['redirect'];
     }
 
     protected function mockUrlGenerator(): UrlGenerator&MockObject
     {
         $this->instances[UrlGenerator::class] = $this->createMock(UrlGenerator::class);
+
         return $this->instances[UrlGenerator::class];
     }
 
     protected function mockViewFactory(): ViewFactory&MockObject
     {
         $this->instances[ViewFactory::class] = $this->createMock(ViewFactory::class);
+
         return $this->instances[ViewFactory::class];
     }
 }

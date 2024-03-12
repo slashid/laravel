@@ -56,8 +56,7 @@ class ListWebhooksTest extends TestCase
             $outputMock->expects($this->once())
                 ->method('writeln')
                 ->with($this->identicalTo('<info>No webhooks found for organization 999-999-999</info>'), $this->identicalTo(32));
-        }
-        else {
+        } else {
             $outputMock->expects($this->exactly(6))
                 ->method('writeln')
                 ->willReturnCallback(function (string|iterable $messages, int $type = self::OUTPUT_NORMAL) {
@@ -82,6 +81,4 @@ class ListWebhooksTest extends TestCase
         $listWebhooks->setOutput($outputMock);
         $listWebhooks->handle($sdkStub);
     }
-
-
 }

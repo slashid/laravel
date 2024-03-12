@@ -5,9 +5,7 @@ namespace SlashId\Test\Laravel\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\Controllers\LoginController;
-use SlashId\Test\Laravel\LaravelMockTestTrait;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\HttpFoundation\InputBag;
 
@@ -19,8 +17,8 @@ class LoginControllerTest extends SlashIdTestCaseBase
     public static function dataProviderTestLogin(): array
     {
         return [
-            [FALSE, View::class],
-            [TRUE, RedirectResponse::class],
+            [false, View::class],
+            [true, RedirectResponse::class],
         ];
     }
 
@@ -70,8 +68,8 @@ class LoginControllerTest extends SlashIdTestCaseBase
     public static function dataProviderTestLoginCallback(): array
     {
         return [
-            [FALSE, '{"success":false,"redirect":"\/"}'],
-            [TRUE, '{"success":true,"redirect":"\/"}'],
+            [false, '{"success":false,"redirect":"\/"}'],
+            [true, '{"success":true,"redirect":"\/"}'],
         ];
     }
 

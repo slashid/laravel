@@ -10,7 +10,7 @@ class SlashIdUserTest extends TestCase
     /**
      * Test values to run the SlashID user.
      */
-    private const TEST_VALUES =  [
+    private const TEST_VALUES = [
         'active' => true,
         'attributes' => [],
         'groups' => ['Admin', 'Editor'],
@@ -91,5 +91,4 @@ class SlashIdUserTest extends TestCase
     {
         return new SlashIdUser('0659dd31-7e38-7d1e-8704-e3b8b6966176', self::TEST_VALUES);
     }
-
 }
