@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
 use SlashId\Laravel\Auth\StatelessGuard;
 use SlashId\Laravel\SlashIdUser;
-use SlashId\Php\SlashIdSdk;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 
 class StatelessGuardTest extends SlashIdTestCaseBase
 {
     protected Request&MockObject $request;
+
     protected UserProvider&MockObject $userProvider;
 
     /**
@@ -21,7 +21,7 @@ class StatelessGuardTest extends SlashIdTestCaseBase
     public function testAnonymous(): void
     {
         $guard = $this->getStatelessGuard();
-        $guard->setAuthenticated(FALSE);
+        $guard->setAuthenticated(false);
         $this->assertFalse($guard->check());
         $this->assertFalse($guard->hasUser());
         $this->assertTrue($guard->guest());
@@ -47,8 +47,8 @@ class StatelessGuardTest extends SlashIdTestCaseBase
     public static function dataProviderTestUser(): array
     {
         return [
-            [FALSE],
-            [TRUE],
+            [false],
+            [true],
         ];
     }
 
@@ -122,12 +122,15 @@ class StatelessGuardTest extends SlashIdTestCaseBase
     {
         $this->request = $this->createMock(Request::class);
         $this->userProvider = $this->createMock(UserProvider::class);
+
         return new TestableStatelessGuard($this->request, $this->userProvider);
     }
 }
 
-class TestableStatelessGuard extends StatelessGuard {
-    public function setAuthenticated(bool $authenticated): void {
+class TestableStatelessGuard extends StatelessGuard
+{
+    public function setAuthenticated(bool $authenticated): void
+    {
         $this->authenticated = $authenticated;
     }
 }

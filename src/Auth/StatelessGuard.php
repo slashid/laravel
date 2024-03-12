@@ -110,6 +110,6 @@ class StatelessGuard implements Guard
     public function setUser(Authenticatable $user)
     {
         $this->user = $user;
-        $this->authenticated = TRUE;
+        $this->authenticated = true;
     }
 }
