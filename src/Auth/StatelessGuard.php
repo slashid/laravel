@@ -6,7 +6,7 @@ use Illuminate\Auth\CreatesUserProviders;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use SlashId\Laravel\SlashIdUser;
 
 class StatelessGuard implements Guard
@@ -18,6 +18,7 @@ class StatelessGuard implements Guard
     protected ?bool $authenticated;
 
     public function __construct(
+        protected Request $request,
         protected UserProvider $userProvider,
     ) {
     }
@@ -117,7 +118,7 @@ class StatelessGuard implements Guard
      */
     protected function getToken(): ?string
     {
-        $header = Request::header('Authorization');
+        $header = $this->request->header('Authorization');
         if ($header && strpos($header, 'Bearer ') === 0) {
             return substr($header, strlen('Bearer '));
         }
