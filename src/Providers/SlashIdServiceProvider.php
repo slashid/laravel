@@ -3,9 +3,7 @@
 namespace SlashId\Laravel\Providers;
 
 use Illuminate\Auth\AuthManager;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
@@ -49,7 +47,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_session_user', function (Application $app) {
+            $auth->provider('slashid_session_user', function ($app) {
                 return new SessionUserProvider(app(SlashIdSdk::class));
             });
         }
@@ -62,7 +60,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->extend('slashid_session_guard', function (Application $app, $name, array $config) use ($auth) {
+            $auth->extend('slashid_session_guard', function ($app, $name, array $config) use ($auth) {
                 $provider = $auth->createUserProvider($config['provider'] ?? null);
 
                 $guard = new SessionGuard(
@@ -97,7 +95,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_stateless_user', function (Application $app) {
+            $auth->provider('slashid_stateless_user', function ($app) {
                 return new StatelessUserProvider(app(SlashIdSdk::class));
             });
         }
