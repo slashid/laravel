@@ -27,12 +27,12 @@ class SlashIdServiceProvider extends ServiceProvider
         Router $router,
     ) {
         $this->publishes([
-            __DIR__.'/../../config/slashid.php' => config_path('slashid.php'),
+            __DIR__.'/../../config/slashid.php' => $this->app->configPath('slashid.php'),
         ]);
         $this->mergeConfigFrom(__DIR__.'/../../config/slashid.php', 'slashid');
 
         $this->publishes([
-            __DIR__.'/../../public' => public_path('vendor/slashid'),
+            __DIR__.'/../../public' => $this->app->publicPath('vendor/slashid'),
         ], 'public');
 
         if ($this->app->runningInConsole()) {
@@ -119,21 +119,21 @@ class SlashIdServiceProvider extends ServiceProvider
 
         if (config('slashid.web_register_routes')) {
             $this->loadViewsFrom(__DIR__.'/../../resources/views', 'slashid');
-            Route::get(config('slashid.web_route_path_login'), [LoginController::class, 'login'])
+            $router->get(config('slashid.web_route_path_login'), [LoginController::class, 'login'])
                 ->middleware('web')
                 ->name('login');
 
-            Route::post(config('slashid.web_route_path_login_callback'), [LoginController::class, 'loginCallback'])
+            $router->post(config('slashid.web_route_path_login_callback'), [LoginController::class, 'loginCallback'])
                 ->middleware('web')
                 ->name('login.callback');
 
-            Route::get(config('slashid.web_route_path_logout'), [LoginController::class, 'logout'])
+            $router->get(config('slashid.web_route_path_logout'), [LoginController::class, 'logout'])
                 ->middleware('web')
                 ->name('logout');
         }
 
         if (config('slashid.webhook_enable')) {
-            Route::post(config('slashid.webhook_route_path'), [WebhookController::class, 'listen'])
+            $router->post(config('slashid.webhook_route_path'), [WebhookController::class, 'listen'])
                 ->name('slashid.webhook');
         }
     }
