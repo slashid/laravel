@@ -110,7 +110,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->extend('slashid_stateless_guard', fn ($app, $name, array $config) => new StatelessGuard($auth->createUserProvider($config['provider'])));
+            $auth->extend('slashid_stateless_guard', fn ($app, $name, array $config) => new StatelessGuard(app('request'), $auth->createUserProvider($config['provider'])));
         }
 
         if (config('slashid.group_register_middleware')) {
