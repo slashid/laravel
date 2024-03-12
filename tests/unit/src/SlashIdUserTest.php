@@ -1,6 +1,6 @@
 <?php
 
-namespace SlashId\Tets\Laravel;
+namespace SlashId\Test\Laravel;
 
 use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\SlashIdUser;

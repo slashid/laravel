@@ -1,6 +1,6 @@
 <?php
 
-namespace SlashId\Tets\Laravel\Middleware;
+namespace SlashId\Test\Laravel\Middleware;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\AuthManager;
@@ -8,14 +8,15 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PHPUnit\Framework\TestCase;
-use SlashId\Laravel\Auth\StatelessGuard;
 use SlashId\Laravel\Exception\InvalidGroupMiddlewareDefinitionException;
 use SlashId\Laravel\Middleware\GroupMiddleware;
 use SlashId\Laravel\SlashIdUser;
+use SlashId\Test\Laravel\LaravelMockTestTrait;
+use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-class GroupMiddlewareTest extends TestCase
+class GroupMiddlewareTest extends SlashIdTestCaseBase
 {
     /**
      * Data provider for testHandle().
@@ -40,31 +41,19 @@ class GroupMiddlewareTest extends TestCase
      *
      * @dataProvider dataProviderTestHandle
      */
-    public function testHandle(bool $check, string $group, array $userGroups, ?string $expectedException)
+    public function testHandle(bool $check, string $group, array $userGroups, ?string $expectedException): void
     {
-        $statelessGuard = $this->createMock(StatelessGuard::class);
-        $statelessGuard
+        $guard = $this->mockGuard();
+        $guard
             ->expects($this->once())
             ->method('check')
             ->willReturn($check);
-        $statelessGuard
+        $guard
             ->expects($this->any())
             ->method('user')
             ->willReturn(new SlashIdUser('99999-99999-9999', [
                 'groups' => $userGroups,
             ]));
-
-        $auth = new AuthManager([
-            'config' => [
-                'auth.defaults.guard' => 'api',
-                'auth.guards.api' => [
-                    'driver' => 'slashid_stateless_guard',
-                    'provider' => 'slashid_stateless_user',
-                ],
-            ],
-        ]);
-        $auth->extend('slashid_stateless_guard', fn ($app, $name, array $config) => $statelessGuard);
-        Auth::swap($auth);
 
         $request = $this->createMock(Request::class);
         $request
