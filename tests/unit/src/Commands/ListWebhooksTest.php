@@ -59,7 +59,7 @@ class ListWebhooksTest extends TestCase
         } else {
             $outputMock->expects($this->exactly(6))
                 ->method('writeln')
-                ->willReturnCallback(function (string|iterable $messages, int $type = self::OUTPUT_NORMAL) {
+                ->willReturnCallback(function (string|iterable $messages) {
                     static $callCounter = 0;
                     $lines = [
                         '<info>Webhooks for organization 999-999-999</info>',
