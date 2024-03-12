@@ -42,7 +42,7 @@
     },
     "scripts": {
         "test-pint": "./vendor/bin/pint --test",
-        "test-pint-fix": "./vendor/bin/pint --test",
+        "test-pint-fix": "./vendor/bin/pint",
         "test-phpunit": "vendor/bin/phpunit tests/unit/",
         "test-phpunit-coverage": "vendor/bin/phpunit --coverage-html tests/coverage --coverage-filter src/ tests/unit/"
     }
