@@ -46,9 +46,7 @@ class SlashIdTestCaseBase extends TestCase
 
     protected function mockConfig(): ConfigRepository&MockObject
     {
-        $this->instances['config'] = $this->createMock(ConfigRepository::class);
-
-        return $this->instances['config'];
+        return $this->instances['config'] = $this->createMock(ConfigRepository::class);
     }
 
     protected function mockGuard(): SessionGuard&MockObject
@@ -72,22 +70,16 @@ class SlashIdTestCaseBase extends TestCase
 
     protected function mockRedirect(): Redirector&MockObject
     {
-        $this->instances['redirect'] = $this->createMock(Redirector::class);
-
-        return $this->instances['redirect'];
+        return $this->instances['redirect'] = $this->createMock(Redirector::class);
     }
 
     protected function mockUrlGenerator(): UrlGenerator&MockObject
     {
-        $this->instances[UrlGenerator::class] = $this->createMock(UrlGenerator::class);
-
-        return $this->instances[UrlGenerator::class];
+        return $this->instances['url'] = $this->instances[UrlGenerator::class] = $this->createMock(UrlGenerator::class);
     }
 
     protected function mockViewFactory(): ViewFactory&MockObject
     {
-        $this->instances[ViewFactory::class] = $this->createMock(ViewFactory::class);
-
-        return $this->instances[ViewFactory::class];
+        return $this->instances[ViewFactory::class] = $this->createMock(ViewFactory::class);
     }
 }
