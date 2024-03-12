@@ -15,7 +15,7 @@ class StatelessGuard implements Guard
 
     protected ?SlashIdUser $user = null;
 
-    protected bool $authenticated;
+    protected ?bool $authenticated;
 
     public function __construct(
         protected UserProvider $userProvider,
@@ -109,6 +109,7 @@ class StatelessGuard implements Guard
     public function setUser(Authenticatable $user)
     {
         $this->user = $user;
+        $this->authenticated = TRUE;
     }
 
     /**
