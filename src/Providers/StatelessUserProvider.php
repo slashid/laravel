@@ -70,7 +70,7 @@ class StatelessUserProvider implements UserProvider
         [, $userDataTokenPart] = $tokenParts;
         $userData = json_decode(base64_decode($userDataTokenPart), true);
 
-        if (! $userData || empty($userData['person_id'])) {
+        if (! $userData || ! is_array($userData) || empty($userData['person_id'])) {
             return null;
         }
 
@@ -97,19 +97,18 @@ class StatelessUserProvider implements UserProvider
 
     protected function validateSlashIdToken(string $token): bool
     {
-        return $this->sdk
-            ->post('/token/validate', ['token' => $token])['valid'] ?? false;
+        $response = $this->sdk->post('/token/validate', ['token' => $token]);
+        return is_array($response) ? (bool) ($response['valid'] ?? false) : false;
     }
 
     protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser
     {
         try {
-            /** @var mixed[] */
-            $sdkData = $this->sdk->get('/persons/'.$identifier, [
+            $response = $this->sdk->get('/persons/'.$identifier, [
                 'fields' => ['handles', 'groups', 'attributes'],
             ]);
 
-            return new SlashIdUser($identifier, $sdkData);
+            return is_array($response) ? new SlashIdUser($identifier, $response) : null;
         } catch (IdNotFoundException $exception) {
             return null;
         }

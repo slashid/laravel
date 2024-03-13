@@ -43,6 +43,7 @@ class LoginController
 
     protected function getRedirectionPath(string $redirectAfter): string
     {
-        return config('slashid.web_redirect_after_'.$redirectAfter);
+        $redirectionPath = config('slashid.web_redirect_after_'.$redirectAfter);
+        return is_string($redirectionPath) ? $redirectionPath : '/';
     }
 }

@@ -3,6 +3,7 @@
 namespace SlashId\Laravel\Providers;
 
 use Illuminate\Auth\AuthManager;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
@@ -12,17 +13,17 @@ use SlashId\Laravel\Commands\ListWebhooks;
 use SlashId\Laravel\Commands\RegisterWebhook;
 use SlashId\Laravel\Controllers\LoginController;
 use SlashId\Laravel\Controllers\WebhookController;
+use SlashId\Laravel\Exception\InvalidConfigurationException;
 use SlashId\Laravel\Middleware\GroupMiddleware;
 use SlashId\Php\SlashIdSdk;
 
 class SlashIdServiceProvider extends ServiceProvider
 {
-    /**
-     * {@inheritdoc}
-     */
     public function boot(
         AuthManager $auth,
+        Request $request,
         Router $router,
+        SlashIdSdk $sdk,
     ): void {
         $this->publishes([
             __DIR__.'/../../config/slashid.php' => $this->app->configPath('slashid.php'),
@@ -47,9 +48,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_session_user', function ($app) {
-                return new SessionUserProvider(app(SlashIdSdk::class));
-            });
+            $auth->provider('slashid_session_user', fn() => new SessionUserProvider($sdk));
         }
 
         if (config('slashid.web_register_guard')) {
@@ -96,9 +95,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_stateless_user', function ($app) {
-                return new StatelessUserProvider(app(SlashIdSdk::class));
-            });
+            $auth->provider('slashid_stateless_user', fn () => new StatelessUserProvider($sdk));
         }
 
         if (config('slashid.api_register_guard')) {
@@ -109,10 +106,10 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->extend('slashid_stateless_guard', function ($app, $name, array $config) use ($auth): StatelessGuard {
+            $auth->extend('slashid_stateless_guard', function ($app, $name, array $config) use ($auth, $request): StatelessGuard {
                 /** @var \SlashId\Laravel\Providers\StatelessUserProvider */
                 $userProvider = $auth->createUserProvider($config['provider']);
-                return new StatelessGuard(app('request'), $userProvider);
+                return new StatelessGuard($request, $userProvider);
             });
         }
 
@@ -122,33 +119,56 @@ class SlashIdServiceProvider extends ServiceProvider
 
         if (config('slashid.web_register_routes')) {
             $this->loadViewsFrom(__DIR__.'/../../resources/views', 'slashid');
-            $router->get(config('slashid.web_route_path_login'), [LoginController::class, 'login'])
+            $router->get($this->getRoutePathFromConfig('web_route_path_login'), [LoginController::class, 'login'])
                 ->name('login')
                 ->middleware('web');
 
-            $router->post(config('slashid.web_route_path_login_callback'), [LoginController::class, 'loginCallback'])
+            $router->post($this->getRoutePathFromConfig('web_route_path_login_callback'), [LoginController::class, 'loginCallback'])
                 ->name('login.callback')
                 ->middleware('web');
 
-            $router->get(config('slashid.web_route_path_logout'), [LoginController::class, 'logout'])
+            $router->get($this->getRoutePathFromConfig('web_route_path_logout'), [LoginController::class, 'logout'])
                 ->name('logout')
                 ->middleware('web');
         }
 
         if (config('slashid.webhook_enable')) {
-            $router->post(config('slashid.webhook_route_path'), [WebhookController::class, 'listen'])
+            $router->post($this->getRoutePathFromConfig('webhook_route_path'), [WebhookController::class, 'listen'])
                 ->name('slashid.webhook');
         }
     }
 
     public function register()
     {
-        $this->app->singleton(SlashIdSdk::class, function (): SlashIdSdk {
-            return new SlashIdSdk(
-                env('SLASHID_ENVIRONMENT'),
-                env('SLASHID_ORGANIZATION_ID'),
-                env('SLASHID_API_KEY'),
-            );
-        });
+        $this->app->singleton(SlashIdSdk::class, fn(): SlashIdSdk => new SlashIdSdk(
+            $this->getStringEnvironmentVariable('SLASHID_ENVIRONMENT'),
+            $this->getStringEnvironmentVariable('SLASHID_ORGANIZATION_ID'),
+            $this->getStringEnvironmentVariable('SLASHID_API_KEY'),
+        ));
+    }
+
+    /**
+     * Loads path-related configuration and ensures they're strings.
+     */
+    protected function getRoutePathFromConfig(string $configName): string
+    {
+        $fullConfigName = 'slashid.'.$configName;
+        $path = config($fullConfigName);
+        if (! is_string($path)) {
+            throw new InvalidConfigurationException("The configuration $fullConfigName should be a string, please check the file \"config/slashid.php\".");
+        }
+        return $path;
+    }
+
+    /**
+     * Loads string environment configuration.
+     */
+    protected function getStringEnvironmentVariable(string $key): string
+    {
+        $value = env($key);
+        if (! is_string($value)) {
+            throw new InvalidConfigurationException("The environment variable $key should be a string.");
+        }
+        return $value;
     }
 }

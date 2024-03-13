@@ -57,10 +57,8 @@ class StatelessGuard implements Guard
 
     /**
      * Get the currently authenticated user.
-     *
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
-    public function user()
+    public function user(): ?SlashIdUser
     {
         if (! isset($this->authenticated)) {
             $this->authenticated = false;
@@ -82,7 +80,7 @@ class StatelessGuard implements Guard
     /**
      * Get the ID for the currently authenticated user.
      *
-     * @return int|string|null
+     * @return string|null
      */
     public function id()
     {

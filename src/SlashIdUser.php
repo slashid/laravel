@@ -36,12 +36,12 @@ final class SlashIdUser implements Authenticatable
     ) {
     }
 
-    public function getAuthIdentifierName()
+    public function getAuthIdentifierName(): string
     {
         return 'id';
     }
 
-    public function getAuthIdentifier()
+    public function getAuthIdentifier(): string
     {
         return $this->id;
     }
@@ -115,6 +115,7 @@ final class SlashIdUser implements Authenticatable
      */
     public function getGroups(): array
     {
+        /** @var string[] */
         return $this->values['groups'] ?? [];
     }
 }

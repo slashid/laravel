@@ -36,6 +36,7 @@ class SessionUserProvider extends StatelessUserProvider
     {
         $session = Request::session();
         if ($session->has('slashid_user_'.$identifier)) {
+            /** @var \SlashId\Laravel\SlashIdUser */
             return $session->get('slashid_user_'.$identifier);
         }
 
