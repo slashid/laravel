@@ -139,10 +139,10 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
             ->withAnyParameters()
             ->willReturn($route);
 
-        $this->instances[SlashIdSdk::class] = $this->createMock(SlashIdSdk::class);
-        $this->instances['request'] = new LaravelRequest();
+        $sdk = $this->createMock(SlashIdSdk::class);
+        $request = new LaravelRequest();
 
-        (new SlashIdServiceProvider($app))->boot($auth, $router);
+        (new SlashIdServiceProvider($app))->boot($auth, $request, $router, $sdk);
 
         if ($enableConfig) {
             // Tests closures.

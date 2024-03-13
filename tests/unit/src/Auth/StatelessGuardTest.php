@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
 use SlashId\Laravel\Auth\StatelessGuard;
+use SlashId\Laravel\Providers\StatelessUserProvider;
 use SlashId\Laravel\SlashIdUser;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 
@@ -150,7 +151,7 @@ class StatelessGuardTest extends SlashIdTestCaseBase
     protected function getStatelessGuard(): StatelessGuard
     {
         $this->request = $this->createMock(Request::class);
-        $this->userProvider = $this->createMock(UserProvider::class);
+        $this->userProvider = $this->createMock(StatelessUserProvider::class);
 
         return new StatelessGuard($this->request, $this->userProvider);
     }
