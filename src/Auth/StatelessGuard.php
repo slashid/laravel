@@ -5,8 +5,8 @@ namespace SlashId\Laravel\Auth;
 use Illuminate\Auth\CreatesUserProviders;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Http\Request;
+use SlashId\Laravel\Providers\StatelessUserProvider;
 use SlashId\Laravel\SlashIdUser;
 
 class StatelessGuard implements Guard
@@ -19,7 +19,7 @@ class StatelessGuard implements Guard
 
     public function __construct(
         protected Request $request,
-        protected UserProvider $userProvider,
+        protected StatelessUserProvider $userProvider,
     ) {
     }
 
@@ -109,6 +109,10 @@ class StatelessGuard implements Guard
      */
     public function setUser(Authenticatable $user)
     {
+        if (!($user instanceof SlashIdUser)) {
+            throw new \InvalidArgumentException('$user must be of type \SlashId\Laravel\SlashIdUser');
+        }
+
         $this->user = $user;
         $this->authenticated = true;
     }

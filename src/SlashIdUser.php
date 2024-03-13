@@ -24,22 +24,22 @@ final class SlashIdUser implements Authenticatable
 
     public function getAuthPassword()
     {
-        return null;
+        throw new \LogicException('getAuthPassword() should not be called on SlashIdUser, as SlashID does not expose passwords.');
     }
 
     public function getRememberToken()
     {
-        return null;
+        throw new \LogicException('Laravel SlashID integration does not support remember tokens.');
     }
 
     public function setRememberToken($value)
     {
-        // Nothing.
+        throw new \LogicException('Laravel SlashID integration does not support remember tokens.');
     }
 
     public function getRememberTokenName()
     {
-        return null;
+        throw new \LogicException('Laravel SlashID integration does not support remember tokens.');
     }
 
     public function getValues(): array
