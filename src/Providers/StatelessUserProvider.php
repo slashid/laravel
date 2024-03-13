@@ -10,6 +10,9 @@ use SlashId\Php\SlashIdSdk;
 
 class StatelessUserProvider implements UserProvider
 {
+    /**
+     * @var \SlashId\Laravel\SlashIdUser[]
+     */
     protected array $localCacheUsers = [];
 
     public function __construct(
@@ -35,6 +38,12 @@ class StatelessUserProvider implements UserProvider
     {
     }
 
+    /**
+     * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN'].
+     * @return \SlashId\Laravel\SlashIdUser|null The user, if the token exists. Please note that the token is NOT
+     *                                           validated, so do not trust the return without calling
+     *                                           validateCredentials().
+     */
     public function retrieveByCredentials(array $credentials): ?SlashIdUser
     {
         if (empty($credentials['token']) || ! str_contains($credentials['token'], '.')) {
@@ -57,6 +66,14 @@ class StatelessUserProvider implements UserProvider
         return new SlashIdUser($userData['person_id'], $userData);
     }
 
+    /**
+     * Validates the token informed by the user, by testing it against the token validation endpoint in SlashID API.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user  The user from the token.
+     * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN'].
+     *
+     * @see https://developer.slashid.dev/docs/api/post-token-validate
+     */
     public function validateCredentials(Authenticatable $user, array $credentials): bool
     {
         $userFromToken = $this->retrieveByCredentials($credentials);

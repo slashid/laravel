@@ -8,7 +8,7 @@ use SlashId\Php\SlashIdSdk;
 
 class WebhookController
 {
-    public function listen(Request $request, SlashIdSdk $sdk)
+    public function listen(Request $request, SlashIdSdk $sdk): void
     {
         $decoded = $sdk->webhook()->decodeWebhookCall($request->getContent(), app('cache.psr6'));
 

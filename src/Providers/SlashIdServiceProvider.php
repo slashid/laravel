@@ -23,7 +23,7 @@ class SlashIdServiceProvider extends ServiceProvider
     public function boot(
         AuthManager $auth,
         Router $router,
-    ) {
+    ): void {
         $this->publishes([
             __DIR__.'/../../config/slashid.php' => $this->app->configPath('slashid.php'),
         ]);
@@ -118,16 +118,16 @@ class SlashIdServiceProvider extends ServiceProvider
         if (config('slashid.web_register_routes')) {
             $this->loadViewsFrom(__DIR__.'/../../resources/views', 'slashid');
             $router->get(config('slashid.web_route_path_login'), [LoginController::class, 'login'])
-                ->middleware('web')
-                ->name('login');
+                ->name('login')
+                ->middleware('web');
 
             $router->post(config('slashid.web_route_path_login_callback'), [LoginController::class, 'loginCallback'])
-                ->middleware('web')
-                ->name('login.callback');
+                ->name('login.callback')
+                ->middleware('web');
 
             $router->get(config('slashid.web_route_path_logout'), [LoginController::class, 'logout'])
-                ->middleware('web')
-                ->name('logout');
+                ->name('logout')
+                ->middleware('web');
         }
 
         if (config('slashid.webhook_enable')) {

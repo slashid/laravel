@@ -21,7 +21,7 @@ class SessionUserProvider extends StatelessUserProvider
         return $this->localCacheUsers[$identifier];
     }
 
-    protected function retrieveSessionUser($identifier): ?SlashIdUser
+    protected function retrieveSessionUser(string $identifier): ?SlashIdUser
     {
         $session = Request::session();
         if ($session->has('slashid_user_'.$identifier)) {

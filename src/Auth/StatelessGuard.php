@@ -15,6 +15,7 @@ class StatelessGuard implements Guard
     use CreatesUserProviders;
 
     protected ?SlashIdUser $user = null;
+
     protected StatelessUserProvider $userProvider;
 
     protected ?bool $authenticated;
@@ -23,7 +24,7 @@ class StatelessGuard implements Guard
         protected Request $request,
         UserProvider $userProvider,
     ) {
-        if (!($userProvider instanceof StatelessUserProvider)) {
+        if (! ($userProvider instanceof StatelessUserProvider)) {
             throw new \InvalidArgumentException('\SlashId\Laravel\Auth\StatelessGuard requires a \SlashId\Laravel\Providers\StatelessUserProvider.');
         }
 
@@ -90,6 +91,7 @@ class StatelessGuard implements Guard
     /**
      * Validate a user's credentials.
      *
+     * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN']
      * @return bool
      */
     public function validate(array $credentials = [])
@@ -116,7 +118,7 @@ class StatelessGuard implements Guard
      */
     public function setUser(Authenticatable $user)
     {
-        if (!($user instanceof SlashIdUser)) {
+        if (! ($user instanceof SlashIdUser)) {
             throw new \InvalidArgumentException('$user must be of type \SlashId\Laravel\SlashIdUser');
         }
 

@@ -22,8 +22,10 @@ class RegisterWebhook extends Command
      */
     public function handle(SlashIdSdk $sdk): void
     {
+        /** @var string */
         $name = $this->argument('name');
 
+        /** @var string[] */
         $triggers = $this->argument('triggers') ?: [
             'PersonDeleted_v1',
             'PersonLoggedOut_v1',
@@ -31,13 +33,20 @@ class RegisterWebhook extends Command
         ];
 
         // If the --webhook-url is informed, we use it.
+        /** @var string|null */
         $webhookRoute = $this->option('webhook-url');
         // If not, we use the internal URL /slashid/webhook.
         if (! $webhookRoute && config('slashid.webhook_enable')) {
-            // --base-url is used when Laravel is behind a proxy. We concatenate the internal URL with the base URL.
-            if ($baseUrl = $this->option('base-url')) {
-                $webhookRoute = $baseUrl.route('slashid.webhook', [], false);
+            /** @var string|null */
+            $baseUrl = $this->option('base-url');
+
+            // --base-url is used when Laravel i behind a proxy. We concatenate the internal URL with the base URL.
+            if ($baseUrl) {
+                /** @var string */
+                $webhookRoute = route('slashid.webhook', [], false);
+                $webhookRoute = $baseUrl.$webhookRoute;
             } else {
+                /** @var string */
                 $webhookRoute = route('slashid.webhook');
             }
         } elseif (! $webhookRoute) {
