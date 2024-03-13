@@ -5,6 +5,7 @@ namespace SlashId\Laravel\Auth;
 use Illuminate\Auth\CreatesUserProviders;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Http\Request;
 use SlashId\Laravel\Providers\StatelessUserProvider;
 use SlashId\Laravel\SlashIdUser;
@@ -14,13 +15,19 @@ class StatelessGuard implements Guard
     use CreatesUserProviders;
 
     protected ?SlashIdUser $user = null;
+    protected StatelessUserProvider $userProvider;
 
     protected ?bool $authenticated;
 
     public function __construct(
         protected Request $request,
-        protected StatelessUserProvider $userProvider,
+        UserProvider $userProvider,
     ) {
+        if (!($userProvider instanceof StatelessUserProvider)) {
+            throw new \InvalidArgumentException('\SlashId\Laravel\Auth\StatelessGuard requires a \SlashId\Laravel\Providers\StatelessUserProvider.');
+        }
+
+        $this->userProvider = $userProvider;
     }
 
     /**
