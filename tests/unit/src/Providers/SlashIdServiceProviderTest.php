@@ -15,6 +15,7 @@ use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Env;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
+use SlashId\Laravel\Exception\InvalidConfigurationException;
 use SlashId\Laravel\Providers\SlashIdServiceProvider;
 use SlashId\Php\SlashIdSdk;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
@@ -27,7 +28,11 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
      */
     public static function dataProviderTestBoot(): array
     {
-        return [[false], [true]];
+        return [
+            [false, true],
+            [true, false],
+            [true, true],
+        ];
     }
 
     /**
@@ -35,14 +40,14 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
      *
      * @dataProvider dataProviderTestBoot
      */
-    public function testBoot(bool $enableConfig): void
+    public function testBoot(bool $enableConfig, bool $validConfig): void
     {
         $config = $this->mockConfig();
         $config
             ->expects($this->any())
             ->method('get')
             ->withAnyParameters()
-            ->willReturnCallback(fn ($configName) => str_contains($configName, 'route_path') ? 'path' : $enableConfig);
+            ->willReturnCallback(fn ($configName) => str_contains($configName, 'route_path') ? ($validConfig ? 'path' : null) : $enableConfig);
 
         $this->mockContainer();
 
@@ -128,19 +133,23 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
         $route = (new RouteRegistrar($router));
 
         $router
-            ->expects($enableConfig ? $this->exactly(2) : $this->never())
+            ->expects($enableConfig && $validConfig ? $this->exactly(2) : $this->never())
             ->method('get')
             ->withAnyParameters()
             ->willReturn($route);
 
         $router
-            ->expects($enableConfig ? $this->exactly(2) : $this->never())
+            ->expects($enableConfig && $validConfig ? $this->exactly(2) : $this->never())
             ->method('post')
             ->withAnyParameters()
             ->willReturn($route);
 
         $sdk = $this->createMock(SlashIdSdk::class);
         $request = new LaravelRequest();
+
+        if (! $validConfig) {
+            $this->expectException(InvalidConfigurationException::class);
+        }
 
         (new SlashIdServiceProvider($app))->boot($auth, $request, $router, $sdk);
 

@@ -18,6 +18,7 @@ class WebhookController
 
         if (
             ! is_array($decoded['trigger_content']) ||
+            empty($decoded['trigger_content']['event_metadata']) ||
             ! is_array($decoded['trigger_content']['event_metadata']) ||
             empty($decoded['trigger_content']['event_metadata']['event_name']) ||
             ! is_string($decoded['trigger_content']['event_metadata']['event_name']) ||

@@ -10,24 +10,96 @@ use SlashId\Php\Abstraction\WebhookAbstraction;
 use SlashId\Php\SlashIdSdk;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class WebhookControllerTest extends SlashIdTestCaseBase
 {
     /**
-     * Tests listen().
+     * Data provider for testListen().
      */
-    public function testListen(): void
+    public static function dataProviderTestListen(): array
+    {
+        return [
+            [
+                [
+                    'trigger_content' => [
+                        'event_metadata' => [
+                            'event_id' => '9999-9999',
+                            'event_name' => 'SlashIDSDKLoaded_v1',
+                        ],
+                    ],
+                ],
+                false,
+            ],
+            [
+                [
+                    'trigger_content' => [
+                        'event_metadata' => [
+                            'event_id' => 123,
+                            'event_name' => 'SlashIDSDKLoaded_v1',
+                        ],
+                    ],
+                ],
+                true,
+            ],
+            [
+                [
+                    'trigger_content' => [
+                        'event_metadata' => [
+                            'event_name' => 'SlashIDSDKLoaded_v1',
+                        ],
+                    ],
+                ],
+                true,
+            ],
+            [
+                [
+                    'trigger_content' => [
+                        'event_metadata' => [
+                            'event_id' => '9999-9999',
+                            'event_name' => 123,
+                        ],
+                    ],
+                ],
+                true,
+            ],
+            [
+                [
+                    'trigger_content' => [
+                        'event_metadata' => [
+                            'event_id' => '9999-9999',
+                        ],
+                    ],
+                ],
+                true,
+            ],
+            [
+                [
+                    'trigger_content' => [
+                        'event_metadata' => 123,
+                    ],
+                ],
+                true,
+            ],
+            [
+                [
+                    'trigger_content' => [],
+                ],
+                true,
+            ],
+        ];
+    }
+
+    /**
+     * Tests listen().
+     *
+     * @dataProvider dataProviderTestListen
+     */
+    public function testListen(array $decodedCall, bool $expectsException): void
     {
         /** @var \SlashId\Php\SlashIdSdk&\PHPUnit\Framework\MockObject\MockObject */
         $webhook = $this->createConfiguredStub(WebhookAbstraction::class, [
-            'decodeWebhookCall' => [
-                'trigger_content' => [
-                    'event_metadata' => [
-                        'event_id' => '9999-9999',
-                        'event_name' => 'SlashIDSDKLoaded_v1',
-                    ],
-                ],
-            ],
+            'decodeWebhookCall' => $decodedCall,
         ]);
         /** @var \SlashId\Php\SlashIdSdk */
         $sdk = $this->createConfiguredStub(SlashIdSdk::class, [
@@ -42,9 +114,13 @@ class WebhookControllerTest extends SlashIdTestCaseBase
         $this->mockContainer();
 
         $dispatcher
-            ->expects($this->once())
+            ->expects($expectsException ? $this->never() : $this->once())
             ->method('dispatch')
             ->with($this->isInstanceOf(WebhookEvent::class));
+
+        if ($expectsException) {
+            $this->expectException(BadRequestException::class);
+        }
 
         (new WebhookController())->listen($request, $sdk);
     }
