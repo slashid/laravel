@@ -74,7 +74,6 @@ class StatelessGuard implements Guard
                     $this->user = $user;
                 }
             }
-
         }
 
         return $this->user;
@@ -87,7 +86,7 @@ class StatelessGuard implements Guard
      */
     public function id()
     {
-        return $this->user ? $this->user->getAuthIdentifier() : null;
+        return $this->user()?->getAuthIdentifier();
     }
 
     /**
@@ -110,7 +109,7 @@ class StatelessGuard implements Guard
      */
     public function hasUser()
     {
-        return $this->authenticated;
+        return $this->check();
     }
 
     /**

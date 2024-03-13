@@ -16,29 +16,58 @@ class StatelessGuardTest extends SlashIdTestCaseBase
     protected UserProvider&MockObject $userProvider;
 
     /**
-     * Tests check(), hasUser(), guest(), id(), when there is not a user.
+     * Data provider for testAnonymous().
      */
-    public function testAnonymous(): void
+    public static function dataProviderTestCheckAnonymous(): array
+    {
+        return [
+            ['check', 'assertFalse'],
+            ['hasUser', 'assertFalse'],
+            ['guest', 'assertTrue'],
+            ['id', 'assertNull'],
+        ];
+    }
+
+    /**
+     * Tests check(), hasUser(), guest(), id(), when there is not a user.
+     *
+     * @dataProvider dataProviderTestCheckAnonymous
+     */
+    public function testAnonymous(string $testedFunction, string $assertFunction): void
     {
         $guard = $this->getStatelessGuard();
-        $guard->setAuthenticated(false);
-        $this->assertFalse($guard->check());
-        $this->assertFalse($guard->hasUser());
-        $this->assertTrue($guard->guest());
-        $this->assertNull($guard->id());
+        $this->request
+            ->expects($this->once())
+            ->method('bearerToken')
+            ->willReturn(null);
+
+        $this->{$assertFunction}($guard->{$testedFunction}());
+    }
+
+    /**
+     * Data provider for testCheckAuthenticated().
+     */
+    public static function dataProviderTestCheckAuthenticated(): array
+    {
+        return [
+            ['check', 'assertTrue', []],
+            ['hasUser', 'assertTrue', []],
+            ['guest', 'assertFalse', []],
+            ['id', 'assertEquals', ['9999-9999-9999']],
+        ];
     }
 
     /**
      * Tests check(), hasUser(), guest(), id(), setUser(), when there is a user.
+     *
+     * @dataProvider dataProviderTestCheckAuthenticated
      */
-    public function testCheckTrue(): void
+    public function testCheckAuthenticated(string $testedFunction, string $assertFunction, array $parameters): void
     {
         $guard = $this->getStatelessGuard();
         $guard->setUser(new SlashIdUser('9999-9999-9999', []));
-        $this->assertTrue($guard->check());
-        $this->assertTrue($guard->hasUser());
-        $this->assertFalse($guard->guest());
-        $this->assertEquals('9999-9999-9999', $guard->id());
+        $parameters[] = $guard->{$testedFunction}();
+        $this->{$assertFunction}(...$parameters);
     }
 
     /**
@@ -118,19 +147,11 @@ class StatelessGuardTest extends SlashIdTestCaseBase
         }
     }
 
-    protected function getStatelessGuard(): TestableStatelessGuard
+    protected function getStatelessGuard(): StatelessGuard
     {
         $this->request = $this->createMock(Request::class);
         $this->userProvider = $this->createMock(UserProvider::class);
 
-        return new TestableStatelessGuard($this->request, $this->userProvider);
-    }
-}
-
-class TestableStatelessGuard extends StatelessGuard
-{
-    public function setAuthenticated(bool $authenticated): void
-    {
-        $this->authenticated = $authenticated;
+        return new StatelessGuard($this->request, $this->userProvider);
     }
 }
