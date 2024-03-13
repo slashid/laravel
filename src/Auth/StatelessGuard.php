@@ -65,12 +65,14 @@ class StatelessGuard implements Guard
         if (! isset($this->authenticated)) {
             $this->authenticated = false;
 
-            $credentials = ['token' => $this->request->bearerToken()];
-            $user = $this->userProvider->retrieveByCredentials($credentials);
+            if ($token = $this->request->bearerToken()) {
+                $credentials = ['token' => $token];
+                $user = $this->userProvider->retrieveByCredentials($credentials);
 
-            if ($user && $this->userProvider->validateCredentials($user, $credentials)) {
-                $this->authenticated = true;
-                $this->user = $user;
+                if ($user && $this->userProvider->validateCredentials($user, $credentials)) {
+                    $this->authenticated = true;
+                    $this->user = $user;
+                }
             }
 
         }
