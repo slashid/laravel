@@ -11,7 +11,7 @@ use SlashId\Php\SlashIdSdk;
 class StatelessUserProvider implements UserProvider
 {
     /**
-     * @var \SlashId\Laravel\SlashIdUser[]
+     * @var array<string, \SlashId\Laravel\SlashIdUser|null>
      */
     protected array $localCacheUsers = [];
 
@@ -20,6 +20,17 @@ class StatelessUserProvider implements UserProvider
     ) {
     }
 
+    /**
+     * Gets a SlashID person by its ID.
+     *
+     * The currently logged in user will usually be provided by the (validated) token provided by the user, either via
+     * Authorization header (in StatelessUserProvider) or via /login/callback route and subsequently save in session (in
+     * SessionUserProvider). However if not found, an API call will be made to GET /persons/9999-9999-9999.
+     *
+     * @param string $identifier
+     *
+     * return \SlashId\Laravel\SlashIdUser|null
+     */
     public function retrieveById($identifier): ?SlashIdUser
     {
         if (! array_key_exists($identifier, $this->localCacheUsers)) {
@@ -77,7 +88,7 @@ class StatelessUserProvider implements UserProvider
     public function validateCredentials(Authenticatable $user, array $credentials): bool
     {
         $userFromToken = $this->retrieveByCredentials($credentials);
-        if ($user->getAuthIdentifier() !== $userFromToken->getAuthIdentifier()) {
+        if ($userFromToken && ($user->getAuthIdentifier() !== $userFromToken->getAuthIdentifier())) {
             return false;
         }
 
@@ -93,13 +104,12 @@ class StatelessUserProvider implements UserProvider
     protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser
     {
         try {
-            return new SlashIdUser(
-                $identifier,
-                $this->sdk
-                    ->get('/persons/'.$identifier, [
-                        'fields' => ['handles', 'groups', 'attributes'],
-                    ])
-            );
+            /** @var mixed[] */
+            $sdkData = $this->sdk->get('/persons/'.$identifier, [
+                'fields' => ['handles', 'groups', 'attributes'],
+            ]);
+
+            return new SlashIdUser($identifier, $sdkData);
         } catch (IdNotFoundException $exception) {
             return null;
         }

@@ -61,6 +61,7 @@ class SlashIdServiceProvider extends ServiceProvider
             ]);
 
             $auth->extend('slashid_session_guard', function ($app, $name, array $config) use ($auth) {
+                /** @var \SlashId\Laravel\Providers\SessionUserProvider */
                 $provider = $auth->createUserProvider($config['provider'] ?? null);
 
                 $guard = new SessionGuard(
@@ -108,7 +109,11 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->extend('slashid_stateless_guard', fn ($app, $name, array $config) => new StatelessGuard(app('request'), $auth->createUserProvider($config['provider'])));
+            $auth->extend('slashid_stateless_guard', function ($app, $name, array $config) use ($auth): StatelessGuard {
+                /** @var \SlashId\Laravel\Providers\StatelessUserProvider */
+                $userProvider = $auth->createUserProvider($config['provider']);
+                return new StatelessGuard(app('request'), $userProvider);
+            });
         }
 
         if (config('slashid.group_register_middleware')) {
