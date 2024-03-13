@@ -48,7 +48,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_session_user', fn() => new SessionUserProvider($sdk));
+            $auth->provider('slashid_session_user', fn () => new SessionUserProvider($sdk));
         }
 
         if (config('slashid.web_register_guard')) {
@@ -109,6 +109,7 @@ class SlashIdServiceProvider extends ServiceProvider
             $auth->extend('slashid_stateless_guard', function ($app, $name, array $config) use ($auth, $request): StatelessGuard {
                 /** @var \SlashId\Laravel\Providers\StatelessUserProvider */
                 $userProvider = $auth->createUserProvider($config['provider']);
+
                 return new StatelessGuard($request, $userProvider);
             });
         }
@@ -140,7 +141,7 @@ class SlashIdServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(SlashIdSdk::class, fn(): SlashIdSdk => new SlashIdSdk(
+        $this->app->singleton(SlashIdSdk::class, fn (): SlashIdSdk => new SlashIdSdk(
             $this->getStringEnvironmentVariable('SLASHID_ENVIRONMENT'),
             $this->getStringEnvironmentVariable('SLASHID_ORGANIZATION_ID'),
             $this->getStringEnvironmentVariable('SLASHID_API_KEY'),
@@ -157,6 +158,7 @@ class SlashIdServiceProvider extends ServiceProvider
         if (! is_string($path)) {
             throw new InvalidConfigurationException("The configuration $fullConfigName should be a string, please check the file \"config/slashid.php\".");
         }
+
         return $path;
     }
 
@@ -169,6 +171,7 @@ class SlashIdServiceProvider extends ServiceProvider
         if (! is_string($value)) {
             throw new InvalidConfigurationException("The environment variable $key should be a string.");
         }
+
         return $value;
     }
 }

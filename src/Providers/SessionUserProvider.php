@@ -14,7 +14,7 @@ class SessionUserProvider extends StatelessUserProvider
      * Authorization header (in StatelessUserProvider) or via /login/callback route and subsequently save in session (in
      * SessionUserProvider). However if not found, an API call will be made to GET /persons/9999-9999-9999.
      *
-     * @param string $identifier
+     * @param  string  $identifier
      *
      * return \SlashId\Laravel\SlashIdUser|null
      */

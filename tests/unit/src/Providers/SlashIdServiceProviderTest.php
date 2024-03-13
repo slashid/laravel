@@ -188,7 +188,7 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
         $repository
             ->expects($this->exactly($validConfig ? 3 : 1))
             ->method('get')
-            ->willReturn($validConfig ? 'sandbox' : NULL);
+            ->willReturn($validConfig ? 'sandbox' : null);
 
         if (! $validConfig) {
             $this->expectException(InvalidConfigurationException::class);

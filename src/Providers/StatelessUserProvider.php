@@ -27,7 +27,7 @@ class StatelessUserProvider implements UserProvider
      * Authorization header (in StatelessUserProvider) or via /login/callback route and subsequently save in session (in
      * SessionUserProvider). However if not found, an API call will be made to GET /persons/9999-9999-9999.
      *
-     * @param string $identifier
+     * @param  string  $identifier
      *
      * return \SlashId\Laravel\SlashIdUser|null
      */
@@ -98,6 +98,7 @@ class StatelessUserProvider implements UserProvider
     protected function validateSlashIdToken(string $token): bool
     {
         $response = $this->sdk->post('/token/validate', ['token' => $token]);
+
         return is_array($response) ? (bool) ($response['valid'] ?? false) : false;
     }
 
