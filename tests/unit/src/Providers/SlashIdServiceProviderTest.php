@@ -161,9 +161,19 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
     }
 
     /**
-     * Tests register().
+     * Data provider for testRegister().
      */
-    public function testRegister(): void
+    public static function dataProviderTestRegister(): array
+    {
+        return [[false], [true]];
+    }
+
+    /**
+     * Tests register().
+     *
+     * @dataProvider dataProviderTestRegister
+     */
+    public function testRegister(bool $validConfig): void
     {
         $app = $this->createMock(Application::class);
         $app
@@ -176,9 +186,13 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
         $reflection = new \ReflectionClass(Env::class);
         $reflection->setStaticPropertyValue('repository', $repository);
         $repository
-            ->expects($this->exactly(3))
+            ->expects($this->exactly($validConfig ? 3 : 1))
             ->method('get')
-            ->willReturn('sandbox');
+            ->willReturn($validConfig ? 'sandbox' : NULL);
+
+        if (! $validConfig) {
+            $this->expectException(InvalidConfigurationException::class);
+        }
 
         (new SlashIdServiceProvider($app))->register();
     }
