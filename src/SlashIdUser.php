@@ -179,7 +179,7 @@ final class SlashIdUser implements Authenticatable
     /**
      * @param  string[]  $groups  A list of groups, e.g. ['Editor', 'Admin'].
      */
-    public function setGroups(array $groups): array
+    public function setGroups(array $groups): static
     {
         foreach ($groups as $group) {
             if (! is_string($group)) {
@@ -187,7 +187,8 @@ final class SlashIdUser implements Authenticatable
             }
         }
 
-        return $this->groups = $groups;
+        $this->groups = $groups;
+        return $this->groups;
     }
 
     // *****************************
