@@ -56,7 +56,7 @@ final class SlashIdUser implements Authenticatable
 
         $user
             ->setGroups($values['groups'])
-            ->setAttributes($values['attributes'] ?? []);
+            ->setAttributes($values['attributes']);
 
         foreach ($values['handles'] ?? [] as $handle) {
             if (($handle['type'] === 'email_address')) {
