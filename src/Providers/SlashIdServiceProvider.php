@@ -8,6 +8,8 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
+use SlashId\Laravel\Commands\Migration\CreateUserImportScript;
+use SlashId\Laravel\Commands\Migration\ImportUsers;
 use SlashId\Laravel\Commands\Webhook\DeleteWebhook;
 use SlashId\Laravel\Commands\Webhook\ListWebhooks;
 use SlashId\Laravel\Commands\Webhook\RegisterWebhook;
@@ -36,7 +38,9 @@ class SlashIdServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
+                CreateUserImportScript::class,
                 DeleteWebhook::class,
+                ImportUsers::class,
                 ListWebhooks::class,
                 RegisterWebhook::class,
             ]);
