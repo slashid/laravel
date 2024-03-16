@@ -78,7 +78,7 @@ class StatelessGuardTest extends SlashIdTestCaseBase
     public function testCheckAuthenticated(string $testedFunction, string $assertFunction, array $parameters): void
     {
         $guard = $this->getStatelessGuard();
-        $guard->setUser(new SlashIdUser('9999-9999-9999', []));
+        $guard->setUser(new SlashIdUser('9999-9999-9999'));
         $parameters[] = $guard->{$testedFunction}();
         $this->{$assertFunction}(...$parameters);
     }
@@ -122,7 +122,7 @@ class StatelessGuardTest extends SlashIdTestCaseBase
             ->expects($this->once())
             ->method('retrieveByCredentials')
             ->with($this->identicalTo(['token' => 'TOKEN']))
-            ->willReturn(new SlashIdUser('9999-9999-9999', []));
+            ->willReturn(new SlashIdUser('9999-9999-9999'));
 
         $this->userProvider
             ->expects($this->once())
@@ -154,7 +154,7 @@ class StatelessGuardTest extends SlashIdTestCaseBase
             ->expects($this->once())
             ->method('retrieveByCredentials')
             ->with($this->identicalTo(['token' => 'TOKEN']))
-            ->willReturn(new SlashIdUser('9999-9999-9999', []));
+            ->willReturn(new SlashIdUser('9999-9999-9999'));
 
         $this->userProvider
             ->expects($this->once())

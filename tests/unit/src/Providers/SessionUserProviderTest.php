@@ -53,7 +53,7 @@ class SessionUserProviderTest extends SlashIdUserTest
             ->expects($hasSession ? $this->once() : $this->never())
             ->method('get')
             ->with($this->identicalTo('slashid_user_9999-9999-9999'))
-            ->willReturn($hasSession ? new SlashIdUser('9999-9999-9999', []) : null);
+            ->willReturn($hasSession ? new SlashIdUser('9999-9999-9999') : null);
 
         $expectations = $sdk->expects($hasSession ? $this->never() : $this->once())
             ->method('get')

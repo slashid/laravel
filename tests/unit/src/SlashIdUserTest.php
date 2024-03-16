@@ -82,14 +82,6 @@ class SlashIdUserTest extends TestCase
     }
 
     /**
-     * Tests getValues().
-     */
-    public function testGetValues(): void
-    {
-        $this->assertEquals(self::TEST_VALUES, $this->slashIdUser()->getValues());
-    }
-
-    /**
      * Tests group-related methods.
      */
     public function testGroups(): void
@@ -117,6 +109,6 @@ class SlashIdUserTest extends TestCase
      */
     protected function slashIdUser(): SlashIdUser
     {
-        return new SlashIdUser('0659dd31-7e38-7d1e-8704-e3b8b6966176', self::TEST_VALUES);
+        return SlashIdUser::fromValues(self::TEST_VALUES);
     }
 }

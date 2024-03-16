@@ -41,7 +41,11 @@ class StatelessUserProviderTest extends TestCase
         if ($identifier === '9999-9999-9999') {
             $expectations->willReturn([
                 'person_id' => '9999-9999-9999',
+                'active' => true,
+                'attributes' => ['name' => 'John'],
                 'region' => 'us-iowa',
+                'handles' => [],
+                'groups' => ['Admin', 'Editor'],
             ]);
         } else {
             $expectations->willThrowException(new IdNotFoundException('Not found', new ClientException('Not found', new Request('GET', '/person/'.$identifier), new Response(404))));
@@ -52,10 +56,10 @@ class StatelessUserProviderTest extends TestCase
 
         if ($identifier === '9999-9999-9999') {
             $this->assertEquals($user->getAuthIdentifier(), $identifier);
-            $this->assertEquals($user->getValues(), [
-                'person_id' => '9999-9999-9999',
-                'region' => 'us-iowa',
-            ]);
+            $this->assertTrue($user->isActive());
+            $this->assertEquals(['name' => 'John'], $user->getAttributes());
+            $this->assertEquals('us-iowa', $user->getRegion());
+            $this->assertEquals(['Admin', 'Editor'], $user->getGroups());
         } else {
             $this->assertNull($user);
         }
@@ -69,7 +73,7 @@ class StatelessUserProviderTest extends TestCase
         /** @var \SlashId\Php\SlashIdSdk&\PHPUnit\Framework\MockObject\MockObject */
         $sdkMock = $this->createMock(SlashIdSdk::class);
         $userProvider = new StatelessUserProvider($sdkMock);
-        $user = new SlashIdUser('0000-0000-0000', []);
+        $user = new SlashIdUser('0000-0000-0000');
 
         $this->assertNull($userProvider->retrieveByToken($user, 'token'));
         $this->assertNull($userProvider->updateRememberToken($user, 'token'));
@@ -87,7 +91,14 @@ class StatelessUserProviderTest extends TestCase
             [['token' => 'aaaa.bbbb'], false],
             [['token' => 'aaaa.'.base64_encode('NOT JSON').'.cccc'], false],
             [['token' => 'aaaa.'.base64_encode(json_encode(['invalid' => 'token'])).'.cccc'], false],
-            [['token' => 'aaaa.'.base64_encode(json_encode(['person_id' => '9999-9999-9999'])).'.cccc'], true],
+            [['token' => 'aaaa.'.base64_encode(json_encode([
+                'person_id' => '9999-9999-9999',
+                'active' => true,
+                'attributes' => [],
+                'region' => 'us-iowa',
+                'handles' => [],
+                'groups' => [],
+            ])).'.cccc'], true],
         ];
     }
 
@@ -116,7 +127,14 @@ class StatelessUserProviderTest extends TestCase
      */
     public static function dataProviderTestValidateCredentials(): array
     {
-        $validCredentials = ['token' => 'aaaa.'.base64_encode(json_encode(['person_id' => '9999-9999-9999'])).'.cccc'];
+        $validCredentials = ['token' => 'aaaa.'.base64_encode(json_encode([
+            'person_id' => '9999-9999-9999',
+            'active' => true,
+            'attributes' => [],
+            'region' => 'us-iowa',
+            'handles' => [],
+            'groups' => [],
+        ])).'.cccc'];
 
         return [
             ['0000-0000-0000', $validCredentials, false, false, false],
@@ -148,7 +166,7 @@ class StatelessUserProviderTest extends TestCase
         }
 
         $userProvider = new StatelessUserProvider($sdkMock);
-        $user = new SlashIdUser($id, []);
+        $user = new SlashIdUser($id);
 
         $isValid = $userProvider->validateCredentials($user, $credentials);
         $this->assertEquals($expectedResult, $isValid);
