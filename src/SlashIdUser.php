@@ -109,6 +109,18 @@ final class SlashIdUser implements Authenticatable
     // ** Get/Set methods. **
     // **********************
 
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function getActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
     public function getEmailAddress(): ?string
     {
         return $this->emailAddress;
