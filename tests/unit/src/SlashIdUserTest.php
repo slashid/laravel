@@ -20,6 +20,7 @@ class SlashIdUserTest extends TestCase
             'type' => 'phone_number',
             'value' => '+5511999999999',
         ];
+
         return [
             [[], false, false],
             [[$emailHandle], true, false],
@@ -52,14 +53,14 @@ class SlashIdUserTest extends TestCase
         $this->assertEquals(['name' => 'John'], $user->getAttributes());
         $this->assertEquals(['Admin', 'Editor'], $user->getGroups());
         if ($hasEmail) {
-            $this->assertEquals('test@example.com', $user->getEmailAddress());
+            $this->assertEquals(['test@example.com'], $user->getEmailAddresses());
         } else {
-            $this->assertNull($user->getEmailAddress());
+            $this->assertEmpty($user->getEmailAddresses());
         }
         if ($hasPhone) {
-            $this->assertEquals('+5511999999999', $user->getPhoneNumber());
+            $this->assertEquals(['+5511999999999'], $user->getPhoneNumbers());
         } else {
-            $this->assertNull($user->getPhoneNumber());
+            $this->assertEmpty($user->getPhoneNumbers());
         }
     }
 
@@ -129,26 +130,14 @@ class SlashIdUserTest extends TestCase
         $firstUser = new SlashIdUser();
         $this->assertTrue($firstUser->isActive());
 
-        $secondUser = new SlashIdUser(NULL, false);
+        $secondUser = new SlashIdUser(null, false);
         $this->assertFalse($secondUser->isActive());
-
 
         $firstUser->setActive(false);
         $this->assertFalse($firstUser->isActive());
 
         $secondUser->setActive(true);
         $this->assertTrue($secondUser->isActive());
-    }
-
-    /**
-     * Tests getEmailAddress()/setEmailAddress().
-     */
-    public function testEmailAddress(): void
-    {
-        $user = new SlashIdUser();
-        $this->assertNull($user->getEmailAddress());
-        $user->setPhoneNumber('+5511999999999');
-        $this->assertEquals('+5511999999999', $user->getPhoneNumber());
     }
 
     /**
@@ -166,14 +155,17 @@ class SlashIdUserTest extends TestCase
     }
 
     /**
-     * Tests getAttributes()/setAttributes().
+     * Tests getEmailAddress()/setEmailAddress().
      */
-    public function testAttributes(): void
+    public function testEmailAddress(): void
     {
         $user = new SlashIdUser();
-        $this->assertEmpty($user->getAttributes());
-        $user->setAttributes(['name' => 'John']);
-        $this->assertEquals(['name' => 'John'], $user->getAttributes());
+        $this->assertEmpty($user->getEmailAddresses());
+        $user->setEmailAddresses(['test@example.com']);
+        $this->assertEquals(['test@example.com'], $user->getEmailAddresses());
+        $user->addEmailAddress('test@example.com');
+        $user->addEmailAddress('test2@example.com');
+        $this->assertEquals(['test@example.com', 'test2@example.com'], $user->getEmailAddresses());
     }
 
     /**
@@ -182,9 +174,23 @@ class SlashIdUserTest extends TestCase
     public function testPhoneNumber(): void
     {
         $user = new SlashIdUser();
-        $this->assertNull($user->getPhoneNumber());
-        $user->setEmailAddress('test@example.com');
-        $this->assertEquals('test@example.com', $user->getEmailAddress());
+        $this->assertEmpty($user->getPhoneNumbers());
+        $user->setPhoneNumbers(['+5511999999999']);
+        $this->assertEquals(['+5511999999999'], $user->getPhoneNumbers());
+        $user->addPhoneNumber('+5511999999999');
+        $user->addPhoneNumber('+5511999999998');
+        $this->assertEquals(['+5511999999999', '+5511999999998'], $user->getPhoneNumbers());
+    }
+
+    /**
+     * Tests getAttributes()/setAttributes().
+     */
+    public function testAttributes(): void
+    {
+        $user = new SlashIdUser();
+        $this->assertEmpty($user->getAttributes());
+        $user->setAttributes(['name' => 'John']);
+        $this->assertEquals(['name' => 'John'], $user->getAttributes());
     }
 
     /**
@@ -204,6 +210,7 @@ class SlashIdUserTest extends TestCase
         $this->expectExceptionMessage('The $groups parameter must be a list of strings.');
         $user->setGroups([123]);
     }
+
     /**
      * Tests group-checking methods.
      */
