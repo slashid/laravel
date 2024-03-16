@@ -11,30 +11,34 @@ final class SlashIdUser implements Authenticatable
      *
      * In an API response or a token, the phone number will look something like this:
      * {"handles":[{"type":"email_address","value":"user@example.com"}]}
+     *
+     * @var string[]
      */
-    protected ?string $emailAddress;
+    protected array $emailAddresses = [];
 
     /**
      * The phone number, if it exists.
      *
      * In an API response or a token, the phone number will look something like this:
      * {"handles":[{"type":"phone_number","value":"+5519999999999"}]}
+     *
+     * @var string[]
      */
-    protected ?string $phoneNumber;
+    protected array $phoneNumbers = [];
 
     /**
      * The attributes of a user.
      *
      * @var mixed[]
      */
-    protected array $attributes;
+    protected array $attributes = [];
 
     /**
      * The groups of the user.
      *
      * @var string[]
      */
-    protected array $groups;
+    protected array $groups = [];
 
     /**
      * Password hash used for user migrations only.
@@ -66,10 +70,10 @@ final class SlashIdUser implements Authenticatable
 
         foreach ($values['handles'] as $handle) {
             if (($handle['type'] === 'email_address')) {
-                $user->setEmailAddress($handle['value']);
+                $user->addEmailAddress($handle['value']);
             }
             if (($handle['type'] === 'phone_number')) {
-                $user->setPhoneNumber($handle['value']);
+                $user->addPhoneNumber($handle['value']);
             }
         }
 
@@ -119,33 +123,63 @@ final class SlashIdUser implements Authenticatable
         return $this->isActive;
     }
 
-    public function getActive(bool $isActive): static
+    public function setActive(bool $isActive): static
     {
         $this->isActive = $isActive;
 
         return $this;
     }
 
-    public function getEmailAddress(): ?string
+    /**
+     * @return string[]
+     */
+    public function getEmailAddresses(): array
     {
-        return $this->emailAddress;
+        return $this->emailAddresses;
     }
 
-    public function setEmailAddress(string $emailAddress): static
+    public function addEmailAddress(string $emailAddress): static
     {
-        $this->emailAddress = $emailAddress;
+        $this->emailAddresses[] = $emailAddress;
+        $this->emailAddresses = array_unique($this->emailAddresses);
 
         return $this;
     }
 
-    public function getPhoneNumber(): ?string
+    /**
+     * @param  string[]  $emailAddresses
+     */
+    public function setEmailAddresses(array $emailAddresses): static
     {
-        return $this->phoneNumber;
+        $this->assertStringArray('$emailAddresses', $emailAddresses);
+        $this->emailAddresses = $emailAddresses;
+
+        return $this;
     }
 
-    public function setPhoneNumber(string $phoneNumber): static
+    /**
+     * @return string[]
+     */
+    public function getPhoneNumbers(): array
     {
-        $this->phoneNumber = $phoneNumber;
+        return $this->phoneNumbers;
+    }
+
+    public function addPhoneNumber(string $phoneNumber): static
+    {
+        $this->phoneNumbers[] = $phoneNumber;
+        $this->phoneNumbers = array_unique($this->phoneNumbers);
+
+        return $this;
+    }
+
+    /**
+     * @param  string[]  $phoneNumbers
+     */
+    public function setPhoneNumbers(array $phoneNumbers): static
+    {
+        $this->assertStringArray('$phoneNumbers', $phoneNumbers);
+        $this->phoneNumbers = $phoneNumbers;
 
         return $this;
     }
@@ -164,18 +198,6 @@ final class SlashIdUser implements Authenticatable
     public function setAttributes(array $attributes): static
     {
         $this->attributes = $attributes;
-
-        return $this;
-    }
-
-    public function getIsActive(): bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): static
-    {
-        $this->isActive = $isActive;
 
         return $this;
     }
@@ -205,13 +227,8 @@ final class SlashIdUser implements Authenticatable
      */
     public function setGroups(array $groups): static
     {
-        foreach ($groups as $group) {
-            if (! is_string($group)) {
-                throw new \InvalidArgumentException('The $groups parameter must be a list of strings.');
-            }
-        }
-
-        $this->groups = $groups;
+        $this->assertStringArray('$groups', $groups);
+        $this->groups = array_values($groups);
 
         return $this;
     }
@@ -262,5 +279,22 @@ final class SlashIdUser implements Authenticatable
     public function hasAllGroups(array $groups): bool
     {
         return ! count(array_diff($groups, $this->getGroups()));
+    }
+
+    // ************************
+    // ** Protected methods. **
+    // ************************
+
+    /**
+     * @param  string  $parameterName  The name of the parameter to use in the exception.
+     * @param  mixed[]  $strings  The strings to check.
+     */
+    protected function assertStringArray(string $parameterName, array $strings): void
+    {
+        foreach ($strings as $string) {
+            if (! is_string($string)) {
+                throw new \InvalidArgumentException("The $parameterName parameter must be a list of strings.");
+            }
+        }
     }
 }

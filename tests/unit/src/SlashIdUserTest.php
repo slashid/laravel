@@ -10,30 +10,67 @@ use SlashId\Laravel\SlashIdUser;
  */
 class SlashIdUserTest extends TestCase
 {
+    public static function dataProviderTestFromValues(): array
+    {
+        $emailHandle = [
+            'type' => 'email_address',
+            'value' => 'test@example.com',
+        ];
+        $phoneHandle = [
+            'type' => 'phone_number',
+            'value' => '+5511999999999',
+        ];
+
+        return [
+            [[], false, false],
+            [[$emailHandle], true, false],
+            [[$phoneHandle], false, true],
+            [[$emailHandle, $phoneHandle], true, true],
+        ];
+    }
+
     /**
-     * Test values to run the SlashID user.
+     * Tests fromValues().
+     *
+     * @dataProvider dataProviderTestFromValues
      */
-    private const TEST_VALUES = [
-        'active' => true,
-        'attributes' => [],
-        'groups' => ['Admin', 'Editor'],
-        'handles' => [
-            [
-                'type' => 'email_address',
-                'value' => 'test@example.com',
-            ],
-        ],
-        'person_id' => '0659dd31-7e38-7d1e-8704-e3b8b6966176',
-        'region' => 'us-iowa',
-        'roles' => [],
-    ];
+    public function testFromValues(array $handles, bool $hasEmail, bool $hasPhone): void
+    {
+        $values = [
+            'active' => true,
+            'attributes' => ['name' => 'John'],
+            'groups' => ['Admin', 'Editor'],
+            'handles' => $handles,
+            'person_id' => '0659dd31-7e38-7d1e-8704-e3b8b6966176',
+            'region' => 'us-iowa',
+            'roles' => [],
+        ];
+
+        $user = SlashIdUser::fromValues($values);
+        $this->assertEquals('0659dd31-7e38-7d1e-8704-e3b8b6966176', $user->getAuthIdentifier());
+        $this->assertTrue($user->isActive());
+        $this->assertEquals('us-iowa', $user->getRegion());
+        $this->assertEquals(['name' => 'John'], $user->getAttributes());
+        $this->assertEquals(['Admin', 'Editor'], $user->getGroups());
+        if ($hasEmail) {
+            $this->assertEquals(['test@example.com'], $user->getEmailAddresses());
+        } else {
+            $this->assertEmpty($user->getEmailAddresses());
+        }
+        if ($hasPhone) {
+            $this->assertEquals(['+5511999999999'], $user->getPhoneNumbers());
+        } else {
+            $this->assertEmpty($user->getPhoneNumbers());
+        }
+    }
 
     /**
      * Tests getAuthIdentifierName().
      */
     public function testGetAuthIdentifierName(): void
     {
-        $this->assertEquals('id', $this->slashIdUser()->getAuthIdentifierName());
+        $user = new SlashIdUser();
+        $this->assertEquals('id', $user->getAuthIdentifierName());
     }
 
     /**
@@ -41,7 +78,8 @@ class SlashIdUserTest extends TestCase
      */
     public function testGetAuthIdentifier(): void
     {
-        $this->assertEquals('0659dd31-7e38-7d1e-8704-e3b8b6966176', $this->slashIdUser()->getAuthIdentifier());
+        $user = new SlashIdUser('0659dd31-7e38-7d1e-8704-e3b8b6966176');
+        $this->assertEquals('0659dd31-7e38-7d1e-8704-e3b8b6966176', $user->getAuthIdentifier());
     }
 
     /**
@@ -49,7 +87,7 @@ class SlashIdUserTest extends TestCase
      */
     public function testGetAuthPassword(): void
     {
-        $user = $this->slashIdUser();
+        $user = new SlashIdUser();
         $this->expectException(\LogicException::class);
         $this->assertNull($user->getAuthPassword());
     }
@@ -59,7 +97,7 @@ class SlashIdUserTest extends TestCase
      */
     public function testGetRememberToken(): void
     {
-        $user = $this->slashIdUser();
+        $user = new SlashIdUser();
         $this->expectException(\LogicException::class);
         $this->assertNull($user->getRememberToken());
     }
@@ -69,7 +107,7 @@ class SlashIdUserTest extends TestCase
      */
     public function testSetRememberToken(): void
     {
-        $user = $this->slashIdUser();
+        $user = new SlashIdUser();
         $this->expectException(\LogicException::class);
         $this->assertNull($user->setRememberToken('value'));
     }
@@ -79,18 +117,107 @@ class SlashIdUserTest extends TestCase
      */
     public function testGetRememberTokenName(): void
     {
-        $user = $this->slashIdUser();
+        $user = new SlashIdUser();
         $this->expectException(\LogicException::class);
         $this->assertNull($user->getRememberTokenName());
     }
 
     /**
-     * Tests group-related methods.
+     * Tests isActive()/setActive().
+     */
+    public function testActive(): void
+    {
+        $firstUser = new SlashIdUser();
+        $this->assertTrue($firstUser->isActive());
+
+        $secondUser = new SlashIdUser(null, false);
+        $this->assertFalse($secondUser->isActive());
+
+        $firstUser->setActive(false);
+        $this->assertFalse($firstUser->isActive());
+
+        $secondUser->setActive(true);
+        $this->assertTrue($secondUser->isActive());
+    }
+
+    /**
+     * Tests getRegion()/setRegion().
+     */
+    public function testRegion(): void
+    {
+        $user = new SlashIdUser();
+        $this->assertNull($user->getRegion());
+
+        $user = new SlashIdUser(region: 'us-iowa');
+        $this->assertEquals('us-iowa', $user->getRegion());
+        $user->setRegion('europe-belgium');
+        $this->assertEquals('europe-belgium', $user->getRegion());
+    }
+
+    /**
+     * Tests getEmailAddress()/setEmailAddress().
+     */
+    public function testEmailAddress(): void
+    {
+        $user = new SlashIdUser();
+        $this->assertEmpty($user->getEmailAddresses());
+        $user->setEmailAddresses(['test@example.com']);
+        $this->assertEquals(['test@example.com'], $user->getEmailAddresses());
+        $user->addEmailAddress('test@example.com');
+        $user->addEmailAddress('test2@example.com');
+        $this->assertEquals(['test@example.com', 'test2@example.com'], $user->getEmailAddresses());
+    }
+
+    /**
+     * Tests getPhoneNumber()/setPhoneNumber().
+     */
+    public function testPhoneNumber(): void
+    {
+        $user = new SlashIdUser();
+        $this->assertEmpty($user->getPhoneNumbers());
+        $user->setPhoneNumbers(['+5511999999999']);
+        $this->assertEquals(['+5511999999999'], $user->getPhoneNumbers());
+        $user->addPhoneNumber('+5511999999999');
+        $user->addPhoneNumber('+5511999999998');
+        $this->assertEquals(['+5511999999999', '+5511999999998'], $user->getPhoneNumbers());
+    }
+
+    /**
+     * Tests getAttributes()/setAttributes().
+     */
+    public function testAttributes(): void
+    {
+        $user = new SlashIdUser();
+        $this->assertEmpty($user->getAttributes());
+        $user->setAttributes(['name' => 'John']);
+        $this->assertEquals(['name' => 'John'], $user->getAttributes());
+    }
+
+    /**
+     * Tests getGroups()/setGroups().
      */
     public function testGroups(): void
     {
-        $user = $this->slashIdUser();
+        $user = new SlashIdUser();
+        $this->assertEmpty($user->getGroups());
+        $user->setGroups(['Admin', 'Editor']);
         $this->assertEquals(['Admin', 'Editor'], $user->getGroups());
+
+        $user->setGroups(['indexes_will_be_ignored' => 'Admin']);
+        $this->assertEquals(['Admin'], $user->getGroups());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The $groups parameter must be a list of strings.');
+        $user->setGroups([123]);
+    }
+
+    /**
+     * Tests group-checking methods.
+     */
+    public function testGroupChecking(): void
+    {
+        $user = new SlashIdUser();
+        $user->setGroups(['Admin', 'Editor']);
         $this->assertTrue($user->hasGroup('Editor'));
         $this->assertFalse($user->hasGroup('Manager'));
         $this->assertTrue($user->hasAnyGroup(['Editor', 'Manager']));
@@ -105,13 +232,5 @@ class SlashIdUserTest extends TestCase
         $this->assertFalse($user->hasAllGroups(['Editor', 'Manager']));
         $this->assertFalse($user->hasAllGroups(['Admin', 'Manager']));
         $this->assertFalse($user->hasAllGroups(['Manager']));
-    }
-
-    /**
-     * Instantiates a class to do the testing.
-     */
-    protected function slashIdUser(): SlashIdUser
-    {
-        return SlashIdUser::fromValues(self::TEST_VALUES);
     }
 }
