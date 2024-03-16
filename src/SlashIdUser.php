@@ -194,7 +194,7 @@ final class SlashIdUser implements Authenticatable
             }
         }
 
-        $this->groups = $groups;
+        $this->groups = array_values($groups);
 
         return $this;
     }
