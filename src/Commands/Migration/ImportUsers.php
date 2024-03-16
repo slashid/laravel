@@ -1,11 +1,12 @@
 <?php
 
-namespace SlashId\Laravel\Commands;
+namespace SlashId\Laravel\Commands\Migration;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use SlashId\Laravel\Exception\InvalidMigrationScriptException;
+use SlashId\Php\SlashIdSdk;
 
 class ImportUsers extends Command
 {
@@ -22,8 +23,10 @@ class ImportUsers extends Command
     /**
      * {@inheritdoc}
      */
-    public function handle(Application $app, Filesystem $files): void
+    public function handle(Application $app, Filesystem $files, SlashIdSdk $sdk): void
     {
+        //"slashid:emails","slashid:phone_numbers","slashid:region","slashid:roles","slashid:groups","slashid:attributes"
+
         $filename = $app->databasePath() . '/slashid/user-migration.php';
         if (! $files->exists($filename)) {
             $this->error('The script database/slashid-user-migration.php does not exist. Please create one using "php artisan slashid:import:create-script".');
