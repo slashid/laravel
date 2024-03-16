@@ -37,18 +37,19 @@ final class SlashIdUser implements Authenticatable
     protected array $groups;
 
     /**
-     * @param  string  $id  The Person ID. In an API response or a token it will look like: {"person_id": "af5fbd30-7ce7-4548-8b30-4cd59cb2aba1"}.
+     * @param  string|null  $id  The Person ID. In an API response or a token it will look like: {"person_id": "af5fbd30-7ce7-4548-8b30-4cd59cb2aba1"}.
      * @param  bool  $isActive  Whether the user is active. In an API response or a token it will look like: {"active": true}.
+     * @param  string|null  $region  The Region. In an API response or a token it will look like: {"region": "us-iowa"}.
      */
     public function __construct(
-        public string $id,
+        public ?string $id = null,
         protected bool $isActive = true,
         protected ?string $region = null,
     ) {
     }
 
     /**
-     * @param  array{active: bool, person_id: string, roles: string[], region: string, handles: array{type: string, value: string}, groups: string[]}  $values
+     * @param  array{active: bool, person_id: string, roles: string[], attributes: mixed[], region: string, handles: array{type: string, value: string}[], groups: string[]}  $values
      */
     public static function fromValues(array $values): static
     {
@@ -58,7 +59,7 @@ final class SlashIdUser implements Authenticatable
             ->setGroups($values['groups'])
             ->setAttributes($values['attributes']);
 
-        foreach ($values['handles'] ?? [] as $handle) {
+        foreach ($values['handles'] as $handle) {
             if (($handle['type'] === 'email_address')) {
                 $user->setEmailAddress($handle['value']);
             }
@@ -79,7 +80,7 @@ final class SlashIdUser implements Authenticatable
         return 'id';
     }
 
-    public function getAuthIdentifier(): string
+    public function getAuthIdentifier(): ?string
     {
         return $this->id;
     }
@@ -108,7 +109,7 @@ final class SlashIdUser implements Authenticatable
     // ** Get/Set methods. **
     // **********************
 
-    public function getEmailAddress(): string
+    public function getEmailAddress(): ?string
     {
         return $this->emailAddress;
     }
@@ -120,7 +121,7 @@ final class SlashIdUser implements Authenticatable
         return $this;
     }
 
-    public function getPhoneNumber(): string
+    public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
     }
@@ -162,7 +163,7 @@ final class SlashIdUser implements Authenticatable
         return $this;
     }
 
-    public function getRegion(): string
+    public function getRegion(): ?string
     {
         return $this->region;
     }
