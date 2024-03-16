@@ -12,7 +12,7 @@ final class SlashIdUser implements Authenticatable
      * In an API response or a token, the phone number will look something like this:
      * {"handles":[{"type":"email_address","value":"user@example.com"}]}
      */
-    protected ?string $emailAddress;
+    protected ?string $emailAddress = null;
 
     /**
      * The phone number, if it exists.
@@ -20,21 +20,21 @@ final class SlashIdUser implements Authenticatable
      * In an API response or a token, the phone number will look something like this:
      * {"handles":[{"type":"phone_number","value":"+5519999999999"}]}
      */
-    protected ?string $phoneNumber;
+    protected ?string $phoneNumber = null;
 
     /**
      * The attributes of a user.
      *
      * @var mixed[]
      */
-    protected array $attributes;
+    protected array $attributes = [];
 
     /**
      * The groups of the user.
      *
      * @var string[]
      */
-    protected array $groups;
+    protected array $groups = [];
 
     /**
      * @param  string|null  $id  The Person ID. In an API response or a token it will look like: {"person_id": "af5fbd30-7ce7-4548-8b30-4cd59cb2aba1"}.
