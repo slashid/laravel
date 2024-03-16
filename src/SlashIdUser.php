@@ -37,6 +37,11 @@ final class SlashIdUser implements Authenticatable
     protected array $groups;
 
     /**
+     * Password hash used for user migrations only.
+     */
+    protected ?string $legacyPasswordToMigate;
+
+    /**
      * @param  string|null  $id  The Person ID. In an API response or a token it will look like: {"person_id": "af5fbd30-7ce7-4548-8b30-4cd59cb2aba1"}.
      * @param  bool  $isActive  Whether the user is active. In an API response or a token it will look like: {"active": true}.
      * @param  string|null  $region  The Region. In an API response or a token it will look like: {"region": "us-iowa"}.
@@ -207,6 +212,18 @@ final class SlashIdUser implements Authenticatable
         }
 
         $this->groups = $groups;
+
+        return $this;
+    }
+
+    public function getLegacyPasswordToMigate(): ?string
+    {
+        return $this->legacyPasswordToMigate;
+    }
+
+    public function setLegacyPasswordToMigate(string $legacyPasswordToMigate): static
+    {
+        $this->legacyPasswordToMigate = $legacyPasswordToMigate;
 
         return $this;
     }
