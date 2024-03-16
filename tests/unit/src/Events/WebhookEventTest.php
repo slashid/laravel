@@ -5,6 +5,9 @@ namespace SlashId\Test\Laravel\Events;
 use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\Events\WebhookEvent;
 
+/**
+ * @covers \SlashId\Laravel\Events\WebhookEvent
+ */
 class WebhookEventTest extends TestCase
 {
     /**

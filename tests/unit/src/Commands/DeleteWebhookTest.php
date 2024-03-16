@@ -9,6 +9,9 @@ use SlashId\Php\Abstraction\WebhookAbstraction;
 use SlashId\Php\SlashIdSdk;
 use Symfony\Component\Console\Input\InputInterface;
 
+/**
+ * @covers \SlashId\Laravel\Commands\DeleteWebhook
+ */
 class DeleteWebhookTest extends TestCase
 {
     /**

@@ -11,6 +11,9 @@ use SlashId\Laravel\Providers\StatelessUserProvider;
 use SlashId\Laravel\SlashIdUser;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 
+/**
+ * @covers \SlashId\Laravel\Auth\StatelessGuard
+ */
 class StatelessGuardTest extends SlashIdTestCaseBase
 {
     protected Request&MockObject $request;

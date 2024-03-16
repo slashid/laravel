@@ -8,6 +8,9 @@ use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\SlashIdUser;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 
+/**
+ * @covers \SlashId\Laravel\Auth\SessionGuard
+ */
 class SessionGuardTest extends SlashIdTestCaseBase
 {
     /**
