@@ -42,8 +42,8 @@ final class SlashIdUser implements Authenticatable
      */
     public function __construct(
         public string $id,
-        protected bool $isActive = TRUE,
-        protected ?string $region = NULL,
+        protected bool $isActive = true,
+        protected ?string $region = null,
     ) {
     }
 
@@ -52,7 +52,7 @@ final class SlashIdUser implements Authenticatable
      */
     public function fromValues(array $values): static
     {
-        $user = new static($values['person_id'], $values['active'], $values['region']);
+        $user = new self($values['person_id'], $values['active'], $values['region']);
 
         $user
             ->setGroups($values['groups'])
@@ -66,6 +66,7 @@ final class SlashIdUser implements Authenticatable
                 $user->setPhoneNumber($handle['value']);
             }
         }
+
         return $user;
     }
 
@@ -115,6 +116,7 @@ final class SlashIdUser implements Authenticatable
     public function setEmailAddress(string $emailAddress): static
     {
         $this->emailAddress = $emailAddress;
+
         return $this;
     }
 
@@ -126,6 +128,7 @@ final class SlashIdUser implements Authenticatable
     public function setPhoneNumber(string $phoneNumber): static
     {
         $this->phoneNumber = $phoneNumber;
+
         return $this;
     }
 
@@ -138,11 +141,12 @@ final class SlashIdUser implements Authenticatable
     }
 
     /**
-     * @param mixed[] $attributes The user attributes.
+     * @param  mixed[]  $attributes  The user attributes.
      */
     public function setAttributes(array $attributes): static
     {
         $this->attributes = $attributes;
+
         return $this;
     }
 
@@ -154,6 +158,7 @@ final class SlashIdUser implements Authenticatable
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
         return $this;
     }
 
@@ -165,6 +170,7 @@ final class SlashIdUser implements Authenticatable
     public function setRegion(string $region): static
     {
         $this->region = $region;
+
         return $this;
     }
 
@@ -188,6 +194,7 @@ final class SlashIdUser implements Authenticatable
         }
 
         $this->groups = $groups;
+
         return $this->groups;
     }
 
