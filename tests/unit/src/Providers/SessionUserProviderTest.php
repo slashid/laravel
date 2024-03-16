@@ -14,6 +14,9 @@ use SlashId\Php\Exception\IdNotFoundException;
 use SlashId\Php\SlashIdSdk;
 use SlashId\Test\Laravel\SlashIdUserTest;
 
+/**
+ * @covers \SlashId\Laravel\Providers\SessionUserProvider
+ */
 class SessionUserProviderTest extends SlashIdUserTest
 {
     /**

@@ -11,6 +11,9 @@ use SlashId\Laravel\SlashIdUser;
 use SlashId\Php\Exception\IdNotFoundException;
 use SlashId\Php\SlashIdSdk;
 
+/**
+ * @covers \SlashId\Laravel\Providers\StatelessUserProvider
+ */
 class StatelessUserProviderTest extends TestCase
 {
     /**

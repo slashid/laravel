@@ -9,6 +9,9 @@ use SlashId\Php\SlashIdSdk;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\Console\Input\InputInterface;
 
+/**
+ * @covers \SlashId\Laravel\Commands\RegisterWebhook
+ */
 class RegisterWebhookTest extends SlashIdTestCaseBase
 {
     /**

@@ -11,6 +11,9 @@ use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
+/**
+ * @covers \SlashId\Laravel\Middleware\GroupMiddleware
+ */
 class GroupMiddlewareTest extends SlashIdTestCaseBase
 {
     /**
