@@ -74,7 +74,8 @@ class StatelessUserProvider implements UserProvider
             return null;
         }
 
-        return new SlashIdUser($userData['person_id'], $userData);
+        // @phpstan-ignore-next-line
+        return SlashIdUser::fromValues($userData);
     }
 
     /**
@@ -109,7 +110,10 @@ class StatelessUserProvider implements UserProvider
                 'fields' => ['handles', 'groups', 'attributes'],
             ]);
 
-            return is_array($response) ? new SlashIdUser($identifier, $response) : null;
+            return is_array($response) ?
+                // @phpstan-ignore-next-line
+                SlashIdUser::fromValues($response) :
+                null;
         } catch (IdNotFoundException $exception) {
             return null;
         }

@@ -8,6 +8,9 @@ use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\SlashIdUser;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 
+/**
+ * @covers \SlashId\Laravel\Auth\SessionGuard
+ */
 class SessionGuardTest extends SlashIdTestCaseBase
 {
     /**
@@ -18,7 +21,7 @@ class SessionGuardTest extends SlashIdTestCaseBase
         $provider = $this->createMock(UserProvider::class);
         $session = $this->createMock(Session::class);
         $guard = new SessionGuard('slashid_session_guard', $provider, $session);
-        $user = new SlashIdUser('9999-9999-9999', []);
+        $user = new SlashIdUser('9999-9999-9999');
 
         $session->expects($this->exactly(2))
             ->method('put')

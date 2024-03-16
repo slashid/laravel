@@ -12,6 +12,9 @@ use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
+/**
+ * @covers \SlashId\Laravel\Controllers\WebhookController
+ */
 class WebhookControllerTest extends SlashIdTestCaseBase
 {
     /**

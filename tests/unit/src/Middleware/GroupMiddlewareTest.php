@@ -11,6 +11,9 @@ use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
+/**
+ * @covers \SlashId\Laravel\Middleware\GroupMiddleware
+ */
 class GroupMiddlewareTest extends SlashIdTestCaseBase
 {
     /**
@@ -47,9 +50,7 @@ class GroupMiddlewareTest extends SlashIdTestCaseBase
         $guard
             ->expects($this->any())
             ->method('user')
-            ->willReturn(new SlashIdUser('99999-99999-9999', [
-                'groups' => $userGroups,
-            ]));
+            ->willReturn((new SlashIdUser('99999-99999-9999'))->setGroups($userGroups));
 
         $request = $this->createMock(Request::class);
         $request

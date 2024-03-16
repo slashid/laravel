@@ -8,6 +8,9 @@ use SlashId\Laravel\Commands\ListWebhooks;
 use SlashId\Php\Abstraction\WebhookAbstraction;
 use SlashId\Php\SlashIdSdk;
 
+/**
+ * @covers \SlashId\Laravel\Commands\ListWebhooks
+ */
 class ListWebhooksTest extends TestCase
 {
     /**
