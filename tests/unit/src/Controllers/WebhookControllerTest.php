@@ -11,6 +11,9 @@ use SlashId\Php\SlashIdSdk;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
+/**
+ * @covers \SlashId\Laravel\Controllers\WebhookController
+ */
 class WebhookControllerTest extends SlashIdTestCaseBase
 {
     /**

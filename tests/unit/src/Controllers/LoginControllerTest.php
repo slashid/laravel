@@ -9,6 +9,9 @@ use SlashId\Laravel\Controllers\LoginController;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\HttpFoundation\InputBag;
 
+/**
+ * @covers \SlashId\Laravel\Controllers\LoginController
+ */
 class LoginControllerTest extends SlashIdTestCaseBase
 {
     /**

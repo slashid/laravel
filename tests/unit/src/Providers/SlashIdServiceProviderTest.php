@@ -20,6 +20,9 @@ use SlashId\Php\SlashIdSdk;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @covers \SlashId\Laravel\Providers\SlashIdServiceProvider
+ */
 class SlashIdServiceProviderTest extends SlashIdTestCaseBase
 {
     /**

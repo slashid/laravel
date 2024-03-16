@@ -5,6 +5,9 @@ namespace SlashId\Test\Laravel;
 use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\SlashIdUser;
 
+/**
+ * @covers \SlashId\Laravel\SlashIdUser
+ */
 class SlashIdUserTest extends TestCase
 {
     /**
