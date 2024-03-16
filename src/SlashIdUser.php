@@ -114,7 +114,7 @@ final class SlashIdUser implements Authenticatable
         return $this->isActive;
     }
 
-    public function getActive(bool $isActive): static
+    public function setActive(bool $isActive): static
     {
         $this->isActive = $isActive;
 
@@ -159,18 +159,6 @@ final class SlashIdUser implements Authenticatable
     public function setAttributes(array $attributes): static
     {
         $this->attributes = $attributes;
-
-        return $this;
-    }
-
-    public function getIsActive(): bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): static
-    {
-        $this->isActive = $isActive;
 
         return $this;
     }
