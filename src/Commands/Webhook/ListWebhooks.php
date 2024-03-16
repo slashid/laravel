@@ -1,6 +1,6 @@
 <?php
 
-namespace SlashId\Laravel\Commands;
+namespace SlashId\Laravel\Commands\Webhook;
 
 use Illuminate\Console\Command;
 use SlashId\Php\SlashIdSdk;
