@@ -47,6 +47,28 @@ final class SlashIdUser implements Authenticatable
     ) {
     }
 
+    /**
+     * @param  array{active: bool, person_id: string, roles: string[], region: string, handles: array{type: string, value: string}, groups: string[]}  $values
+     */
+    public function fromValues(array $values): static
+    {
+        $user = new static($values['person_id'], $values['active'], $values['region']);
+
+        $user
+            ->setGroups($values['groups'])
+            ->setAttributes($values['attributes'] ?? []);
+
+        foreach ($values['handles'] ?? [] as $handle) {
+            if (($handle['type'] === 'email_address')) {
+                $user->setEmailAddress($handle['value']);
+            }
+            if (($handle['type'] === 'phone_number')) {
+                $user->setPhoneNumber($handle['value']);
+            }
+        }
+        return $user;
+    }
+
     // ******************************************************************
     // ** Implementations of methods of the Authenticatable interface. **
     // ******************************************************************
