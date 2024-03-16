@@ -50,7 +50,7 @@ final class SlashIdUser implements Authenticatable
     /**
      * @param  array{active: bool, person_id: string, roles: string[], region: string, handles: array{type: string, value: string}, groups: string[]}  $values
      */
-    public function fromValues(array $values): static
+    public static function fromValues(array $values): static
     {
         $user = new self($values['person_id'], $values['active'], $values['region']);
 
