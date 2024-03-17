@@ -37,12 +37,17 @@ class CreateUserImportScript extends Command
         }
 
         $class = $this->ask('Please inform the class of the user model', '\\App\Models\User');
+        if (! is_string($class)) {
+            $this->error("Please input a class.");
+
+            return;
+        }
         if (! class_exists($class)) {
             $this->error("Class $class does not exist.");
 
             return;
         }
-        if (! class_implements($class, Authenticatable::class)) {
+        if (! is_subclass_of($class, Authenticatable::class)) {
             $this->error("Class $class is not an implementation of \\Illuminate\\Contracts\\Auth\\Authenticatable.");
 
             return;
