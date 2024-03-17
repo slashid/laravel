@@ -56,6 +56,7 @@ class CreateUserImportScript extends Command
         }
         if (is_subclass_of($class, Model::class)) {
             $firstUser = $class::limit(1)->get()->first(); // @phpstan-ignore-line
+            /** @var string[] */
             $fields = array_keys($firstUser->toArray());
             $script = $this->buildModelScript($files->get(__DIR__.'/../../../resources/scripts/user-migration.php.template-model'), $class, $fields);
         } else {
@@ -89,7 +90,7 @@ class CreateUserImportScript extends Command
      *
      * @param  string  $scriptTemplate  The contents of the script template.
      * @param  string  $class  The class of the User model.
-     * @param  array  $fields  The fields of the users table.
+     * @param  string[]  $fields  The fields of the users table.
      */
     protected function buildModelScript(string $scriptTemplate, string $class, array $fields): string
     {

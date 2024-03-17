@@ -50,11 +50,11 @@ class ImportUsers extends Command
             $csvLines[] = [
                 implode(',', $user->getEmailAddresses()),
                 implode(',', $user->getPhoneNumbers()),
-                $user->getRegion(),
+                $user->getRegion() ?? '',
                 '',
                 implode(',', $user->getGroups()),
-                json_encode($user->getAttributes()),
-                $user->getLegacyPasswordToMigate(),
+                json_encode($user->getAttributes()) ?: '',
+                $user->getLegacyPasswordToMigate() ?? '',
             ];
         }
 
