@@ -1,16 +1,16 @@
 <?php
 
-namespace SlashId\Test\Laravel\Commands;
+namespace SlashId\Test\Laravel\Commands\Webhook;
 
 use Illuminate\Console\OutputStyle;
-use SlashId\Laravel\Commands\RegisterWebhook;
+use SlashId\Laravel\Commands\Webhook\RegisterWebhook;
 use SlashId\Php\Abstraction\WebhookAbstraction;
 use SlashId\Php\SlashIdSdk;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
- * @covers \SlashId\Laravel\Commands\RegisterWebhook
+ * @covers \SlashId\Laravel\Commands\Webhook\RegisterWebhook
  */
 class RegisterWebhookTest extends SlashIdTestCaseBase
 {
