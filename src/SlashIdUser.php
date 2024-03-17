@@ -235,7 +235,7 @@ final class SlashIdUser implements Authenticatable
 
     public function getLegacyPasswordToMigate(): ?string
     {
-        return $this->legacyPasswordToMigate ?? NULL;
+        return $this->legacyPasswordToMigate ?? null;
     }
 
     public function setLegacyPasswordToMigate(string $legacyPasswordToMigate): static

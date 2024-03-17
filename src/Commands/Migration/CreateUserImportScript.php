@@ -24,13 +24,14 @@ class CreateUserImportScript extends Command
      */
     public function handle(Application $app, Filesystem $files): void
     {
-        $filename = $app->databasePath() . '/slashid/user-migration.php';
+        $filename = $app->databasePath().'/slashid/user-migration.php';
 
         if ($files->exists($filename)) {
             if ($this->confirm('Script slashid-user-migration.php already exists, do you want to overwrite it?')) {
-                $this->info('Backup file copied to ' . $this->backupFile($files, $filename));
+                $this->info('Backup file copied to '.$this->backupFile($files, $filename));
             } else {
                 $this->info('Will not overwrite script, aborting.');
+
                 return;
             }
         }
@@ -38,16 +39,18 @@ class CreateUserImportScript extends Command
         $class = $this->ask('Please inform the class of the user model', '\\App\Models\User');
         if (! class_exists($class)) {
             $this->error("Class $class does not exist.");
+
             return;
         }
         if (! class_implements($class, Authenticatable::class)) {
             $this->error("Class $class is not an implementation of \\Illuminate\\Contracts\\Auth\\Authenticatable.");
+
             return;
         }
 
         $firstUser = $class::limit(1)->get()->first();
         $fields = array_keys($firstUser->toArray());
-        $script = $this->buildScript($files->get(__DIR__ . '/../../../resources/scripts/user-migration.php.template'), $class, $fields);
+        $script = $this->buildScript($files->get(__DIR__.'/../../../resources/scripts/user-migration.php.template'), $class, $fields);
 
         $files->ensureDirectoryExists(dirname($filename));
         $files->put($filename, $script);
@@ -62,7 +65,7 @@ class CreateUserImportScript extends Command
     {
         $count = 0;
         do {
-            $backupFilename = $filename . '.bak' . ($count ? '.' . $count : '');
+            $backupFilename = $filename.'.bak'.($count ? '.'.$count : '');
             $count++;
         } while ($files->exists($backupFilename));
 
