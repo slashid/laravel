@@ -2,8 +2,10 @@
 
 use SlashId\Laravel\SlashIdUser;
 
+// Write a code to load all of your users here...
 /** @var \Illuminate\Contracts\Auth\Authenticatable[] */
-$laravelUsers = {{ class }}::all();
+$laravelUsers = ...........
+
 $slashIdUsers = [];
 foreach ($laravelUsers as $laravelUser) {
     $slashIdUser = new SlashIdUser();
@@ -18,7 +20,7 @@ foreach ($laravelUsers as $laravelUser) {
         // ->setRegion('us-iowa')
         ->setAttributes([
             'old_id' => $laravelUser->getAuthIdentifier(),
-            {{ attributes }}
+            // Add more attributes here.
         ]);
 
     $slashIdUsers[] = $slashIdUser;

@@ -5,6 +5,7 @@ namespace SlashId\Laravel\Commands\Migration;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 
 class CreateUserImportScript extends Command
@@ -24,6 +25,7 @@ class CreateUserImportScript extends Command
      */
     public function handle(Application $app, Filesystem $files): void
     {
+
         $filename = $app->databasePath().'/slashid/user-migration.php';
 
         if ($files->exists($filename)) {
@@ -38,7 +40,7 @@ class CreateUserImportScript extends Command
 
         $class = $this->ask('Please inform the class of the user model', '\\App\Models\User');
         if (! is_string($class)) {
-            $this->error("Please input a class.");
+            $this->error('Please input a class.');
 
             return;
         }
@@ -52,10 +54,13 @@ class CreateUserImportScript extends Command
 
             return;
         }
-
-        $firstUser = $class::limit(1)->get()->first();
-        $fields = array_keys($firstUser->toArray());
-        $script = $this->buildScript($files->get(__DIR__.'/../../../resources/scripts/user-migration.php.template'), $class, $fields);
+        if (is_subclass_of($class, Model::class)) {
+            $firstUser = $class::limit(1)->get()->first(); // @phpstan-ignore-line
+            $fields = array_keys($firstUser->toArray());
+            $script = $this->buildModelScript($files->get(__DIR__.'/../../../resources/scripts/user-migration.php.template-model'), $class, $fields);
+        } else {
+            $script = $files->get(__DIR__.'/../../../resources/scripts/user-migration.php.template-nonmodel');
+        }
 
         $files->ensureDirectoryExists(dirname($filename));
         $files->put($filename, $script);
@@ -81,8 +86,12 @@ class CreateUserImportScript extends Command
 
     /**
      * Builds the script.
+     *
+     * @param  string  $scriptTemplate  The contents of the script template.
+     * @param  string  $class  The class of the User model.
+     * @param  array  $fields  The fields of the users table.
      */
-    protected function buildScript(string $scriptTemplate, string $class, array $fields): string
+    protected function buildModelScript(string $scriptTemplate, string $class, array $fields): string
     {
         // Removes fields that should not be attributes.
         $fieldsToIgnore = [
