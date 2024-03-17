@@ -2,6 +2,7 @@
 
 namespace SlashId\Laravel\Commands\Migration;
 
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
@@ -25,20 +26,65 @@ class ImportUsers extends Command
      */
     public function handle(Application $app, Filesystem $files, SlashIdSdk $sdk): void
     {
-        //"slashid:emails","slashid:phone_numbers","slashid:region","slashid:roles","slashid:groups","slashid:attributes"
-
         $filename = $app->databasePath() . '/slashid/user-migration.php';
         if (! $files->exists($filename)) {
             $this->error('The script database/slashid-user-migration.php does not exist. Please create one using "php artisan slashid:import:create-script".');
             return;
         }
 
+        // Loads the users.
         $users = $this->loadUsers($files, $filename);
-        dd($users);
+
+        // Write to CSV.
+        $csvLines = [];
+        $csvLines[] = [
+            'slashid:emails',
+            #'slashid:phone_numbers',
+            #'slashid:region',
+            #'slashid:roles',
+            #'slashid:groups',
+            #'slashid:attributes',
+            #'slashid:password',
+        ];
+        foreach ($users as $user) {
+            $csvLines[] = [
+                implode(',', $user->getEmailAddresses()),
+                implode(',', $user->getPhoneNumbers()),
+                $user->getRegion(),
+                '',
+                implode(',', $user->getGroups()),
+                json_encode($user->getAttributes()),
+                $user->getLegacyPasswordToMigate(),
+            ];
+        }
+
+        $this->info('Users to import:');
+        $this->table(reset($csvLines), array_slice($csvLines, 1));
+
+        $csv = implode(
+            "\n",
+            array_map(
+                fn ($line) => '"' . implode('","', array_map(fn ($column) => str_replace('"', '""', $column), $line)) . '"',
+                $csvLines,
+            ),
+        ) . "\n";
+
+        if ($this->confirm('Do you want to proceed with importing ' . count($users) . ' users?')) {
+            $response = $sdk->getClient()->request('POST', '/persons/bulk-import', [
+                'headers' => [
+                    'Content-Type' => 'multipart/form-data',
+                ],
+                'form_params' => [
+                    'persons' => $csv,
+                ],
+            ]);
+        }
     }
 
     /**
      * Loads users from the script.
+     *
+     * @return \SlashId\Laravel\SlashIdUser[]
      */
     protected function loadUsers(Filesystem $files, string $filename): array
     {
