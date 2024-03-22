@@ -2,7 +2,6 @@
 
 namespace SlashId\Laravel\Commands\Migration;
 
-use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
@@ -55,12 +54,12 @@ class ImportUsers extends Command
 
         if ($this->confirm('Do you want to proceed with importing '.count($users).' users?')) {
             $response = $sdk->migration()->migrateUsers($users);
-            $decodedResponse = \json_decode((string) $response->getBody(), TRUE);
-            $this->info($decodedResponse['result']['successful_imports'] . ' successfully imported users.');
+            $decodedResponse = \json_decode((string) $response->getBody(), true);
+            $this->info($decodedResponse['result']['successful_imports'].' successfully imported users.');
             if ($decodedResponse['result']['failed_imports'] && $decodedResponse['result']['failed_csv']) {
                 $logFilePath = $app->databasePath().'/slashid/migration-failed-'.date('Ymdhi').'.csv';
                 $files->put($logFilePath, $decodedResponse['result']['failed_csv']);
-                $this->warn($decodedResponse['result']['failed_imports'] . " users failed importing. Check the file $logFilePath for errors.");
+                $this->warn($decodedResponse['result']['failed_imports']." users failed importing. Check the file $logFilePath for errors.");
             }
         }
     }
