@@ -2,10 +2,12 @@
 
 namespace SlashId\Laravel\Commands\Migration;
 
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use SlashId\Laravel\Exception\InvalidMigrationScriptException;
+use SlashId\Php\PersonInterface;
 use SlashId\Php\SlashIdSdk;
 
 class ImportUsers extends Command
@@ -13,7 +15,7 @@ class ImportUsers extends Command
     /**
      * {@inheritdoc}
      */
-    protected $signature = 'slashid:import';
+    protected $signature = 'slashid:import:run';
 
     /**
      * {@inheritdoc}
@@ -35,49 +37,31 @@ class ImportUsers extends Command
         // Loads the users.
         $users = $this->loadUsers($files, $filename);
 
-        // Write to CSV.
-        $csvLines = [];
-        $csvLines[] = [
-            'slashid:emails',
-            //'slashid:phone_numbers',
-            //'slashid:region',
-            //'slashid:roles',
-            //'slashid:groups',
-            //'slashid:attributes',
-            //'slashid:password',
-        ];
-        foreach ($users as $user) {
-            $csvLines[] = [
-                implode(',', $user->getEmailAddresses()),
-                implode(',', $user->getPhoneNumbers()),
-                $user->getRegion() ?? '',
-                '',
-                implode(',', $user->getGroups()),
-                json_encode($user->getAttributes()) ?: '',
-                $user->getLegacyPasswordToMigate() ?? '',
-            ];
-        }
-
-        $this->info('Users to import:');
-        $this->table(reset($csvLines), array_slice($csvLines, 1));
-
-        $csv = implode(
-            "\n",
-            array_map(
-                fn ($line) => '"'.implode('","', array_map(fn ($column) => str_replace('"', '""', $column), $line)).'"',
-                $csvLines,
-            ),
-        )."\n";
+        $this->table([
+            'Emails',
+            'Phone numbers',
+            'Region',
+            'Roles',
+            'Groups',
+            'Attributes',
+        ], array_map(fn (PersonInterface $person) => [
+            implode(',', $person->getEmailAddresses()),
+            implode(',', $person->getPhoneNumbers()),
+            $person->getRegion() ?? '',
+            '',
+            implode(',', $person->getGroups()),
+            \json_encode($person->getAllAttributes()),
+        ], array_slice($users, 0, 5)));
 
         if ($this->confirm('Do you want to proceed with importing '.count($users).' users?')) {
-            $response = $sdk->getClient()->request('POST', '/persons/bulk-import', [
-                'headers' => [
-                    'Content-Type' => 'multipart/form-data',
-                ],
-                'form_params' => [
-                    'persons' => $csv,
-                ],
-            ]);
+            $response = $sdk->migration()->migrateUsers($users);
+            $decodedResponse = \json_decode((string) $response->getBody(), TRUE);
+            $this->info($decodedResponse['result']['successful_imports'] . ' successfully imported users.');
+            if ($decodedResponse['result']['failed_imports'] && $decodedResponse['result']['failed_csv']) {
+                $logFilePath = $app->databasePath().'/slashid/migration-failed-'.date('Ymdhi').'.csv';
+                $files->put($logFilePath, $decodedResponse['result']['failed_csv']);
+                $this->warn($decodedResponse['result']['failed_imports'] . " users failed importing. Check the file $logFilePath for errors.");
+            }
         }
     }
 
