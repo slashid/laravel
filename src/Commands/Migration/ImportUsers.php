@@ -54,6 +54,7 @@ class ImportUsers extends Command
 
         if ($this->confirm('Do you want to proceed with importing '.count($users).' users?')) {
             $response = $sdk->migration()->migrateUsers($users);
+            /** @var array{result: array{failed_csv: ?string, successful_imports: int, failed_imports: int}} */
             $decodedResponse = \json_decode((string) $response->getBody(), true);
             $this->info($decodedResponse['result']['successful_imports'].' successfully imported users.');
             if ($decodedResponse['result']['failed_imports'] && $decodedResponse['result']['failed_csv']) {
