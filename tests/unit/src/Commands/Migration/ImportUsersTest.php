@@ -74,8 +74,12 @@ class ImportUsersTest extends TestCase
     {
         return [
             [
+                '',
+                '<error>The file /var/www/html/database/slashid/user-migration.php is empty.</error>',
+            ],
+            [
                 'Not starts with <?php',
-                '<error>The contents of the file /var/www/html/database/slashid/user-migration.php must start with a <?php tag.</error>',
+                '<error>The file /var/www/html/database/slashid/user-migration.php must start with a <?php tag.</error>',
             ],
             [
                 '<?php return "a string";',
@@ -157,7 +161,7 @@ class ImportUsersTest extends TestCase
                 ],
                 array_merge($tableMessages, [
                     '<info>3 successfully imported users.</info>',
-                    '<warning>3 users failed importing. Check the file /var/www/html/database/slashid/migration-failed-202403220428.csv for errors.</warning>',
+                    '<warning>3 users failed importing. Check the file /var/www/html/database/slashid/migration-failed-'.date('Ymdhi').'.csv for errors.</warning>',
                 ]),
                 true,
             ],
