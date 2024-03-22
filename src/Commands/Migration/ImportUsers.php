@@ -3,9 +3,10 @@
 namespace SlashId\Laravel\Commands\Migration;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Filesystem\Filesystem;
 use SlashId\Laravel\Exception\InvalidMigrationScriptException;
+use SlashId\Laravel\SlashIdUser;
 use SlashId\Php\PersonInterface;
 use SlashId\Php\SlashIdSdk;
 
@@ -34,8 +35,15 @@ class ImportUsers extends Command
         }
 
         // Loads the users.
-        $users = $this->loadUsers($files, $filename);
+        try {
+            $users = $this->loadUsers($files, $filename);
+        } catch (InvalidMigrationScriptException $exception) {
+            $this->error($exception->getMessage());
 
+            return;
+        }
+
+        // Renders table to confirm importing.
         $this->table([
             'Emails',
             'Phone numbers',
@@ -83,9 +91,18 @@ class ImportUsers extends Command
 
         $users = eval($scriptContents);
 
-        // @todo properly validate the results of the script.
         if (! is_array($users)) {
-            throw new InvalidMigrationScriptException("The script at $filename must return an array of arrays.");
+            throw new InvalidMigrationScriptException("The script at $filename must return an array of \\SlashId\\Laravel\\SlashIdUser.");
+        }
+
+        foreach ($users as $user) {
+            if (! ($user instanceof SlashIdUser)) {
+                throw new InvalidMigrationScriptException("The script at $filename must return an array of \\SlashId\\Laravel\\SlashIdUser.");
+            }
+        }
+
+        if (empty($users)) {
+            throw new InvalidMigrationScriptException("The script at $filename returned an empty array.");
         }
 
         return $users;
