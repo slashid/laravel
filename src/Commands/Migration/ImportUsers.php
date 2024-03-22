@@ -60,15 +60,16 @@ class ImportUsers extends Command
             \json_encode($person->getAllAttributes()),
         ], array_slice($users, 0, 5)));
 
+        // Runs the import.
         if ($this->confirm('Do you want to proceed with importing '.count($users).' users?')) {
-            $response = $sdk->migration()->migrateUsers($users);
-            /** @var array{result: array{failed_csv: ?string, successful_imports: int, failed_imports: int}} */
-            $decodedResponse = \json_decode((string) $response->getBody(), true);
-            $this->info($decodedResponse['result']['successful_imports'].' successfully imported users.');
-            if ($decodedResponse['result']['failed_imports'] && $decodedResponse['result']['failed_csv']) {
+            $response = $sdk->migration()->migratePersons($users);
+            $this->info($response['successful_imports'].' successfully imported users.');
+
+            // Displays errors if any.
+            if ($response['failed_imports'] && $response['failed_csv']) {
                 $logFilePath = $app->databasePath().'/slashid/migration-failed-'.date('Ymdhi').'.csv';
-                $files->put($logFilePath, $decodedResponse['result']['failed_csv']);
-                $this->warn($decodedResponse['result']['failed_imports']." users failed importing. Check the file $logFilePath for errors.");
+                $files->put($logFilePath, $response['failed_csv']);
+                $this->warn($response['failed_imports']." users failed importing. Check the file $logFilePath for errors.");
             }
         }
     }
