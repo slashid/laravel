@@ -83,8 +83,12 @@ class ImportUsers extends Command
     {
         $scriptContents = $files->get($filename);
 
+        if (empty($scriptContents)) {
+            throw new InvalidMigrationScriptException("The file $filename is empty.");
+        }
+
         if (strpos($scriptContents, '<?php') !== 0) {
-            throw new InvalidMigrationScriptException("The contents of the file $filename must start with a <?php tag.");
+            throw new InvalidMigrationScriptException("The file $filename must start with a <?php tag.");
         }
 
         // Removes the <?php for the consumption of eval().
