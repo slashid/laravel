@@ -222,11 +222,10 @@ class ImportUsersTest extends TestCase
             });
 
         $this->migrationAbstraction
-            ->expects(!empty($sdkResponse) ? $this->once() : $this->never())
+            ->expects(! empty($sdkResponse) ? $this->once() : $this->never())
             ->method('migratePersons')
             ->willReturn($sdkResponse);
 
         $this->command->handle($this->app, $this->files, $this->sdk);
     }
-
 }
