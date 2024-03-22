@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\Providers\StatelessUserProvider;
 use SlashId\Laravel\SlashIdUser;
 use SlashId\Php\Exception\IdNotFoundException;
+use SlashId\Php\PersonInterface;
 use SlashId\Php\SlashIdSdk;
 
 /**
@@ -45,7 +46,9 @@ class StatelessUserProviderTest extends TestCase
             $expectations->willReturn([
                 'person_id' => '9999-9999-9999',
                 'active' => true,
-                'attributes' => ['name' => 'John'],
+                'attributes' => [
+                    PersonInterface::BUCKET_ORGANIZATION_END_USER_NO_ACCESS => ['name' => 'John'],
+                ],
                 'region' => 'us-iowa',
                 'handles' => [],
                 'groups' => ['Admin', 'Editor'],
@@ -60,7 +63,7 @@ class StatelessUserProviderTest extends TestCase
         if ($identifier === '9999-9999-9999') {
             $this->assertEquals($user->getAuthIdentifier(), $identifier);
             $this->assertTrue($user->isActive());
-            $this->assertEquals(['name' => 'John'], $user->getAttributes());
+            $this->assertEquals('John', $user->getAttribute(PersonInterface::BUCKET_ORGANIZATION_END_USER_NO_ACCESS, 'name'));
             $this->assertEquals('us-iowa', $user->getRegion());
             $this->assertEquals(['Admin', 'Editor'], $user->getGroups());
         } else {
