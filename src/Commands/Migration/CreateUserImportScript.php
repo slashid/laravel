@@ -25,7 +25,6 @@ class CreateUserImportScript extends Command
      */
     public function handle(Application $app, Filesystem $files): void
     {
-
         $filename = $app->databasePath().'/slashid/user-migration.php';
 
         if ($files->exists($filename)) {

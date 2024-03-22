@@ -18,7 +18,8 @@ foreach ($laravelUsers as $laravelUser) {
         // ->setGroups(['Editor'])
         // Uncomment if you want to specify a region for the user.
         // ->setRegion('us-iowa')
-        ->setAttributes([
+        ->setBucketAttributes(\SlashId\Php\PersonInterface::BUCKET_ORGANIZATION_END_USER_NO_ACCESS, [
+            // List the user attributes you want to migrate, grouped by bucket.
             'old_id' => $laravelUser->getAuthIdentifier(),
             // Add more attributes here.
         ]);
