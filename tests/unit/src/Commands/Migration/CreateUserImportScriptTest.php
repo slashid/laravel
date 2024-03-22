@@ -4,22 +4,26 @@ namespace SlashId\Test\Laravel\Commands\Migration;
 
 use Illuminate\Auth\GenericUser;
 use Illuminate\Console\OutputStyle;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Auth\User;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\Commands\Migration\CreateUserImportScript;
 
+/**
+ * @covers \SlashId\Laravel\Commands\Migration\CreateUserImportScript
+ */
 class CreateUserImportScriptTest extends TestCase
 {
     protected const FILEPATH = '/var/www/html/database/slashid/user-migration.php';
 
     protected CreateUserImportScript $command;
+
     protected Application&MockObject $app;
+
     protected Filesystem&MockObject $files;
+
     protected OutputStyle&MockObject $output;
 
     public function setUp(): void
@@ -50,7 +54,7 @@ class CreateUserImportScriptTest extends TestCase
                 1, [self::FILEPATH], false, null, ['<info>Will not overwrite script, aborting.</info>'],
             ],
             'backup file does not exist' => [
-                2, [self::FILEPATH], true, self::FILEPATH . '.bak',
+                2, [self::FILEPATH], true, self::FILEPATH.'.bak',
                 [
                     '<info>Backup file copied to /var/www/html/database/slashid/user-migration.php.bak</info>',
                     '<error>Please input a class.</error>',
@@ -60,10 +64,10 @@ class CreateUserImportScriptTest extends TestCase
                 4,
                 [
                     self::FILEPATH,
-                    self::FILEPATH . '.bak',
-                    self::FILEPATH . '.bak.1',
+                    self::FILEPATH.'.bak',
+                    self::FILEPATH.'.bak.1',
                 ],
-                true, self::FILEPATH . '.bak.2',
+                true, self::FILEPATH.'.bak.2',
                 [
                     '<info>Backup file copied to /var/www/html/database/slashid/user-migration.php.bak.2</info>',
                     '<error>Please input a class.</error>',
@@ -201,7 +205,7 @@ class CreateUserImportScriptTest extends TestCase
         $this->files
             ->expects($this->once())
             ->method('get')
-            ->willReturn(file_get_contents(__DIR__. '/../../../../../resources/scripts/user-migration.php.template-model'));
+            ->willReturn(file_get_contents(__DIR__.'/../../../../../resources/scripts/user-migration.php.template-model'));
 
         $script = '<?php
 
@@ -244,16 +248,20 @@ return $slashIdUsers;
     }
 }
 
-class TestableUser extends User {
-
+class TestableUser extends User
+{
     public static function limit()
     {
-        return new class() {
-            public function get() {
-                return new class() {
+        return new class()
+        {
+            public function get()
+            {
+                return new class()
+                {
                     public function first()
                     {
-                        return new class() {
+                        return new class()
+                        {
                             public function toArray()
                             {
                                 return [
