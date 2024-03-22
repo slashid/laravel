@@ -38,7 +38,7 @@ class CreateUserImportScript extends Command
         }
 
         $class = $this->ask('Please inform the class of the user model', '\\App\Models\User');
-        if (! is_string($class)) {
+        if (! is_string($class) || empty($class)) {
             $this->error('Please input a class.');
 
             return;
