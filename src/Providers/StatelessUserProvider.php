@@ -74,7 +74,6 @@ class StatelessUserProvider implements UserProvider
             return null;
         }
 
-        // @phpstan-ignore-next-line
         return $this->retrieveByIdFromApi($userData['person_id']);
     }
 
