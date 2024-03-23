@@ -18,7 +18,11 @@ class LoginController
         }
 
         /** @var \Illuminate\Contracts\View\View */
-        return view('slashid::login');
+        return view('slashid::login', [
+            'organizationId' => env('SLASHID_ORGANIZATION_ID'),
+            'loginCallbackUrl' => route('login.callback', [], false),
+            'csrfToken' => csrf_token(),
+        ]);
     }
 
     public function loginCallback(Request $request): JsonResponse

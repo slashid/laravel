@@ -14,7 +14,7 @@
     <!-- @todo Break the template down in parts -->
     <slashid-form
         factors='[{ "method": "webauthn" }, { "method": "email_link" }]'
-        oid="@php print env('SLASHID_ORGANIZATION_ID'); @endphp"
+        oid="{{ $organizationId }}"
         base-api-url="https://api.sandbox.slashid.com"
         token-storage="memory"
         on-success="slashIdLoginSuccessCallback"
@@ -23,8 +23,8 @@
 
     <script>
         SlashIdSettings = {
-            loginCallbackUrl: "@php print route('login.callback', [], false); @endphp",
-            csfrToken: "@php print csrf_token(); @endphp"
+            loginCallbackUrl: "{{ $loginCallbackUrl }}",
+            csfrToken: "{{ $csrfToken }}"
         };
     </script>
 
