@@ -57,6 +57,36 @@ class StatelessUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials): ?SlashIdUser
     {
+        if ($personId = $this->parsePersonIdFromCredentials($credentials)) {
+            return $this->retrieveByIdFromApi($personId);
+        }
+
+        return null;
+    }
+
+    /**
+     * Validates the token informed by the user, by testing it against the token validation endpoint in SlashID API.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user  The user from the token.
+     * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN'].
+     *
+     * @see https://developer.slashid.dev/docs/api/post-token-validate
+     */
+    public function validateCredentials(Authenticatable $user, array $credentials): bool
+    {
+        $personId = $this->parsePersonIdFromCredentials($credentials);
+        if ($user->getAuthIdentifier() !== $personId) {
+            return false;
+        }
+
+        return $this->validateSlashIdToken($credentials['token']);
+    }
+
+    /**
+     * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN'].
+     */
+    protected function parsePersonIdFromCredentials(array $credentials): ?string
+    {
         if (empty($credentials['token']) || ! str_contains($credentials['token'], '.')) {
             return null;
         }
@@ -70,29 +100,11 @@ class StatelessUserProvider implements UserProvider
         [, $userDataTokenPart] = $tokenParts;
         $userData = json_decode(base64_decode($userDataTokenPart), true);
 
-        if (! $userData || ! is_array($userData) || empty($userData['person_id'])) {
+        if (! $userData || ! is_array($userData) || empty($userData['person_id']) || ! is_string($userData['person_id'])) {
             return null;
         }
 
-        return $this->retrieveByIdFromApi($userData['person_id']);
-    }
-
-    /**
-     * Validates the token informed by the user, by testing it against the token validation endpoint in SlashID API.
-     *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user  The user from the token.
-     * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN'].
-     *
-     * @see https://developer.slashid.dev/docs/api/post-token-validate
-     */
-    public function validateCredentials(Authenticatable $user, array $credentials): bool
-    {
-        $userFromToken = $this->retrieveByCredentials($credentials);
-        if ($userFromToken && ($user->getAuthIdentifier() !== $userFromToken->getAuthIdentifier())) {
-            return false;
-        }
-
-        return $this->validateSlashIdToken($credentials['token']);
+        return $userData['person_id'];
     }
 
     protected function validateSlashIdToken(string $token): bool
