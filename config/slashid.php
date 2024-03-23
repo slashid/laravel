@@ -10,6 +10,8 @@ return [
     'web_redirect_after_login' => '/',
     'web_redirect_after_logout' => '/',
 
+    'login_screen_template_wrapper' => 'auto',
+
     'api_register_user_provider' => true,
     'api_register_guard' => true,
 
