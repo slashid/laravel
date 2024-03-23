@@ -42,7 +42,7 @@ final class SlashIdUser extends Person implements Authenticatable
 
     public function getRememberToken()
     {
-        throw new \LogicException('Laravel SlashID integration does not support remember tokens.');
+        return null;
     }
 
     public function setRememberToken($value)

@@ -99,11 +99,6 @@ class StatelessUserProviderTest extends TestCase
             [['token' => 'aaaa.'.base64_encode(json_encode(['invalid' => 'token'])).'.cccc'], false],
             [['token' => 'aaaa.'.base64_encode(json_encode([
                 'person_id' => '9999-9999-9999',
-                'active' => true,
-                'attributes' => [],
-                'region' => 'us-iowa',
-                'handles' => [],
-                'groups' => [],
             ])).'.cccc'], true],
         ];
     }
@@ -118,6 +113,23 @@ class StatelessUserProviderTest extends TestCase
         /** @var \SlashId\Php\SlashIdSdk&\PHPUnit\Framework\MockObject\MockObject */
         $sdkMock = $this->createMock(SlashIdSdk::class);
         $userProvider = new StatelessUserProvider($sdkMock);
+
+        if ($hasUser) {
+            $sdkMock
+                ->expects($this->once())
+                ->method('get')
+                ->with($this->identicalTo('/persons/9999-9999-9999'), $this->identicalTo([
+                    'fields' => ['handles', 'groups', 'attributes'],
+                ]))
+                ->willReturn([
+                    'person_id' => '9999-9999-9999',
+                    'active' => true,
+                    'attributes' => [],
+                    'region' => 'us-iowa',
+                    'handles' => [],
+                    'groups' => [],
+                ]);
+        }
 
         $user = $userProvider->retrieveByCredentials($credentials);
 
@@ -160,7 +172,8 @@ class StatelessUserProviderTest extends TestCase
         $sdkMock = $this->createMock(SlashIdSdk::class);
 
         if ($willCallWs) {
-            $sdkMock->expects($this->once())
+            $sdkMock
+                ->expects($this->once())
                 ->method('post')
                 ->with($this->identicalTo('/token/validate'), $this->identicalTo([
                     'token' => $credentials['token'],
