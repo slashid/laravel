@@ -75,7 +75,7 @@ class StatelessUserProvider implements UserProvider
         }
 
         // @phpstan-ignore-next-line
-        return SlashIdUser::fromValues($userData);
+        return $this->retrieveByIdFromApi($userData['person_id']);
     }
 
     /**
