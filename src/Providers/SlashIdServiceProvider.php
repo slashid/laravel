@@ -23,7 +23,6 @@ class SlashIdServiceProvider extends ServiceProvider
         AuthManager $auth,
         Request $request,
         Router $router,
-        SlashIdSdk $sdk,
     ): void {
         $this->publishes([
             __DIR__.'/../../config/slashid.php' => $this->app->configPath('slashid.php'),
@@ -48,7 +47,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_session_user', fn () => new SessionUserProvider($sdk));
+            $auth->provider('slashid_session_user', fn () => new SessionUserProvider(app(SlashIdSdk::class)));
         }
 
         if (config('slashid.web_register_guard')) {
@@ -95,7 +94,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_stateless_user', fn () => new StatelessUserProvider($sdk));
+            $auth->provider('slashid_stateless_user', fn () => new StatelessUserProvider(app(SlashIdSdk::class)));
         }
 
         if (config('slashid.api_register_guard')) {
@@ -142,9 +141,9 @@ class SlashIdServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(SlashIdSdk::class, fn (): SlashIdSdk => new SlashIdSdk(
-            $this->getStringEnvironmentVariable('SLASHID_ENVIRONMENT'),
-            $this->getStringEnvironmentVariable('SLASHID_ORGANIZATION_ID'),
-            $this->getStringEnvironmentVariable('SLASHID_API_KEY'),
+            $this->getSdkKey('environment'),
+            $this->getSdkKey('organization_id'),
+            $this->getSdkKey('api_key'),
         ));
     }
 
@@ -165,11 +164,11 @@ class SlashIdServiceProvider extends ServiceProvider
     /**
      * Loads string environment configuration.
      */
-    protected function getStringEnvironmentVariable(string $key): string
+    protected function getSdkKey(string $key): string
     {
-        $value = env($key);
+        $value = config('slashid.sdk_' . $key);
         if (! is_string($value)) {
-            throw new InvalidConfigurationException("The environment variable $key should be a string.");
+            throw new InvalidConfigurationException('The environment variable SLASHID_' . strtoupper($key) . ' should be a string.');
         }
 
         return $value;
