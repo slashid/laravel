@@ -8,6 +8,6 @@
     <title>Login</title>
 </head>
 <body>
-    @include('slashid::slashid-login')
+    @include('slashid::login-form')
 </body>
 </html>
