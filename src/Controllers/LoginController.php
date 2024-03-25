@@ -20,9 +20,11 @@ class LoginController
 
         /** @var \Illuminate\Contracts\View\View */
         return view('slashid::login', [
-            'organizationId' => $sdk->getOrganizationId(),
-            'loginCallbackUrl' => route('login.callback', [], false),
+            'apiUrl' => $sdk->getApiUrl(),
             'csrfToken' => csrf_token(),
+            'factors' => config('slashid.login_factors'),
+            'loginCallbackUrl' => route('login.callback', [], false),
+            'organizationId' => $sdk->getOrganizationId(),
         ]);
     }
 

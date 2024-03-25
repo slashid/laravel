@@ -1,12 +1,10 @@
 <link rel="stylesheet" href="{{ asset('vendor/slashid/bundled-form/style.css') }}">
 
-<!-- @todo Inject OID and base API URL properly -->
 <!-- @todo Make the form configurable -->
-<!-- @todo Break the template down in parts -->
 <slashid-form
-    factors='[{ "method": "webauthn" }, { "method": "email_link" }]'
+    factors='{{ json_encode($factors) }}'
     oid="{{ $organizationId }}"
-    base-api-url="https://api.sandbox.slashid.com"
+    base-api-url="{{ $apiUrl }}"
     token-storage="memory"
     on-success="slashIdLoginSuccessCallback"
     analytics-enabled

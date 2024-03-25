@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'login_factors' => [
+        ['method' => 'webauthn'],
+        ['method' => 'email_link'],
+    ],
+
     'web_register_user_provider' => true,
     'web_register_guard' => true,
     'web_register_routes' => true,
@@ -9,8 +14,6 @@ return [
     'web_route_path_logout' => '/logout',
     'web_redirect_after_login' => '/',
     'web_redirect_after_logout' => '/',
-
-    'login_screen_template_wrapper' => 'auto',
 
     'api_register_user_provider' => true,
     'api_register_guard' => true,
