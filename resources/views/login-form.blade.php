@@ -1,4 +1,6 @@
-<link rel="stylesheet" href="{{ asset('vendor/slashid/bundled-form/style.css') }}">
+@if ($useBundled)
+    <link rel="stylesheet" href="{{ asset('vendor/slashid/bundled-form/style.css') }}">
+@endif
 
 <!-- @todo Make the form configurable -->
 <slashid-form
@@ -17,5 +19,10 @@
     };
 </script>
 
-<script src="{{ asset('vendor/slashid/slashid.laravel-web-login.js') }}"></script>
-<script type="module" src="{{ asset('vendor/slashid/bundled-form/main.js') }}"></script>
+@if ($useGlue)
+    <script src="{{ asset('vendor/slashid/slashid.laravel-web-login.js') }}"></script>
+@endif
+
+@if ($useBundled)
+    <script type="module" src="{{ asset('vendor/slashid/bundled-form/main.js') }}"></script>
+@endif

@@ -25,6 +25,8 @@ class LoginController
             'factors' => config('slashid.login_factors'),
             'loginCallbackUrl' => route('login.callback', [], false),
             'organizationId' => $sdk->getOrganizationId(),
+            'useBundled' => !config('slashid.login_override_bundled_javascript'),
+            'useGlue' => !config('slashid.login_override_javascript_glue'),
         ]);
     }
 

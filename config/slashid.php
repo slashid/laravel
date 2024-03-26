@@ -5,6 +5,8 @@ return [
         ['method' => 'webauthn'],
         ['method' => 'email_link'],
     ],
+    'login_override_bundled_javascript' => false,
+    'login_override_javascript_glue' => false,
 
     'web_register_user_provider' => true,
     'web_register_guard' => true,
