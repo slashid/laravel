@@ -18,13 +18,20 @@ class LoginController
             return redirect($this->getRedirectionPath('login'));
         }
 
+        $configuration = config('slashid.login_form_configuration') + [
+            'factors' => json_encode(config('slashid.login_form_factors')),
+            'oid' => $sdk->getOrganizationId(),
+            'base-api-url' => $sdk->getApiUrl(),
+            'token-storage' => 'memory',
+            'on-success' => 'slashIdLoginSuccessCallback',
+            'analytics-enabled'
+        ];
+
         /** @var \Illuminate\Contracts\View\View */
         return view('slashid::login', [
-            'apiUrl' => $sdk->getApiUrl(),
+            'configuration' => $configuration,
             'csrfToken' => csrf_token(),
-            'factors' => config('slashid.login_factors'),
             'loginCallbackUrl' => route('login.callback', [], false),
-            'organizationId' => $sdk->getOrganizationId(),
             'useBundled' => !config('slashid.login_override_bundled_javascript'),
             'useGlue' => !config('slashid.login_override_javascript_glue'),
         ]);

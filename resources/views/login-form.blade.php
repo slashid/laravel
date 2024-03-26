@@ -4,12 +4,13 @@
 
 <!-- @todo Make the form configurable -->
 <slashid-form
-    factors='{{ json_encode($factors) }}'
-    oid="{{ $organizationId }}"
-    base-api-url="{{ $apiUrl }}"
-    token-storage="memory"
-    on-success="slashIdLoginSuccessCallback"
-    analytics-enabled
+    @foreach ($configuration as $attributeName => $attributeValue)
+        @if (is_int($attributeName))
+            {{ $attributeValue }}
+        @else
+            {{ $attributeName }}="{{ $attributeValue }}"
+        @endif
+    @endforeach
 ></slashid-form>
 
 <script>

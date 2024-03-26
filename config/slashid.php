@@ -1,12 +1,13 @@
 <?php
 
 return [
-    'login_factors' => [
+    'login_form_factors' => [
         ['method' => 'webauthn'],
         ['method' => 'email_link'],
     ],
-    'login_override_bundled_javascript' => false,
-    'login_override_javascript_glue' => false,
+    'login_form_configuration' => [],
+    'login_form_override_bundled_javascript' => false,
+    'login_form_override_javascript_glue' => false,
 
     'web_register_user_provider' => true,
     'web_register_guard' => true,
