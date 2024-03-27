@@ -173,9 +173,9 @@ class SlashIdServiceProvider extends ServiceProvider
      */
     protected function getSdkKey(string $key): string
     {
-        $value = config('slashid-internal.sdk_' . $key);
+        $value = config('slashid-internal.sdk_'.$key);
         if (! is_string($value)) {
-            throw new InvalidConfigurationException('The environment variable SLASHID_' . strtoupper($key) . ' should be a string.');
+            throw new InvalidConfigurationException('The environment variable SLASHID_'.strtoupper($key).' should be a string.');
         }
 
         return $value;
