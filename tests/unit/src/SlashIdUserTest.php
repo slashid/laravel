@@ -36,7 +36,7 @@ class SlashIdUserTest extends TestCase
     {
         $user = new SlashIdUser();
         $this->expectException(\LogicException::class);
-        $this->assertNull($user->getAuthPassword());
+        $user->getAuthPassword();
     }
 
     /**
@@ -45,7 +45,6 @@ class SlashIdUserTest extends TestCase
     public function testGetRememberToken(): void
     {
         $user = new SlashIdUser();
-        $this->expectException(\LogicException::class);
         $this->assertNull($user->getRememberToken());
     }
 
@@ -56,7 +55,7 @@ class SlashIdUserTest extends TestCase
     {
         $user = new SlashIdUser();
         $this->expectException(\LogicException::class);
-        $this->assertNull($user->setRememberToken('value'));
+        $user->setRememberToken('value');
     }
 
     /**
@@ -66,6 +65,6 @@ class SlashIdUserTest extends TestCase
     {
         $user = new SlashIdUser();
         $this->expectException(\LogicException::class);
-        $this->assertNull($user->getRememberTokenName());
+        $user->getRememberTokenName();
     }
 }
