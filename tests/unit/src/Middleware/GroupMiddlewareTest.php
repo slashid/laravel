@@ -50,9 +50,7 @@ class GroupMiddlewareTest extends SlashIdTestCaseBase
         $guard
             ->expects($this->any())
             ->method('user')
-            ->willReturn(new SlashIdUser('99999-99999-9999', [
-                'groups' => $userGroups,
-            ]));
+            ->willReturn((new SlashIdUser('99999-99999-9999'))->setGroups($userGroups));
 
         $request = $this->createMock(Request::class);
         $request
