@@ -1,15 +1,15 @@
 <?php
 
-namespace SlashId\Tests\Laravel\Commands;
+namespace SlashId\Tests\Laravel\Commands\Webhook;
 
 use Illuminate\Console\OutputStyle;
 use PHPUnit\Framework\TestCase;
-use SlashId\Laravel\Commands\ListWebhooks;
+use SlashId\Laravel\Commands\Webhook\ListWebhooks;
 use SlashId\Php\Abstraction\WebhookAbstraction;
 use SlashId\Php\SlashIdSdk;
 
 /**
- * @covers \SlashId\Laravel\Commands\ListWebhooks
+ * @covers \SlashId\Laravel\Commands\Webhook\ListWebhooks
  */
 class ListWebhooksTest extends TestCase
 {

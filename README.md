@@ -287,3 +287,77 @@ The listener will receive the event of class `\SlashId\Laravel\Events\WebhookEve
 * `$event->getEventName()` will return the trigger name, such as `AuthenticationFailed_v1`, that is, `->trigger_content->event_metadata->event_name` in the JSON sent to the webhook.
 * `$event->getEventId()` will return the event ID, such as `68a850ca-b2ee-46ce-8592-410813037739`, that is, `->trigger_content->event_metadata->event_id` in the JSON sent to the webhook.
 * `$event->getTriggerContent()` will return the full content of the webhook call, that is, `->trigger_content` in the JSON sent to the webhook.
+
+## User Migration
+
+If you are installing SlashID in an existing Laravel website, you will probably already have a userbase that you'll want to migrate to SlashID's database. This is made easy with two migration commands.
+
+First, you have to run the artisan command `php artisan slashid:import:create-script`. It will ask you the User class in your installation, usually `\App\Models\User`.
+
+```
+$ php artisan slashid:import:create-script
+
+ Please inform the class of the user model [\App\Models\User]:
+ >
+
+The Slash ID migration script has been created at /var/www/html/database/slashid/user-migration.php. Please open the file and modify it according to the instructions in it.
+```
+
+A script will be created on `database/slashid/user-migration.php`. It will look like this:
+
+```php
+<?php
+
+use SlashId\Laravel\SlashIdUser;
+
+/** @var \Illuminate\Contracts\Auth\Authenticatable[] */
+$laravelUsers = \App\Models\User::all();
+$slashIdUsers = [];
+foreach ($laravelUsers as $laravelUser) {
+    $slashIdUser = new SlashIdUser();
+    $slashIdUser
+        ->addEmailAddress($laravelUser->email)
+        ->setLegacyPasswordToMigate($laravelUser->getAuthPassword())
+        // Uncomment if you want to set the phone number.
+        // ->addPhoneNumber($laravelUser->phone_number)
+        // Uncomment if you want to set groups.
+        // ->setGroups(['Editor'])
+        // Uncomment if you want to specify a region for the user.
+        // ->setRegion('us-iowa')
+        ->setBucketAttributes(\SlashId\Php\PersonInterface::BUCKET_ORGANIZATION_END_USER_NO_ACCESS, [
+            // List the user attributes you want to migrate, grouped by bucket.
+            'old_id' => $laravelUser->getAuthIdentifier(),
+            'firstname' => $laravelUser->firstname,
+            'email_verified_at' => $laravelUser->email_verified_at,
+            'lastname' => $laravelUser->lastname,
+            'username' => $laravelUser->username,
+        ]);
+
+    $slashIdUsers[] = $slashIdUser;
+}
+
+return $slashIdUsers;
+```
+
+You must alter the `user-migration.php` to model the data to be migrated as you want. The script must return an array of `\SlashId\Laravel\SlashIdUser` with all the users you want to bulk import into SlashID.
+
+After fitting the script to your needs, run `php artisan slashid:import:run`, e.g.:
+
+```
+$ php artisan slashid:import:run
++------------------------+---------------+--------+-------+--------+-------------------------------------------------------------------------------------------------------------------------------+
+| Emails                 | Phone numbers | Region | Roles | Groups | Attributes                                                                                                                    |
++------------------------+---------------+--------+-------+--------+-------------------------------------------------------------------------------------------------------------------------------+
+| rattazzi@example.com   |               |        |       |        | {"end_user_no_access":{"old_id":1,"firstname":"Urbano","email_verified_at":null,"lastname":"Rattazzi","username":"rattazzi"}} |
+| nitti@example.com      |               |        |       |        | {"end_user_no_access":{"old_id":2,"firstname":"Francesco","email_verified_at":null,"lastname":"Nitti","username":"nitti"}}    |
+| cavour@example.com     |               |        |       |        | {"end_user_no_access":{"old_id":3,"firstname":"Camillo","email_verified_at":null,"lastname":"Cavour","username":"cavour"}}    |
++------------------------+---------------+--------+-------+--------+-------------------------------------------------------------------------------------------------------------------------------+
+
+ Do you want to proceed with importing 3 users? (yes/no) [no]:
+ > yes
+
+2 successfully imported users.
+1 users failed importing. Check the file /var/www/html/database/slashid/migration-failed-202403271142.csv for errors.
+```
+
+Any errors occured in a migration will be output as a CSV. Check the CSV to fix the errors and run again.
