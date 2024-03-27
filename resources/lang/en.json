@@ -1,6 +1,10 @@
 {
+    "SlashID::initial.title": "Welcome",
+    "SlashID::success.title": "Completing authentication...",
+    "SlashID::success.subtitle": "You'll be logged in in a few moments",
+
+
     "SlashID::footer.branding": "Top-tier security by SlashID",
-    "SlashID::initial.title": "Welcome to SlashID",
     "SlashID::initial.subtitle": "Sign in to your account",
     "SlashID::initial.oidc": "Sign in with",
     "SlashID::initial.sso": "Sign in with",
@@ -91,8 +95,6 @@
     "SlashID::authenticating.otpInput": "OTP",
     "SlashID::authenticating.otpInput.submit": "Submit",
     "SlashID::authenticating.otpInput.submit.error": "Please enter a valid code",
-    "SlashID::success.title": "You are now authenticated!",
-    "SlashID::success.subtitle": "You can now close this page.",
     "SlashID::error.title": "Something went wrong...",
     "SlashID::error.subtitle":
       "There has been an error while submitting your form. Please try again.",
