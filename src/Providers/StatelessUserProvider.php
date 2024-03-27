@@ -5,6 +5,7 @@ namespace SlashId\Laravel\Providers;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use SlashId\Laravel\SlashIdUser;
+use SlashId\Php\Exception\IdNotFoundException;
 use SlashId\Php\SlashIdSdk;
 
 class StatelessUserProvider implements UserProvider
@@ -16,7 +17,7 @@ class StatelessUserProvider implements UserProvider
     ) {
     }
 
-    public function retrieveById($identifier)
+    public function retrieveById($identifier): ?SlashIdUser
     {
         if (! array_key_exists($identifier, $this->localCacheUsers)) {
             $this->localCacheUsers[$identifier] = $this->retrieveByIdFromApi($identifier);
@@ -30,24 +31,33 @@ class StatelessUserProvider implements UserProvider
         return null;
     }
 
-    public function updateRememberToken(Authenticatable $user, $token)
+    public function updateRememberToken(Authenticatable $user, $token): void
     {
     }
 
-    public function retrieveByCredentials(array $credentials)
+    public function retrieveByCredentials(array $credentials): ?SlashIdUser
     {
-        // @todo Add exceptions for malformed tokens
         if (empty($credentials['token']) || ! str_contains($credentials['token'], '.')) {
             return null;
         }
 
-        [, $userDataTokenPart] = explode('.', $credentials['token']);
+        $tokenParts = explode('.', $credentials['token']);
+
+        if (count($tokenParts) !== 3) {
+            return null;
+        }
+
+        [, $userDataTokenPart] = $tokenParts;
         $userData = json_decode(base64_decode($userDataTokenPart), true);
+
+        if (! $userData || empty($userData['person_id'])) {
+            return null;
+        }
 
         return new SlashIdUser($userData['person_id'], $userData);
     }
 
-    public function validateCredentials(Authenticatable $user, array $credentials)
+    public function validateCredentials(Authenticatable $user, array $credentials): bool
     {
         $userFromToken = $this->retrieveByCredentials($credentials);
         if ($user->getAuthIdentifier() !== $userFromToken->getAuthIdentifier()) {
@@ -57,20 +67,24 @@ class StatelessUserProvider implements UserProvider
         return $this->validateSlashIdToken($credentials['token']);
     }
 
-    protected function validateSlashIdToken(string $token)
+    protected function validateSlashIdToken(string $token): bool
     {
-        return app(SlashIdSdk::class)
-            ->post('/token/validate', ['token' => $token])['valid'];
+        return $this->sdk
+            ->post('/token/validate', ['token' => $token])['valid'] ?? false;
     }
 
     protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser
     {
-        return new SlashIdUser(
-            $identifier,
-            app(SlashIdSdk::class)
-                ->get('/persons/'.$identifier, [
-                    'fields' => ['handles', 'groups', 'attributes'],
-                ])
-        );
+        try {
+            return new SlashIdUser(
+                $identifier,
+                $this->sdk
+                    ->get('/persons/'.$identifier, [
+                        'fields' => ['handles', 'groups', 'attributes'],
+                    ])
+            );
+        } catch (IdNotFoundException $exception) {
+            return null;
+        }
     }
 }

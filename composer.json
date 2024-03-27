@@ -5,7 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "SlashId\\Laravel\\": "src/"
+            "SlashId\\Laravel\\": "src/",
+            "SlashId\\Test\\Laravel\\": "tests/unit/src/"
         }
     },
     "authors": [
@@ -35,9 +36,14 @@
         }
     ],
     "require-dev": {
-        "laravel/pint": "^1.14"
+        "laravel/pint": "^1.14",
+        "phpunit/phpunit": "^10.5",
+        "laravel/framework": "^10"
     },
     "scripts": {
-        "test-pint": "./vendor/bin/pint --test"
+        "test-pint": "./vendor/bin/pint --test",
+        "test-pint-fix": "./vendor/bin/pint",
+        "test-phpunit": "vendor/bin/phpunit tests/unit/",
+        "test-phpunit-coverage": "vendor/bin/phpunit --coverage-html tests/coverage --coverage-filter src/ tests/unit/"
     }
 }

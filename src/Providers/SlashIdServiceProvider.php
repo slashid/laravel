@@ -3,9 +3,7 @@
 namespace SlashId\Laravel\Providers;
 
 use Illuminate\Auth\AuthManager;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
@@ -27,12 +25,12 @@ class SlashIdServiceProvider extends ServiceProvider
         Router $router,
     ) {
         $this->publishes([
-            __DIR__.'/../../config/slashid.php' => config_path('slashid.php'),
+            __DIR__.'/../../config/slashid.php' => $this->app->configPath('slashid.php'),
         ]);
         $this->mergeConfigFrom(__DIR__.'/../../config/slashid.php', 'slashid');
 
         $this->publishes([
-            __DIR__.'/../../public' => public_path('vendor/slashid'),
+            __DIR__.'/../../public' => $this->app->publicPath('vendor/slashid'),
         ], 'public');
 
         if ($this->app->runningInConsole()) {
@@ -49,7 +47,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_session_user', function (Application $app) {
+            $auth->provider('slashid_session_user', function ($app) {
                 return new SessionUserProvider(app(SlashIdSdk::class));
             });
         }
@@ -62,7 +60,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->extend('slashid_session_guard', function (Application $app, $name, array $config) use ($auth) {
+            $auth->extend('slashid_session_guard', function ($app, $name, array $config) use ($auth) {
                 $provider = $auth->createUserProvider($config['provider'] ?? null);
 
                 $guard = new SessionGuard(
@@ -97,7 +95,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_stateless_user', function (Application $app) {
+            $auth->provider('slashid_stateless_user', function ($app) {
                 return new StatelessUserProvider(app(SlashIdSdk::class));
             });
         }
@@ -110,7 +108,7 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->extend('slashid_stateless_guard', fn ($app, $name, array $config) => new StatelessGuard($auth->createUserProvider($config['provider'])));
+            $auth->extend('slashid_stateless_guard', fn ($app, $name, array $config) => new StatelessGuard(app('request'), $auth->createUserProvider($config['provider'])));
         }
 
         if (config('slashid.group_register_middleware')) {
@@ -119,21 +117,21 @@ class SlashIdServiceProvider extends ServiceProvider
 
         if (config('slashid.web_register_routes')) {
             $this->loadViewsFrom(__DIR__.'/../../resources/views', 'slashid');
-            Route::get(config('slashid.web_route_path_login'), [LoginController::class, 'login'])
+            $router->get(config('slashid.web_route_path_login'), [LoginController::class, 'login'])
                 ->middleware('web')
                 ->name('login');
 
-            Route::post(config('slashid.web_route_path_login_callback'), [LoginController::class, 'loginCallback'])
+            $router->post(config('slashid.web_route_path_login_callback'), [LoginController::class, 'loginCallback'])
                 ->middleware('web')
                 ->name('login.callback');
 
-            Route::get(config('slashid.web_route_path_logout'), [LoginController::class, 'logout'])
+            $router->get(config('slashid.web_route_path_logout'), [LoginController::class, 'logout'])
                 ->middleware('web')
                 ->name('logout');
         }
 
         if (config('slashid.webhook_enable')) {
-            Route::post(config('slashid.webhook_route_path'), [WebhookController::class, 'listen'])
+            $router->post(config('slashid.webhook_route_path'), [WebhookController::class, 'listen'])
                 ->name('slashid.webhook');
         }
     }

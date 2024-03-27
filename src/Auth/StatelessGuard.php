@@ -6,7 +6,7 @@ use Illuminate\Auth\CreatesUserProviders;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use SlashId\Laravel\SlashIdUser;
 
 class StatelessGuard implements Guard
@@ -15,9 +15,10 @@ class StatelessGuard implements Guard
 
     protected ?SlashIdUser $user = null;
 
-    protected bool $authenticated;
+    protected ?bool $authenticated;
 
     public function __construct(
+        protected Request $request,
         protected UserProvider $userProvider,
     ) {
     }
@@ -56,14 +57,15 @@ class StatelessGuard implements Guard
         if (! isset($this->authenticated)) {
             $this->authenticated = false;
 
-            $credentials = ['token' => $this->getToken()];
-            $user = $this->userProvider->retrieveByCredentials($credentials);
+            if ($token = $this->request->bearerToken()) {
+                $credentials = ['token' => $token];
+                $user = $this->userProvider->retrieveByCredentials($credentials);
 
-            if ($user && $this->userProvider->validateCredentials($user, $credentials)) {
-                $this->authenticated = true;
-                $this->user = $user;
+                if ($user && $this->userProvider->validateCredentials($user, $credentials)) {
+                    $this->authenticated = true;
+                    $this->user = $user;
+                }
             }
-
         }
 
         return $this->user;
@@ -76,7 +78,7 @@ class StatelessGuard implements Guard
      */
     public function id()
     {
-        return $this->user ? $this->user->getAuthIdentifier() : null;
+        return $this->user()?->getAuthIdentifier();
     }
 
     /**
@@ -98,7 +100,7 @@ class StatelessGuard implements Guard
      */
     public function hasUser()
     {
-        return $this->authenticated;
+        return $this->check();
     }
 
     /**
@@ -109,18 +111,6 @@ class StatelessGuard implements Guard
     public function setUser(Authenticatable $user)
     {
         $this->user = $user;
-    }
-
-    /**
-     * Gets the token.
-     */
-    protected function getToken(): ?string
-    {
-        $header = Request::header('Authorization');
-        if ($header && strpos($header, 'Bearer ') === 0) {
-            return substr($header, strlen('Bearer '));
-        }
-
-        return null;
+        $this->authenticated = true;
     }
 }
