@@ -28,10 +28,13 @@ class SlashIdServiceProvider extends ServiceProvider
             __DIR__.'/../../config/slashid.php' => $this->app->configPath('slashid.php'),
         ]);
         $this->mergeConfigFrom(__DIR__.'/../../config/slashid.php', 'slashid');
+        $this->mergeConfigFrom(__DIR__.'/../../config/slashid-internal.php', 'slashid-internal');
 
         $this->publishes([
             __DIR__.'/../../public' => $this->app->publicPath('vendor/slashid'),
         ], 'public');
+
+        $this->loadJsonTranslationsFrom(__DIR__.'/../../resources/lang');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -166,7 +169,7 @@ class SlashIdServiceProvider extends ServiceProvider
      */
     protected function getSdkKey(string $key): string
     {
-        $value = config('slashid.sdk_' . $key);
+        $value = config('slashid-internal.sdk_' . $key);
         if (! is_string($value)) {
             throw new InvalidConfigurationException('The environment variable SLASHID_' . strtoupper($key) . ' should be a string.');
         }
