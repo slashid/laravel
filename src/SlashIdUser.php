@@ -40,6 +40,9 @@ final class SlashIdUser extends Person implements Authenticatable
         throw new \LogicException('getAuthPassword() should not be called on SlashIdUser, as SlashID does not expose passwords.');
     }
 
+    /**
+     * @return string|null
+     */
     public function getRememberToken()
     {
         return null;

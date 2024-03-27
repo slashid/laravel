@@ -1,16 +1,16 @@
 <?php
 
-namespace SlashId\Tests\Laravel\Commands;
+namespace SlashId\Tests\Laravel\Commands\Webhook;
 
 use Illuminate\Console\OutputStyle;
 use PHPUnit\Framework\TestCase;
-use SlashId\Laravel\Commands\DeleteWebhook;
+use SlashId\Laravel\Commands\Webhook\DeleteWebhook;
 use SlashId\Php\Abstraction\WebhookAbstraction;
 use SlashId\Php\SlashIdSdk;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
- * @covers \SlashId\Laravel\Commands\DeleteWebhook
+ * @covers \SlashId\Laravel\Commands\Webhook\DeleteWebhook
  */
 class DeleteWebhookTest extends TestCase
 {

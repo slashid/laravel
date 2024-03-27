@@ -44,8 +44,13 @@
     "scripts": {
         "test-pint": "./vendor/bin/pint --test",
         "test-pint-fix": "./vendor/bin/pint",
+        "test-phpstan": "vendor/bin/phpstan analyse src -l 9",
         "test-phpunit": "vendor/bin/phpunit tests/unit/",
-        "test-phpunit-coverage": "vendor/bin/phpunit --display-warnings --coverage-html tests/coverage --coverage-filter src/ tests/unit/",
-        "test-phpstan": "vendor/bin/phpstan analyse src -l 9"
+        "test-phpunit-coverage": "vendor/bin/phpunit --display-deprecations --display-warnings --coverage-html tests/coverage --coverage-filter src/ tests/unit/",
+        "test": [
+            "composer test-pint",
+            "composer test-phpstan",
+            "composer test-phpunit-coverage"
+        ]
     }
 }
