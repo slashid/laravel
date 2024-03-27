@@ -96,7 +96,7 @@ class CreateUserImportScriptTest extends TestCase
         $this->output
             ->expects(is_null($confirm) ? $this->never() : $this->once())
             ->method('confirm')
-            ->with($this->identicalTo('Script slashid-user-migration.php already exists, do you want to overwrite it?'))
+            ->with($this->identicalTo('Script database/slashid/user-migration.php already exists, do you want to overwrite it?'))
             ->willReturn((bool) $confirm);
 
         $this->output
