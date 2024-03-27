@@ -28,7 +28,7 @@ class CreateUserImportScript extends Command
         $filename = $app->databasePath().'/slashid/user-migration.php';
 
         if ($files->exists($filename)) {
-            if ($this->confirm('Script slashid-user-migration.php already exists, do you want to overwrite it?')) {
+            if ($this->confirm('Script database/slashid/user-migration.php already exists, do you want to overwrite it?')) {
                 $this->info('Backup file copied to '.$this->backupFile($files, $filename));
             } else {
                 $this->info('Will not overwrite script, aborting.');
