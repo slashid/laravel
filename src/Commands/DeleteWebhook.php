@@ -22,6 +22,7 @@ class DeleteWebhook extends Command
      */
     public function handle(SlashIdSdk $sdk): void
     {
+        /** @var string */
         $id = $this->argument('id');
         $sdk->webhook()->deleteById($id);
         $this->info('Webhook with ID "'.$id.'" has been deleted.');

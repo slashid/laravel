@@ -2,10 +2,12 @@
 
 namespace SlashId\Test\Laravel\Auth;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
 use SlashId\Laravel\Auth\StatelessGuard;
+use SlashId\Laravel\Providers\StatelessUserProvider;
 use SlashId\Laravel\SlashIdUser;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 
@@ -17,6 +19,17 @@ class StatelessGuardTest extends SlashIdTestCaseBase
     protected Request&MockObject $request;
 
     protected UserProvider&MockObject $userProvider;
+
+    /**
+     * Tests __construct() with invalid user provider.
+     */
+    public function testConstructException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $request = $this->createMock(Request::class);
+        $userProvider = $this->createMock(UserProvider::class);
+        new StatelessGuard($request, $userProvider);
+    }
 
     /**
      * Data provider for testAnonymous().
@@ -71,6 +84,17 @@ class StatelessGuardTest extends SlashIdTestCaseBase
         $guard->setUser(new SlashIdUser('9999-9999-9999', []));
         $parameters[] = $guard->{$testedFunction}();
         $this->{$assertFunction}(...$parameters);
+    }
+
+    /**
+     * Tests setUser() when the user is not a SlashIdUser.
+     */
+    public function testSetUserWithInvalidUser(): void
+    {
+        $this->expectException(\LogicException::class);
+
+        $guard = $this->getStatelessGuard();
+        $guard->setUser($this->createMock(Authenticatable::class));
     }
 
     /**
@@ -153,7 +177,7 @@ class StatelessGuardTest extends SlashIdTestCaseBase
     protected function getStatelessGuard(): StatelessGuard
     {
         $this->request = $this->createMock(Request::class);
-        $this->userProvider = $this->createMock(UserProvider::class);
+        $this->userProvider = $this->createMock(StatelessUserProvider::class);
 
         return new StatelessGuard($this->request, $this->userProvider);
     }

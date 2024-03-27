@@ -45,15 +45,42 @@ class SlashIdUserTest extends TestCase
     }
 
     /**
-     * Covers methods that don't do anything.
+     * Tests getAuthPassword().
      */
-    public function testNullMethods(): void
+    public function testGetAuthPassword(): void
     {
         $user = $this->slashIdUser();
-        $this->assertNull($user->getAuthPassword());
+        $this->expectException(\LogicException::class);
+        $user->getAuthPassword();
+    }
+
+    /**
+     * Tests getRememberToken().
+     */
+    public function testGetRememberToken(): void
+    {
+        $user = $this->slashIdUser();
         $this->assertNull($user->getRememberToken());
-        $this->assertNull($user->setRememberToken('value'));
-        $this->assertNull($user->getRememberTokenName());
+    }
+
+    /**
+     * Tests setRememberToken().
+     */
+    public function testSetRememberToken(): void
+    {
+        $user = $this->slashIdUser();
+        $this->expectException(\LogicException::class);
+        $user->setRememberToken('value');
+    }
+
+    /**
+     * Tests getRememberTokenName().
+     */
+    public function testGetRememberTokenName(): void
+    {
+        $user = $this->slashIdUser();
+        $this->expectException(\LogicException::class);
+        $user->getRememberTokenName();
     }
 
     /**

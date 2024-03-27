@@ -10,6 +10,9 @@ use SlashId\Php\SlashIdSdk;
 
 class StatelessUserProvider implements UserProvider
 {
+    /**
+     * @var array<string, \SlashId\Laravel\SlashIdUser|null>
+     */
     protected array $localCacheUsers = [];
 
     public function __construct(
@@ -17,6 +20,17 @@ class StatelessUserProvider implements UserProvider
     ) {
     }
 
+    /**
+     * Gets a SlashID person by its ID.
+     *
+     * The currently logged in user will usually be provided by the (validated) token provided by the user, either via
+     * Authorization header (in StatelessUserProvider) or via /login/callback route and subsequently save in session (in
+     * SessionUserProvider). However if not found, an API call will be made to GET /persons/9999-9999-9999.
+     *
+     * @param  string  $identifier
+     *
+     * return \SlashId\Laravel\SlashIdUser|null
+     */
     public function retrieveById($identifier): ?SlashIdUser
     {
         if (! array_key_exists($identifier, $this->localCacheUsers)) {
@@ -35,6 +49,12 @@ class StatelessUserProvider implements UserProvider
     {
     }
 
+    /**
+     * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN'].
+     * @return \SlashId\Laravel\SlashIdUser|null The user, if the token exists. Please note that the token is NOT
+     *                                           validated, so do not trust the return without calling
+     *                                           validateCredentials().
+     */
     public function retrieveByCredentials(array $credentials): ?SlashIdUser
     {
         if (empty($credentials['token']) || ! str_contains($credentials['token'], '.')) {
@@ -50,17 +70,25 @@ class StatelessUserProvider implements UserProvider
         [, $userDataTokenPart] = $tokenParts;
         $userData = json_decode(base64_decode($userDataTokenPart), true);
 
-        if (! $userData || empty($userData['person_id'])) {
+        if (! $userData || ! is_array($userData) || empty($userData['person_id'])) {
             return null;
         }
 
         return new SlashIdUser($userData['person_id'], $userData);
     }
 
+    /**
+     * Validates the token informed by the user, by testing it against the token validation endpoint in SlashID API.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user  The user from the token.
+     * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN'].
+     *
+     * @see https://developer.slashid.dev/docs/api/post-token-validate
+     */
     public function validateCredentials(Authenticatable $user, array $credentials): bool
     {
         $userFromToken = $this->retrieveByCredentials($credentials);
-        if ($user->getAuthIdentifier() !== $userFromToken->getAuthIdentifier()) {
+        if ($userFromToken && ($user->getAuthIdentifier() !== $userFromToken->getAuthIdentifier())) {
             return false;
         }
 
@@ -69,20 +97,19 @@ class StatelessUserProvider implements UserProvider
 
     protected function validateSlashIdToken(string $token): bool
     {
-        return $this->sdk
-            ->post('/token/validate', ['token' => $token])['valid'] ?? false;
+        $response = $this->sdk->post('/token/validate', ['token' => $token]);
+
+        return is_array($response) ? (bool) ($response['valid'] ?? false) : false;
     }
 
     protected function retrieveByIdFromApi(string $identifier): ?SlashIdUser
     {
         try {
-            return new SlashIdUser(
-                $identifier,
-                $this->sdk
-                    ->get('/persons/'.$identifier, [
-                        'fields' => ['handles', 'groups', 'attributes'],
-                    ])
-            );
+            $response = $this->sdk->get('/persons/'.$identifier, [
+                'fields' => ['handles', 'groups', 'attributes'],
+            ]);
+
+            return is_array($response) ? new SlashIdUser($identifier, $response) : null;
         } catch (IdNotFoundException $exception) {
             return null;
         }

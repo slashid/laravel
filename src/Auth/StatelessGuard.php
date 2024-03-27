@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Http\Request;
+use SlashId\Laravel\Providers\StatelessUserProvider;
 use SlashId\Laravel\SlashIdUser;
 
 class StatelessGuard implements Guard
@@ -15,12 +16,19 @@ class StatelessGuard implements Guard
 
     protected ?SlashIdUser $user = null;
 
+    protected StatelessUserProvider $userProvider;
+
     protected ?bool $authenticated;
 
     public function __construct(
         protected Request $request,
-        protected UserProvider $userProvider,
+        UserProvider $userProvider,
     ) {
+        if (! ($userProvider instanceof StatelessUserProvider)) {
+            throw new \InvalidArgumentException('\SlashId\Laravel\Auth\StatelessGuard requires a \SlashId\Laravel\Providers\StatelessUserProvider.');
+        }
+
+        $this->userProvider = $userProvider;
     }
 
     /**
@@ -49,10 +57,8 @@ class StatelessGuard implements Guard
 
     /**
      * Get the currently authenticated user.
-     *
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
-    public function user()
+    public function user(): ?SlashIdUser
     {
         if (! isset($this->authenticated)) {
             $this->authenticated = false;
@@ -74,7 +80,7 @@ class StatelessGuard implements Guard
     /**
      * Get the ID for the currently authenticated user.
      *
-     * @return int|string|null
+     * @return string|null
      */
     public function id()
     {
@@ -84,6 +90,7 @@ class StatelessGuard implements Guard
     /**
      * Validate a user's credentials.
      *
+     * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN']
      * @return bool
      */
     public function validate(array $credentials = [])
@@ -110,6 +117,10 @@ class StatelessGuard implements Guard
      */
     public function setUser(Authenticatable $user)
     {
+        if (! ($user instanceof SlashIdUser)) {
+            throw new \InvalidArgumentException('$user must be of type \SlashId\Laravel\SlashIdUser');
+        }
+
         $this->user = $user;
         $this->authenticated = true;
     }

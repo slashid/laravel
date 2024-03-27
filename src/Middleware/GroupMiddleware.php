@@ -22,7 +22,7 @@ class GroupMiddleware
             throw new InvalidGroupMiddlewareDefinitionException('You can either define an AND list of roles with comma (,) or an OR list of roles with pipe (|), but not both.');
         }
 
-        /** @var \App\SlashId\SlashIdUser */
+        /** @var \SlashId\Laravel\SlashIdUser */
         $user = Auth::user();
 
         if (str_contains($group, '|')) {
