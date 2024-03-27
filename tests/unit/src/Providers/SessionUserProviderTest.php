@@ -8,16 +8,16 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request as RequestService;
 use Illuminate\Support\Facades\Request;
+use PHPUnit\Framework\TestCase;
 use SlashId\Laravel\Providers\SessionUserProvider;
 use SlashId\Laravel\SlashIdUser;
 use SlashId\Php\Exception\IdNotFoundException;
 use SlashId\Php\SlashIdSdk;
-use SlashId\Test\Laravel\SlashIdUserTest;
 
 /**
  * @covers \SlashId\Laravel\Providers\SessionUserProvider
  */
-class SessionUserProviderTest extends SlashIdUserTest
+class SessionUserProviderTest extends TestCase
 {
     /**
      * Data provider for testRetrieveById().
