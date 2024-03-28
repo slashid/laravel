@@ -2,7 +2,6 @@
 
 namespace SlashId\Test\Laravel\Providers;
 
-use Dotenv\Repository\RepositoryInterface;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Cookie\QueueingFactory;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -12,7 +11,6 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request as LaravelRequest;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteRegistrar;
-use Illuminate\Support\Env;
 use SlashId\Laravel\Auth\SessionGuard;
 use SlashId\Laravel\Auth\StatelessGuard;
 use SlashId\Laravel\Exception\InvalidConfigurationException;
@@ -66,7 +64,7 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
             ->with($this->identicalTo('vendor/slashid'))
             ->willReturn('/var/www/html/public/vendor/slashid');
         $app
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('configurationIsCached')
             ->with()
             ->willReturn(true);
@@ -147,14 +145,14 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
             ->withAnyParameters()
             ->willReturn($route);
 
-        $sdk = $this->createMock(SlashIdSdk::class);
+        $this->instances[SlashIdSdk::class] = $this->createMock(SlashIdSdk::class);
         $request = new LaravelRequest();
 
         if (! $validConfig) {
             $this->expectException(InvalidConfigurationException::class);
         }
 
-        (new SlashIdServiceProvider($app))->boot($auth, $request, $router, $sdk);
+        (new SlashIdServiceProvider($app))->boot($auth, $request, $router);
 
         if ($enableConfig) {
             // Tests closures.
@@ -178,20 +176,20 @@ class SlashIdServiceProviderTest extends SlashIdTestCaseBase
      */
     public function testRegister(bool $validConfig): void
     {
-        $app = $this->createMock(Application::class);
+        $config = $this->mockConfig();
+        $config
+            ->expects($this->exactly($validConfig ? 3 : 1))
+            ->method('get')
+            ->willReturn($validConfig ? 'sandbox' : null);
+
+        $this->mockContainer();
+
+        $app = $this->createMockForIntersectionOfInterfaces([Application::class, CachesConfiguration::class]);
         $app
             ->expects($this->once())
             ->method('singleton')
             ->with($this->identicalTo(SlashIdSdk::class), $this->isInstanceOf(\Closure::class))
             ->willReturnCallback(fn ($name, $closure) => $closure());
-
-        $repository = $this->createMock(RepositoryInterface::class);
-        $reflection = new \ReflectionClass(Env::class);
-        $reflection->setStaticPropertyValue('repository', $repository);
-        $repository
-            ->expects($this->exactly($validConfig ? 3 : 1))
-            ->method('get')
-            ->willReturn($validConfig ? 'sandbox' : null);
 
         if (! $validConfig) {
             $this->expectException(InvalidConfigurationException::class);

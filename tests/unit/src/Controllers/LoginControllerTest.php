@@ -2,10 +2,13 @@
 
 namespace SlashId\Test\Laravel\Controllers;
 
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Session\Store;
 use Illuminate\View\View;
 use SlashId\Laravel\Controllers\LoginController;
+use SlashId\Php\SlashIdSdk;
 use SlashId\Test\Laravel\SlashIdTestCaseBase;
 use Symfony\Component\HttpFoundation\InputBag;
 
@@ -42,10 +45,44 @@ class LoginControllerTest extends SlashIdTestCaseBase
 
         $config = $this->mockConfig();
         $config
-            ->expects($check ? $this->once() : $this->never())
+            ->expects($check ? $this->once() : $this->exactly(5))
             ->method('get')
-            ->with($this->identicalTo('slashid.web_redirect_after_login'))
-            ->willReturn('/');
+            ->withAnyParameters()
+            ->willReturnCallback(fn ($configName) => match ($configName) {
+                'slashid.web_redirect_after_login' => '/',
+                'slashid-internal.login_form_strings' => [
+                    'SlashID::initial.title' => 'initial.title',
+                ],
+                'slashid.login_form_configuration' => [],
+                'slashid.login_form_factors' => [
+                    ['method' => 'webauthn'],
+                    ['method' => 'email_link'],
+                ],
+                'slashid.login_override_bundled_javascript' => false,
+                'slashid.login_override_javascript_glue' => false,
+                default => throw new \LogicException("Unexpected config called: $configName.")
+            });
+
+        $translator = $this->createMock(Translator::class);
+        $translator
+            ->expects($check ? $this->never() : $this->once())
+            ->method('get')
+            ->willReturn('Welcome');
+        $this->instances['translator'] = $translator;
+
+        $session = $this->createMock(Store::class);
+        $session
+            ->expects($check ? $this->never() : $this->once())
+            ->method('token')
+            ->willReturn('000-111-222');
+        $this->instances['session'] = $session;
+
+        $router = $this->mockUrlGenerator();
+        $router
+            ->expects($check ? $this->never() : $this->once())
+            ->method('route')
+            ->with($this->identicalTo('login.callback'), $this->identicalTo([]), $this->identicalTo(false))
+            ->willReturn('/login/callback');
 
         $redirect = $this->mockRedirect();
         $redirect
@@ -61,7 +98,9 @@ class LoginControllerTest extends SlashIdTestCaseBase
             ->with($this->identicalTo('slashid::login'))
             ->willReturn($this->createMock(View::class));
 
-        $response = (new LoginController())->login();
+        $sdk = $this->createMock(SlashIdSdk::class);
+
+        $response = (new LoginController())->login($sdk);
         $this->assertInstanceOf($expectedResponseType, $response);
     }
 
