@@ -54,7 +54,12 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_session_user', fn () => new SessionUserProvider(app(SlashIdSdk::class)));
+            $auth->provider('slashid_session_user', function () {
+                /** @var \SlashId\Php\SlashIdSdk */
+                $sdk = app(SlashIdSdk::class);
+
+                return new SessionUserProvider($sdk);
+            });
         }
 
         if (config('slashid.web_register_guard')) {
@@ -101,7 +106,12 @@ class SlashIdServiceProvider extends ServiceProvider
                 ],
             ]);
 
-            $auth->provider('slashid_stateless_user', fn () => new StatelessUserProvider(app(SlashIdSdk::class)));
+            $auth->provider('slashid_stateless_user', function () {
+                /** @var \SlashId\Php\SlashIdSdk */
+                $sdk = app(SlashIdSdk::class);
+
+                return new SessionUserProvider($sdk);
+            });
         }
 
         if (config('slashid.api_register_guard')) {

@@ -18,7 +18,9 @@ class LoginController
             return redirect($this->getRedirectionPath('login'));
         }
 
-        $strings = array_map(fn ($string) => __($string), config('slashid-internal.login_form_strings'));
+        /** @var string[] */
+        $strings = config('slashid-internal.login_form_strings');
+        $strings = array_map(fn ($string) => __($string), $strings);
 
         $configuration = config('slashid.login_form_configuration') + [
             'factors' => json_encode(config('slashid.login_form_factors')),
