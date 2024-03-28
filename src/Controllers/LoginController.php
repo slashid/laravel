@@ -45,9 +45,9 @@ class LoginController
 
     public function loginCallback(Request $request): JsonResponse
     {
-        // @todo Fix session regeneration
-        //$request->session()->regenerate();
         $success = Auth::attempt(['token' => $request->request->get('token')]);
+
+        $request->session()->regenerate();
 
         return new JsonResponse([
             'success' => $success,
