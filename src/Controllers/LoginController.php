@@ -37,6 +37,7 @@ class LoginController
             'configuration' => $configuration,
             'csrfToken' => csrf_token(),
             'loginCallbackUrl' => route('login.callback', [], false),
+            'cssOverride' => config('slashid.login_form_css_override'),
             'useBundled' => ! config('slashid.login_override_bundled_javascript'),
             'useGlue' => ! config('slashid.login_override_javascript_glue'),
         ]);

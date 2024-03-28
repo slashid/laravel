@@ -2,6 +2,16 @@
     <link rel="stylesheet" href="{{ asset('vendor/slashid/bundled-form/style.css') }}">
 @endif
 
+@if (!empty($cssOverride))
+    <style type="text/css">
+        .sid-theme-root {
+            @foreach ($cssOverride as $property => $value)
+                {{ $property }}: {{ $value }};
+            @endforeach
+        }
+    </style>
+@endif
+
 <slashid-form
     @foreach ($configuration as $attributeName => $attributeValue)
         @if (is_int($attributeName))
