@@ -11,7 +11,7 @@ foreach ($laravelUsers as $laravelUser) {
     $slashIdUser = new SlashIdUser();
     $slashIdUser
         ->addEmailAddress($laravelUser->email)
-        ->setLegacyPasswordToMigate($laravelUser->getAuthPassword())
+        ->setLegacyPasswordToMigrate($laravelUser->getAuthPassword())
         // Uncomment if you want to set the phone number.
         // ->addPhoneNumber($laravelUser->phone_number)
         // Uncomment if you want to set groups.
