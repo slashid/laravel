@@ -22,15 +22,15 @@ class LoginController
         $strings = config('slashid-internal.login_form_strings');
         $strings = array_map(fn ($string) => __($string), $strings);
 
-        $configuration = config('slashid.login_form_configuration') + [
-            'factors' => json_encode(config('slashid.login_form_factors')),
+        $configuration = array_merge([
             'oid' => $sdk->getOrganizationId(),
             'base-api-url' => $sdk->getApiUrl(),
+            'text' => $strings,
             'token-storage' => 'memory',
             'on-success' => 'slashIdLoginSuccessCallback',
-            'analytics-enabled',
-            'text' => json_encode($strings),
-        ];
+        ], config('slashid.login_form_configuration'));
+
+        $configuration = array_map(fn ($option) => is_array($option) ? json_encode($option) : $option, $configuration);
 
         /** @var \Illuminate\Contracts\View\View */
         return view('slashid::login', [

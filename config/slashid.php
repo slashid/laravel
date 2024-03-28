@@ -1,11 +1,15 @@
 <?php
 
 return [
-    'login_form_factors' => [
-        ['method' => 'webauthn'],
-        ['method' => 'email_link'],
+    'login_form_configuration' => [
+        'factors' => [
+            ['method' => 'webauthn'],
+            ['method' => 'email_link'],
+        ],
+        'analytics-enabled',
+        // Uncomment to enable the dark theme.
+        // 'theme-props' => ['theme' => 'dark'],
     ],
-    'login_form_configuration' => [],
     'login_form_override_bundled_javascript' => false,
     'login_form_override_javascript_glue' => false,
     'login_form_css_override' => [
