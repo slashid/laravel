@@ -2,7 +2,6 @@
     <link rel="stylesheet" href="{{ asset('vendor/slashid/bundled-form/style.css') }}">
 @endif
 
-<!-- @todo Make the form configurable -->
 <slashid-form
     @foreach ($configuration as $attributeName => $attributeValue)
         @if (is_int($attributeName))
