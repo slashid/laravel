@@ -31,21 +31,106 @@ You're ready! Now access `/login` in your website and enjoy your new login with 
 
 There several configurations in this package, that you can edit on `config/slashid.php`. The configurations more likely for you to override are `web_redirect_after_login` and `web_redirect_after_logout`.
 
-| Configuration                   | Default value        | Description                                                                                                                    |
-|---------------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `web_register_user_provider`    | `true`               | Whether to register the session-based user provider. Turn off if you want to use *exclusively* API-based authentication.       |
-| `web_register_guard`            | `true`               | Whether to register the session-based authentication. Turn off if you want to use *exclusively* API-based authentication.      |
-| `web_register_routes`           | `true`               | Whether to register the web routes (`/login`, `/login/callback`, `/logout`). Turn off if you want to register your own routes. |
-| `web_route_path_login`          | `'/login'`           | The URL for the login page.                                                                                                    |
-| `web_route_path_login_callback` | `'/login/callback'`  | The URL for the login callback page (you probaby don't want to override it).                                                   |
-| `web_route_path_logout`         | `'/logout'`          | The URL for the logout page.                                                                                                   |
-| `web_redirect_after_login`      | `'/'`                | Where to redirect the user after login.                                                                                        |
-| `web_redirect_after_logout`     | `'/'`                | Where to redirect the user after logout.                                                                                       |
-| `api_register_user_provider`    | `true`               | Whether to register the stateless user provider. Turn off if you want to use *exclusively* web authentication.                 |
-| `api_register_guard`            | `true`               | Whether to register the stateless authentication. Turn off if you want to use *exclusively* web authentication.                |
-| `group_register_middleware`     | `true`               | Whether to register the group middleware (see the section "Group-based access check in routes")                                |
-| `webhook_enable`                | `true`               | Whether to enable webhooks (see the section "Webhooks")                                                                        |
-| `webhook_route_path`            | `'/slashid/webhook'` | The URL for the webhook route (you probaby don't want to override it).                                                         |
+| Configuration                            | Default value        | Description                                                                                                                    |
+|------------------------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `login_form_configuration`               | see below            | See [Login form configuration](#login-form-configuration)                                                                      |
+| `login_form_override_bundled_javascript` | `false`              | Set true to override the Bundled JavaScript form, see [Overriding the login form](#overriding-the-login-form).                 |
+| `login_form_override_javascript_glue`    | `false`              | Set true to override the JavaScript glue code, see [Overriding the login form](#overriding-the-login-form).                    |
+| `login_form_css_override`                | `[]`                 | See [Login form theme](#login-form-theme)                                                                                      |
+| `web_register_user_provider`             | `true`               | Whether to register the session-based user provider. Turn off if you want to use *exclusively* API-based authentication.       |
+| `web_register_guard`                     | `true`               | Whether to register the session-based authentication. Turn off if you want to use *exclusively* API-based authentication.      |
+| `web_register_routes`                    | `true`               | Whether to register the web routes (`/login`, `/login/callback`, `/logout`). Turn off if you want to register your own routes. |
+| `web_route_path_login`                   | `'/login'`           | The URL for the login page.                                                                                                    |
+| `web_route_path_login_callback`          | `'/login/callback'`  | The URL for the login callback page (you probaby don't want to override it).                                                   |
+| `web_route_path_logout`                  | `'/logout'`          | The URL for the logout page.                                                                                                   |
+| `web_redirect_after_login`               | `'/'`                | Where to redirect the user after login.                                                                                        |
+| `web_redirect_after_logout`              | `'/'`                | Where to redirect the user after logout.                                                                                       |
+| `api_register_user_provider`             | `true`               | Whether to register the stateless user provider. Turn off if you want to use *exclusively* web authentication.                 |
+| `api_register_guard`                     | `true`               | Whether to register the stateless authentication. Turn off if you want to use *exclusively* web authentication.                |
+| `group_register_middleware`              | `true`               | Whether to register the group middleware (see the section "Group-based access check in routes")                                |
+| `webhook_enable`                         | `true`               | Whether to enable webhooks (see the section "Webhooks")                                                                        |
+| `webhook_route_path`                     | `'/slashid/webhook'` | The URL for the webhook route (you probaby don't want to override it).                                                         |
+
+### Login form configuration
+
+The login form is a bundled version of [SlashID's React SDK](https://developer.slashid.dev/docs/access/react-sdk). As such all options in the components are usable here, just note that you have to convert `camelCase` to `kebab-case` (see examples below).
+
+In `config/slashid.php`, the options `login_form_configuration`, has the following default value:
+
+```php
+// config/slashid.php
+
+return [
+    'login_form_configuration' => [
+        'factors' => [
+            ['method' => 'webauthn'],
+            ['method' => 'email_link'],
+        ],
+        'analytics-enabled',
+        // Uncomment to enable the dark theme.
+        // 'theme-props' => ['theme' => 'dark'],
+    ],
+    //.............
+];
+```
+
+### Authentication methods
+
+For instance, if you want to add password login, first add the password option in the SlashID Console > Settings, then change the configuration to as such:
+
+```php
+// config/slashid.php
+
+return [
+    'login_form_configuration' => [
+        'factors' => [
+            ['method' => 'webauthn'],
+            ['method' => 'email_link'],
+            ['method' => 'password'],
+        ],
+        'analytics-enabled',
+        // Uncomment to enable the dark theme.
+        // 'theme-props' => ['theme' => 'dark'],
+    ],
+    //........
+];
+```
+
+For more information, check the documentation at: https://developer.slashid.dev/docs/access/sdk/interfaces/Types.Factor
+
+### Login form theme
+
+You can choose between a light and a dark theme by overriding the `theme-props` option in the `login_form_configuration`. For instance, this will make the theme dark:
+
+```php
+// config/slashid.php
+
+return [
+    'login_form_configuration' => [
+        'factors' => [
+            ['method' => 'webauthn'],
+            ['method' => 'email_link'],
+        ],
+        'analytics-enabled',
+        'theme-props' => ['theme' => 'dark'],
+    ],
+    //.............
+];
+```
+
+You can also override [any of the CSS variables provided by the React SDK](https://developer.slashid.dev/docs/access/react-sdk/reference/components/react-sdk-reference-form#css-custom-properties-variables). For insance, to make the login button red, you can do the following:
+
+```php
+// config/slashid.php
+
+return [
+    //.............
+    'login_form_css_override' => [
+        '--sid-color-primary' => '#f00',
+    ],
+    //.............
+];
+```
 
 ## Groups
 
@@ -361,3 +446,32 @@ $ php artisan slashid:import:run
 ```
 
 Any errors occured in a migration will be output as a CSV. Check the CSV to fix the errors and run again.
+
+## Overriding the login form
+
+### Blade template and how to insert the form in a layout
+
+The login form is rendered in two Blade templates: `slashid/login.blade.php` and `slashid/login-form.blade.php`. The actual code lies in the template `login-form`, `login` being just a wrapper to add a `<html>` around the form.
+
+Therefore, if you want to wrap the login form in `/login` inside the layout of the page, you can override the `login` template. So:
+
+First, copy `vendor/slashid/laravel/resources/views/login.blade.php` to `resources/views/vendor/slashid/login.blade.php`, then edit the file according to your needs. For instance, if you have a `<x-app-layout>` component, your template can be:
+
+```php
+// resources/views/vendor/slashid/login.blade.php
+<x-app-layout>
+    @include('slashid::login-form')
+</x-app-layout>
+```
+
+In most cases, you will not need to override `login-form.blade.php`.
+
+### Using custom JavaScript
+
+The Laravel package comes with a bundle [SlashID React SDK](https://developer.slashid.dev/docs/access/react-sdk) and a small JavaScript glue piece of code at `vendor/slashid/laravel/public/slashid.laravel-web-login.js`.
+
+You may want to override the Bundled React SDK in order to compile your own implementation of the React login form. If that's the case, change the option `login_form_override_bundled_javascript` to `true` in `config/slashid.php` to prevent the Bundled React SDK from being loaded.
+
+Alternatively, you may want to override the glue code, in order to include custom actions after the login. If that's the case, change the option `login_form_override_javascript_glue` to `true` in `config/slashid.php` to prevent the glue code from being loaded.
+
+In both cases, you are responsible for loading your custom code yourself.

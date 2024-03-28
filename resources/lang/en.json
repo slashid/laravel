@@ -1,0 +1,199 @@
+{
+    "SlashID::initial.title": "Welcome",
+    "SlashID::success.title": "Completing authentication...",
+    "SlashID::success.subtitle": "You'll be logged in in a few moments",
+
+
+    "SlashID::footer.branding": "Top-tier security by SlashID",
+    "SlashID::initial.subtitle": "Sign in to your account",
+    "SlashID::initial.oidc": "Sign in with",
+    "SlashID::initial.sso": "Sign in with",
+    "SlashID::initial.authenticationMethod": "Authentication method",
+    "SlashID::initial.handle.email": "Email address",
+    "SlashID::initial.handle.phone": "Phone number",
+    "SlashID::initial.handle.email.placeholder": "Type your email",
+    "SlashID::initial.handle.phone.placeholder": "Type your phone number",
+    "SlashID::initial.submit": "Continue",
+    "SlashID::initial.divider": "or",
+    "SlashID::authenticating.password.label": "Password",
+    "SlashID::authenticating.password.placeholder": "Type your password",
+    "SlashID::authenticating.passwordConfirm.label": "Confirm password",
+    "SlashID::authenticating.retryPrompt": "Didn’t receive the code?",
+    "SlashID::authenticating.retry": "Resend",
+    "SlashID::authenticating.back": "Back",
+    "SlashID::authenticating.initial.password.title": "Log in with a password.",
+    "SlashID::authenticating.initial.password.message.email":
+      "If you are using a password for the first time, you will receive an email to verify your email address.",
+    "SlashID::authenticating.initial.password.message.phone":
+      "If you are using a password for the first time, you will receive a message to verify your phone number.",
+    "SlashID::authenticating.setPassword.title": "Create your password",
+    "SlashID::authenticating.setPassword.message": "Define a secure password to sign up.",
+    "SlashID::authenticating.setPassword.validation.required": "Password is required",
+    "SlashID::authenticating.setPassword.validation.mismatch": "Passwords should match",
+    "SlashID::authenticating.setPassword.validation.incorrect":
+      "Incorrect handle or password",
+    "SlashID::authenticating.setPassword.validation.length": "8-256 characters required",
+    "SlashID::authenticating.setPassword.validation.password_variants":
+      "Contains word 'password'",
+    "SlashID::authenticating.setPassword.validation.admin_variants":
+      "Contains word 'admin'",
+    "SlashID::authenticating.setPassword.validation.user_variants": "Contains word 'user'",
+    "SlashID::authenticating.setPassword.validation.alphanumeric_sequences_1":
+      "Illegal sequence: {{ILLEGAL_SEQUENCE}}",
+    "SlashID::authenticating.setPassword.validation.alphanumeric_sequences_2":
+      "Illegal sequence: {{ILLEGAL_SEQUENCE}}",
+    "SlashID::authenticating.setPassword.validation.numeric_sequences_ascending":
+      "Illegal sequence: {{ILLEGAL_SEQUENCE}}",
+    "SlashID::authenticating.setPassword.validation.numeric_subsequences_ascending":
+      "Illegal sequence: {{ILLEGAL_SEQUENCE}}",
+    "SlashID::authenticating.setPassword.validation.numeric_sequences_descending":
+      "Illegal sequence: {{ILLEGAL_SEQUENCE}}",
+    "SlashID::authenticating.setPassword.validation.numeric_subsequences_descending":
+      "Illegal sequence: {{ILLEGAL_SEQUENCE}}",
+    "SlashID::authenticating.setPassword.validation.common_password_xkcd":
+      "Common password",
+    "SlashID::authenticating.verifyPassword.title": "Enter your password",
+    "SlashID::authenticating.verifyPassword.message": "Type your password to sign in.",
+    "SlashID::authenticating.verifyPassword.recover.prompt": "Forgot password?",
+    "SlashID::authenticating.verifyPassword.recover.cta": "Reset",
+    "SlashID::authenticating.recoverPassword.title.email": "Check your email",
+    "SlashID::authenticating.recoverPassword.message.email":
+      "We have sent an email to {{EMAIL_ADDRESS}} with instructions for resetting your password. This email can take a few minutes to arrive, make sure to check your spam.",
+    "SlashID::authenticating.recoverPassword.title.phone": "Check your phone",
+    "SlashID::authenticating.recoverPassword.message.phone":
+      "We have sent a message to {{PHONE_NUMBER}} with instructions for resetting your password. This message can take a few minutes to arrive, make sure to check your spam.",
+    "SlashID::authenticating.password.submit": "Continue",
+    "SlashID::authenticating.submitting.password.title": "Logging you in...",
+    "SlashID::authenticating.submitting.password.message": "This may take some time.",
+    "SlashID::authenticating.message.webauthn":
+      "If you are registering for the first time, you will receive an email to verify your email address.",
+    "SlashID::authenticating.title.webauthn":
+      "You'll be prompted to validate your login via your device",
+    "SlashID::authenticating.message.emailLink":
+      "We have sent you a link via email. Follow the link provided to complete your registration.",
+    "SlashID::authenticating.title.emailLink": "Check your email",
+    "SlashID::authenticating.message.smsLink":
+      "We have sent you a link via text. Follow the link provided to complete your registration.",
+    "SlashID::authenticating.title.smsLink": "Check your phone",
+    "SlashID::authenticating.message.emailOtp":
+      "We have sent you a code via email. Please insert it here.",
+    "SlashID::authenticating.title.emailOtp": "Check your email",
+    "SlashID::authenticating.submitting.message.emailOtp": "We are verifying the code.",
+    "SlashID::authenticating.submitting.title.emailOtp": "Please wait",
+    "SlashID::authenticating.retry.message.emailOtp": "We are resending the OTP code...",
+    "SlashID::authenticating.retry.title.emailOtp": "Please wait",
+    "SlashID::authenticating.message.smsOtp":
+      "We have sent you a code via text. Please insert it here.",
+    "SlashID::authenticating.title.smsOtp": "Check your phone",
+    "SlashID::authenticating.submitting.message.smsOtp": "We are verifying the code.",
+    "SlashID::authenticating.submitting.title.smsOtp": "Please wait",
+    "SlashID::authenticating.retry.message.smsOtp": "We are resending the OTP code...",
+    "SlashID::authenticating.retry.title.smsOtp": "Please wait",
+    "SlashID::authenticating.message.oidc":
+      "Please follow the instructions in the login screen from your SSO provider.",
+    "SlashID::authenticating.title.oidc": "Sign in with ",
+    "SlashID::authenticating.otpInput": "OTP",
+    "SlashID::authenticating.otpInput.submit": "Submit",
+    "SlashID::authenticating.otpInput.submit.error": "Please enter a valid code",
+    "SlashID::error.title": "Something went wrong...",
+    "SlashID::error.subtitle":
+      "There has been an error while submitting your form. Please try again.",
+    "SlashID::error.subtitle.rateLimit":
+      "Your request has been rate limited. Please try again later.",
+    "SlashID::error.retry": "Try again",
+    "SlashID::factor.webauthn": "Passkeys",
+    "SlashID::factor.otpViaSms": "OTP via SMS",
+    "SlashID::factor.otpViaEmail": "OTP via email",
+    "SlashID::factor.emailLink": "Email link",
+    "SlashID::factor.smsLink": "SMS link",
+    "SlashID::factor.password": "Password",
+    "SlashID::validationError.otp": "Please enter the OTP code.",
+    "SlashID::validationError.email": "Please enter your email address.",
+    "SlashID::validationError.phoneNumber": "Please enter your phone number.",
+    "SlashID::kyc.mobile.end.title": "Upload was successful.",
+    "SlashID::kyc.mobile.end.description": "Please return to desktop.",
+    "SlashID::kyc.mobile.failure.generic.title": "Something went wrong",
+    "SlashID::kyc.mobile.failure.generic.description": "Please try again",
+    "SlashID::kyc.mobile.failure.upload_not_supported.title": "Upload not supported",
+    "SlashID::kyc.mobile.failure.upload_not_supported.description":
+      "Please try with a different browser or device",
+    "SlashID::kyc.mobile.failure.invalid_state.title": "Invalid State",
+    "SlashID::kyc.mobile.failure.invalid_state.description":
+      "Cannot render anything due to inconsistent state",
+    "SlashID::kyc.upload.mobile.empty.id_card.front":
+      "Upload the front side of your ID card",
+    "SlashID::kyc.upload.mobile.empty.id_card.back":
+      "Upload the back side of your ID card",
+    "SlashID::kyc.upload.mobile.empty.driver_license.front":
+      "Upload the front side of your driver license",
+    "SlashID::kyc.upload.mobile.empty.driver_license.back":
+      "Upload the back side of your driver license",
+    "SlashID::kyc.upload.mobile.empty.passport.front":
+      "Upload the front side of your passport",
+    "SlashID::kyc.upload.mobile.empty.passport.back":
+      "Upload the back side of your passport",
+    "SlashID::kyc.upload.mobile.empty.cta": "Upload",
+    "SlashID::kyc.upload.mobile.loading.message": "Checking image quality",
+    "SlashID::kyc.upload.mobile.failure.generic.title": "Cannot load image",
+    "SlashID::kyc.upload.mobile.failure.generic.description":
+      "Please try with a different image",
+    "SlashID::kyc.upload.mobile.failure.quality.title": "Invalid Image",
+    "SlashID::kyc.upload.mobile.failure.quality.description":
+      "Please try with a different image",
+    "SlashID::kyc.upload.mobile.failure.quality.detect_blur.title": "Image is too blurry",
+    "SlashID::kyc.upload.mobile.failure.quality.detect_blur.description":
+      "Please try with a different image",
+    "SlashID::kyc.upload.mobile.failure.quality.detect_cutoff.title":
+      "Document is not entirely visible",
+    "SlashID::kyc.upload.mobile.failure.quality.detect_cutoff.description":
+      "Please try with a different image",
+    "SlashID::kyc.upload.mobile.failure.quality.document_detection.title":
+      "Document not found",
+    "SlashID::kyc.upload.mobile.failure.quality.document_detection.description":
+      "Please try with a different image",
+    "SlashID::kyc.upload.mobile.success.title": "Image looks good",
+    "SlashID::kyc.upload.mobile.upload.cta.continue": "Continue",
+    "SlashID::kyc.upload.mobile.upload.cta.again": "Upload again",
+    "SlashID::kyc.upload.mobile.title": "Your document",
+    "SlashID::kyc.upload.mobile.subtitle": "Upload the required images of your documents",
+    "SlashID::kyc.livephoto.mobile.upload.cta.continue": "Continue",
+    "SlashID::kyc.livephoto.mobile.upload.cta.again": "Upload again",
+    "SlashID::kyc.livephoto.mobile.empty": "Upload a selfie picture.",
+    "SlashID::kyc.livephoto.mobile.empty.cta": "Upload",
+    "SlashID::kyc.livephoto.mobile.loading.message": "Validating picture",
+    "SlashID::kyc.livephoto.mobile.failure.generic.title": "Cannot load image",
+    "SlashID::kyc.livephoto.mobile.failure.generic.description":
+      "Please try with a different image",
+    "SlashID::kyc.livephoto.mobile.failure.validation.title": "An error occurred",
+    "SlashID::kyc.livephoto.mobile.failure.validation.description":
+      "Please try with a different image",
+    "SlashID::kyc.livephoto.mobile.failure.validation.face_detection.title":
+      "Face not detected",
+    "SlashID::kyc.livephoto.mobile.failure.validation.face_detection.description":
+      "Please try with a different image",
+    "SlashID::kyc.livephoto.mobile.success.title": "Image looks good",
+    "SlashID::kyc.livephoto.mobile.title": "Selfie Check",
+    "SlashID::kyc.livephoto.mobile.subtitle":
+      "Upload a selfie picture to confirm your identity.",
+    "SlashID::org.switcher.label": "Organization",
+    "SlashID::gdpr.dialog.title": "We value your privacy",
+    "SlashID::gdpr.dialog.subtitle":
+      "We use cookies to improve your experience. Learn more in our Cookie policy.",
+    "SlashID::gdpr.consent.necessary.title": "Necessary cookies",
+    "SlashID::gdpr.consent.necessary.description":
+      "Cookies that are essential to provide the service you have requested or which are required to comply with legal requirements, like data protection laws.",
+    "SlashID::gdpr.consent.analytics.title": "Analytics",
+    "SlashID::gdpr.consent.analytics.description":
+      "Cookies that are used for analytics or performance measurement purposes, like counting the number of unique visitors to our site, how long you stay on the site, and what parts of our site you visit.",
+    "SlashID::gdpr.consent.marketing.title": "Marketing",
+    "SlashID::gdpr.consent.marketing.description":
+      "Cookies that are used to display advertising personalised to you (whether on or off our site) based on your browsing and profile.",
+    "SlashID::gdpr.consent.retargeting.title": "Retargeting",
+    "SlashID::gdpr.consent.retargeting.description":
+      "Cookies that are used to display advertising personalised to you (whether on or off our site) based on your browsing and profile.",
+    "SlashID::gdpr.consent.tracking.title": "Tracking",
+    "SlashID::gdpr.consent.tracking.description":
+      "Cookies that track your online behaviour, such as clicks, preferences, device specifications, location, and search history. This data helps in targeted advertising and gathering website analytics.",
+    "SlashID::gdpr.dialog.error.title": "Oops!",
+    "SlashID::gdpr.dialog.error.subtitle": "Looks like something went wrong..."
+}

@@ -1,6 +1,24 @@
 <?php
 
 return [
+    'login_form_configuration' => [
+        'factors' => [
+            ['method' => 'webauthn'],
+            ['method' => 'email_link'],
+        ],
+        'analytics-enabled',
+        // Uncomment to enable the dark theme.
+        // 'theme-props' => ['theme' => 'dark'],
+    ],
+    'login_form_override_bundled_javascript' => false,
+    'login_form_override_javascript_glue' => false,
+    'login_form_css_override' => [
+        // '--sid-color-foreground' => '#00c',
+        //'--sid-color-primary' => '#f00',
+        // '--sid-color-panel' => '#ff0',
+        // '--sid-button-border-radius' => '3px',
+    ],
+
     'web_register_user_provider' => true,
     'web_register_guard' => true,
     'web_register_routes' => true,
