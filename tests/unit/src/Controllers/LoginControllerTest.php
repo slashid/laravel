@@ -53,10 +53,15 @@ class LoginControllerTest extends SlashIdTestCaseBase
                 'slashid-internal.login_form_strings' => [
                     'SlashID::initial.title' => 'initial.title',
                 ],
-                'slashid.login_form_configuration' => [],
-                'slashid.login_form_factors' => [
-                    ['method' => 'webauthn'],
-                    ['method' => 'email_link'],
+                'slashid.login_form_configuration' => [
+                    'factors' => [
+                        ['method' => 'webauthn'],
+                        ['method' => 'email_link'],
+                    ],
+                    'analytics-enabled',
+                ],
+                'slashid.login_form_css_override' => [
+                    '--sid-color-foreground' => '#00c',
                 ],
                 'slashid.login_override_bundled_javascript' => false,
                 'slashid.login_override_javascript_glue' => false,
@@ -107,16 +112,19 @@ class LoginControllerTest extends SlashIdTestCaseBase
             ->method('make')
             ->with($this->identicalTo('slashid::login'), $this->identicalTo([
                 'configuration' => [
-                    'factors' => '[{"method":"webauthn"},{"method":"email_link"}]',
                     'oid' => '9999-9999-9999',
                     'base-api-url' => 'https://api.slashid.com',
+                    'text' => '{"SlashID::initial.title":"Welcome"}',
                     'token-storage' => 'memory',
                     'on-success' => 'slashIdLoginSuccessCallback',
+                    'factors' => '[{"method":"webauthn"},{"method":"email_link"}]',
                     'analytics-enabled',
-                    'text' => '{"SlashID::initial.title":"Welcome"}',
                 ],
                 'csrfToken' => '000-111-222',
                 'loginCallbackUrl' => '/login/callback',
+                'cssOverride' => [
+                    '--sid-color-foreground' => '#00c',
+                ],
                 'useBundled' => true,
                 'useGlue' => true,
             ]))
@@ -165,10 +173,16 @@ class LoginControllerTest extends SlashIdTestCaseBase
             ->with($this->identicalTo('/'))
             ->willReturn('/');
 
+        $session = $this->createMock(Store::class);
+        $session
+            ->expects($success ? $this->once() : $this->never())
+            ->method('regenerate');
+
         $this->mockContainer();
 
         $request = new Request();
         $request->request = new InputBag(['token' => 'TOKEN']);
+        $request->setLaravelSession($session);
         $response = (new LoginController())->loginCallback($request);
         $this->assertEquals($expectedResponse, $response->getContent());
     }

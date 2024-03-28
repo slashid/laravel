@@ -22,13 +22,15 @@ class LoginController
         $strings = config('slashid-internal.login_form_strings');
         $strings = array_map(fn ($string) => __($string), $strings);
 
+        /** @var mixed[] */
+        $configuration = config('slashid.login_form_configuration');
         $configuration = array_merge([
             'oid' => $sdk->getOrganizationId(),
             'base-api-url' => $sdk->getApiUrl(),
             'text' => $strings,
             'token-storage' => 'memory',
             'on-success' => 'slashIdLoginSuccessCallback',
-        ], config('slashid.login_form_configuration'));
+        ], $configuration);
 
         $configuration = array_map(fn ($option) => is_array($option) ? json_encode($option) : $option, $configuration);
 
@@ -47,7 +49,9 @@ class LoginController
     {
         $success = Auth::attempt(['token' => $request->request->get('token')]);
 
-        $request->session()->regenerate();
+        if ($success) {
+            $request->session()->regenerate();
+        }
 
         return new JsonResponse([
             'success' => $success,
