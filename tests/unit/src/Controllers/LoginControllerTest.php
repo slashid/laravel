@@ -91,14 +91,36 @@ class LoginControllerTest extends SlashIdTestCaseBase
             ->with($this->identicalTo('/'))
             ->willReturn(new RedirectResponse('/'));
 
+        $sdk = $this->createMock(SlashIdSdk::class);
+        $sdk
+            ->expects($check ? $this->never() : $this->once())
+            ->method('getOrganizationId')
+            ->willReturn('9999-9999-9999');
+        $sdk
+            ->expects($check ? $this->never() : $this->once())
+            ->method('getApiUrl')
+            ->willReturn('https://api.slashid.com');
+
         $viewFactory = $this->mockViewFactory();
         $viewFactory
             ->expects($check ? $this->never() : $this->once())
             ->method('make')
-            ->with($this->identicalTo('slashid::login'))
+            ->with($this->identicalTo('slashid::login'), $this->identicalTo([
+                'configuration' => [
+                    'factors' => '[{"method":"webauthn"},{"method":"email_link"}]',
+                    'oid' => '9999-9999-9999',
+                    'base-api-url' => 'https://api.slashid.com',
+                    'token-storage' => 'memory',
+                    'on-success' => 'slashIdLoginSuccessCallback',
+                    'analytics-enabled',
+                    'text' => '{"SlashID::initial.title":"Welcome"}',
+                ],
+                'csrfToken' => '000-111-222',
+                'loginCallbackUrl' => '/login/callback',
+                'useBundled' => true,
+                'useGlue' => true,
+            ]))
             ->willReturn($this->createMock(View::class));
-
-        $sdk = $this->createMock(SlashIdSdk::class);
 
         $response = (new LoginController())->login($sdk);
         $this->assertInstanceOf($expectedResponseType, $response);
