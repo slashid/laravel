@@ -10,8 +10,8 @@ composer require slashid/laravel-slashid
 
 2. Edit your environment file, `.env`, adding the following variables to the end of the file:
     * `SLASHID_ENVIRONMENT`, either `sandbox` or `production`
-    * `SLASHID_ORGANIZATION_ID`, your organization's ID. You'll find it your SlashID console (https://console.slashid.dev/ for production, https://console.sandbox.slashid.dev/ for sandbox), in the "Settings" tab, on the top of the page.
-    * `SLASHID_API_KEY`, your organization's API Key. You'll also find it your SlashID console, in the "Settings" tab, on the very bottom of the page.
+    * `SLASHID_ORGANIZATION_ID`, your organization's ID. You'll find it in your SlashID console (https://console.slashid.dev/ for production, https://console.sandbox.slashid.dev/ for sandbox), in the "Settings" tab, on the top of the page.
+    * `SLASHID_API_KEY`, your organization's API Key. You'll also find it in your SlashID console, in the "Settings" tab, at the very bottom of the page.
 
 ```conf
 SLASHID_ENVIRONMENT=sandbox
@@ -29,7 +29,7 @@ You're ready! Now access `/login` in your website and enjoy your new login with 
 
 ## Configuration
 
-There several configurations in this package, that you can edit on `config/slashid.php`. The configurations more likely for you to override are `web_redirect_after_login` and `web_redirect_after_logout`.
+There are several configurations in this package, that you can edit on `config/slashid.php`. The configurations that are more likely for you to override are `web_redirect_after_login` and `web_redirect_after_logout`.
 
 | Configuration                            | Default value        | Description                                                                                                                    |
 |------------------------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------|
@@ -37,25 +37,25 @@ There several configurations in this package, that you can edit on `config/slash
 | `login_form_override_bundled_javascript` | `false`              | Set true to override the Bundled JavaScript form, see [Overriding the login form](#overriding-the-login-form).                 |
 | `login_form_override_javascript_glue`    | `false`              | Set true to override the JavaScript glue code, see [Overriding the login form](#overriding-the-login-form).                    |
 | `login_form_css_override`                | `[]`                 | See [Login form theme](#login-form-theme)                                                                                      |
-| `web_register_user_provider`             | `true`               | Whether to register the session-based user provider. Turn off if you want to use *exclusively* API-based authentication.       |
-| `web_register_guard`                     | `true`               | Whether to register the session-based authentication. Turn off if you want to use *exclusively* API-based authentication.      |
-| `web_register_routes`                    | `true`               | Whether to register the web routes (`/login`, `/login/callback`, `/logout`). Turn off if you want to register your own routes. |
+| `web_register_user_provider`             | `true`               | Whether to register the session-based user provider. Turn it off if you want to use *exclusively* API-based authentication.       |
+| `web_register_guard`                     | `true`               | Whether to register the session-based authentication. Turn it off if you want to use *exclusively* API-based authentication.      |
+| `web_register_routes`                    | `true`               | Whether to register the web routes (`/login`, `/login/callback`, `/logout`). Turn it off if you want to register your routes. |
 | `web_route_path_login`                   | `'/login'`           | The URL for the login page.                                                                                                    |
-| `web_route_path_login_callback`          | `'/login/callback'`  | The URL for the login callback page (you probaby don't want to override it).                                                   |
+| `web_route_path_login_callback`          | `'/login/callback'`  | The URL for the login callback page (you probably don't want to override it).                                                   |
 | `web_route_path_logout`                  | `'/logout'`          | The URL for the logout page.                                                                                                   |
 | `web_redirect_after_login`               | `'/'`                | Where to redirect the user after login.                                                                                        |
 | `web_redirect_after_logout`              | `'/'`                | Where to redirect the user after logout.                                                                                       |
-| `api_register_user_provider`             | `true`               | Whether to register the stateless user provider. Turn off if you want to use *exclusively* web authentication.                 |
-| `api_register_guard`                     | `true`               | Whether to register the stateless authentication. Turn off if you want to use *exclusively* web authentication.                |
-| `group_register_middleware`              | `true`               | Whether to register the group middleware (see the section "Group-based access check in routes")                                |
+| `api_register_user_provider`             | `true`               | Whether to register the stateless user provider. Turn it off if you want to use *exclusively* web authentication.                 |
+| `api_register_guard`                     | `true`               | Whether to register the stateless authentication. Turn it off if you want to use *exclusively* web authentication.                |
+| `group_register_middleware`              | `true`               | Whether to register the group middleware (see the section "Group-based access check-in routes")                                |
 | `webhook_enable`                         | `true`               | Whether to enable webhooks (see the section "Webhooks")                                                                        |
-| `webhook_route_path`                     | `'/slashid/webhook'` | The URL for the webhook route (you probaby don't want to override it).                                                         |
+| `webhook_route_path`                     | `'/slashid/webhook'` | The URL for the webhook route (you probably don't want to override it).                                                         |
 
 ### Login form configuration
 
 The login form is a bundled version of [SlashID's React SDK](https://developer.slashid.dev/docs/access/react-sdk). As such all options in the components are usable here, just note that you have to convert `camelCase` to `kebab-case` (see examples below).
 
-In `config/slashid.php`, the options `login_form_configuration`, has the following default value:
+In `config/slashid.php`, the option `login_form_configuration`, has the following default value:
 
 ```php
 // config/slashid.php
@@ -118,7 +118,7 @@ return [
 ];
 ```
 
-You can also override [any of the CSS variables provided by the React SDK](https://developer.slashid.dev/docs/access/react-sdk/reference/components/react-sdk-reference-form#css-custom-properties-variables). For insance, to make the login button red, you can do the following:
+You can also override [any of the CSS variables provided by the React SDK](https://developer.slashid.dev/docs/access/react-sdk/reference/components/react-sdk-reference-form#css-custom-properties-variables). For instance, to make the login button red, you can do the following:
 
 ```php
 // config/slashid.php
@@ -134,7 +134,7 @@ return [
 
 ## Groups
 
-### Group-based access check in routes
+### Group-based access check-in routes
 
 You can use the `slashid_group` middleware to restrict certain routes to people of a given group. For instance, if you want to create a route `/content-management` that only people within the "Editor" group can access, and a route `/admin` that only people within the "Admin" group can access, you can do it like this:
 
@@ -199,7 +199,7 @@ var_dump($user->getGroups());
 
 ### Group-checking in Blade
 
-You can also use the `hasGroup` / `hasAnyGroup` / `hasAllGroups` methods do build templates in Blade that display different things depending on the groups the user belongs to.
+You can also use the `hasGroup` / `hasAnyGroup` / `hasAllGroups` methods to build templates in Blade that display different things depending on the groups the user belongs to.
 
 ```php
 // some-template.blade.php
@@ -243,38 +243,38 @@ To use webhooks, you need first to register your URL with SlashID. Webhooks are 
 
 #### How to register webhooks
 
-To register a new webhook for the current website use the following command. You are required to define a unique name for it, in this example we're using `my_laravel_webhook`.
+To register a new webhook for the current website use the following command. You are required to define a unique name for it, in this example, we're using `my_laravel_webhook`.
 
 ```
 php artisan slashid:webhook:register my_laravel_webhook
 ```
 
-By default, the webhook is registered with the triggers: `PersonDeleted_v1`, `PersonLoggedOut_v1` and `PasswordChanged_v1`. You can specify which triggers to register, listing the triggers separated by space:
+By default, the webhook is registered with the triggers: `PersonDeleted_v1`, `PersonLoggedOut_v1`, and `PasswordChanged_v1`. You can specify which triggers to register, listing the triggers separated by space:
 
 ```
 php artisan slashid:webhook:register my_laravel_webhook PasswordChanged_v1 VirtualPageLoaded_v1 AuthenticationFailed_v1
 ```
 
-You can run `slashid:webhook:register` as many times as you want, if there is already a webhook registered to that URL, it will be updated and the list of triggers will be overriden.
+You can run `slashid:webhook:register` as many times as you want, if there is already a webhook registered to that URL, it will be updated and the list of triggers will be overridden.
 
 
 #### How to test webhooks locally
 
 You can test webhooks in your local development environment with a tool such as [ngrok](https://ngrok.com/), then use the option `--base-url` to register a webhook with the proxy.
 
-For instance, if you are running Laravel on port 8080, you can proxy you local environment with ngrok with:
+For instance, if you are running Laravel on port 8080, you can proxy your local environment with ngrok with:
 
 ```
 ngrok http 8000
 ```
 
-The ngrok comamnd-line will then display data about your proxy, such as:
+The ngrok command-line will then display data about your proxy, such as:
 
 ```
 Forwarding                    https://2f45-2804-14c-483-983f-b323-32f2-4714-1609.ngrok-free.app -> http://localhost:8000
 ```
 
-Then, you can register a webservice to the proxy URL, with the following command:
+Then, you can register a web service to the proxy URL, with the following command:
 
 ```
 php artisan slashid:webhook:register proxied_webhook PasswordChanged_v1 --base-url=https://2f45-2804-14c-483-983f-b323-32f2-4714-1609.ngrok-free.app
@@ -308,7 +308,7 @@ To learn a webhook ID, use the `slashid:webhook:list` command.
 
 ### Listening to events
 
-Any received webhook will be made available to developer as a Laravel event.
+Any received webhook will be made available to the developer as a Laravel event.
 
 To listen to webhook events in your Laravel application, create a class in the `app/Listeners` folder of your application. In the example below, we are naming it `WebhookListener`, but you can name it as you like.
 
@@ -375,7 +375,7 @@ The listener will receive the event of class `\SlashId\Laravel\Events\WebhookEve
 
 ## User Migration
 
-If you are installing SlashID in an existing Laravel website, you will probably already have a userbase that you'll want to migrate to SlashID's database. This is made easy with two migration commands.
+If you are installing SlashID in an existing Laravel website, you will probably already have a user base that you'll want to migrate to SlashID's database. This is made easy with two migration commands.
 
 First, you have to run the artisan command `php artisan slashid:import:create-script`. It will ask you the User class in your installation, usually `\App\Models\User`.
 
@@ -442,10 +442,10 @@ $ php artisan slashid:import:run
  > yes
 
 2 successfully imported users.
-1 users failed importing. Check the file /var/www/html/database/slashid/migration-failed-202403271142.csv for errors.
+1 users failed to import. Check the file /var/www/html/database/slashid/migration-failed-202403271142.csv for errors.
 ```
 
-Any errors occured in a migration will be output as a CSV. Check the CSV to fix the errors and run again.
+Any errors that occured in a migration will be output as a CSV. Check the CSV to fix the errors and run again.
 
 ## Overriding the login form
 
@@ -470,8 +470,8 @@ In most cases, you will not need to override `login-form.blade.php`.
 
 The Laravel package comes with a bundle [SlashID React SDK](https://developer.slashid.dev/docs/access/react-sdk) and a small JavaScript glue piece of code at `vendor/slashid/laravel/public/slashid.laravel-web-login.js`.
 
-You may want to override the Bundled React SDK in order to compile your own implementation of the React login form. If that's the case, change the option `login_form_override_bundled_javascript` to `true` in `config/slashid.php` to prevent the Bundled React SDK from being loaded.
+You may want to override the Bundled React SDK to compile your implementation of the React login form. If that's the case, change the option `login_form_override_bundled_javascript` to `true` in `config/slashid.php` to prevent the Bundled React SDK from being loaded.
 
-Alternatively, you may want to override the glue code, in order to include custom actions after the login. If that's the case, change the option `login_form_override_javascript_glue` to `true` in `config/slashid.php` to prevent the glue code from being loaded.
+Alternatively, you may want to override the glue code, to include custom actions after the login. If that's the case, change the option `login_form_override_javascript_glue` to `true` in `config/slashid.php` to prevent the glue code from being loaded.
 
 In both cases, you are responsible for loading your custom code yourself.
