@@ -468,7 +468,7 @@ In most cases, you will not need to override `login-form.blade.php`.
 
 ### Using custom JavaScript
 
-The Laravel package comes with a bundle [SlashID React SDK](https://developer.slashid.dev/docs/access/react-sdk) and a small JavaScript glue piece of code at `vendor/slashid/laravel/public/slashid.laravel-web-login.js`.
+The Laravel package comes with a bundle of the [SlashID React SDK](https://developer.slashid.dev/docs/access/react-sdk) and a small JavaScript glue piece of code in `vendor/slashid/laravel/public/slashid.laravel-web-login.js`.
 
 You may want to override the Bundled React SDK to compile your implementation of the React login form. If that's the case, change the option `login_form_override_bundled_javascript` to `true` in `config/slashid.php` to prevent the Bundled React SDK from being loaded.
 
