@@ -424,9 +424,9 @@ foreach ($laravelUsers as $laravelUser) {
 return $slashIdUsers;
 ```
 
-You must alter the `user-migration.php` to model the data to be migrated as you want. The script must return an array of `\SlashId\Laravel\SlashIdUser` with all the users you want to bulk import into SlashID.
+You must adapt the `user-migration.php` to model the data to be migrated as you want. The script must return an array of `\SlashId\Laravel\SlashIdUser` with all the users you want to bulk import into SlashID.
 
-After fitting the script to your needs, run `php artisan slashid:import:run`, e.g.:
+After adapting the script to your needs, run `php artisan slashid:import:run`, e.g.:
 
 ```
 $ php artisan slashid:import:run
