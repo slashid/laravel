@@ -11,7 +11,7 @@ composer require slashid/laravel-slashid
 2. Edit your environment file, `.env`, adding the following variables to the end of the file:
     * `SLASHID_ENVIRONMENT`, either `sandbox` or `production`
     * `SLASHID_ORGANIZATION_ID`, your organization's ID. You'll find it your SlashID console (https://console.slashid.dev/ for production, https://console.sandbox.slashid.dev/ for sandbox), in the "Settings" tab, on the top of the page.
-    * `SLASHID_ORGANIZATION_ID`, your organization's ID. You'll also find it your SlashID console, in the "Settings" tab, on the very bottom of the page.
+    * `SLASHID_API_KEY`, your organization's API Key. You'll also find it your SlashID console, in the "Settings" tab, on the very bottom of the page.
 
 ```conf
 SLASHID_ENVIRONMENT=sandbox
