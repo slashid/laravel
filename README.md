@@ -388,7 +388,7 @@ $ php artisan slashid:import:create-script
 The Slash ID migration script has been created at /var/www/html/database/slashid/user-migration.php. Please open the file and modify it according to the instructions in it.
 ```
 
-A script will be created on `database/slashid/user-migration.php`. It will look like this:
+A script will be created in `database/slashid/user-migration.php`. It will look like this:
 
 ```php
 <?php
