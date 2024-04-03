@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "385888361f19c8bdef86f7b3be75a7b9",
+    "content-hash": "e9b879a05741f0cc7f0b4c90093f90c9",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -653,12 +653,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:slashid/php.git",
-                "reference": "53e0f9df3a208dcf9bbbeb450d09dd48c3378d96"
+                "reference": "381f73bbcb2f9090751ada824bc4fdb5e0b9f8c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slashid/php/zipball/53e0f9df3a208dcf9bbbeb450d09dd48c3378d96",
-                "reference": "53e0f9df3a208dcf9bbbeb450d09dd48c3378d96",
+                "url": "https://api.github.com/repos/slashid/php/zipball/381f73bbcb2f9090751ada824bc4fdb5e0b9f8c6",
+                "reference": "381f73bbcb2f9090751ada824bc4fdb5e0b9f8c6",
                 "shasum": ""
             },
             "require": {
@@ -689,11 +689,19 @@
                 "test-cs-fix": [
                     "vendor/bin/php-cs-fixer fix --rules=@Symfony,@PER-CS2.0 ."
                 ],
+                "test-phpstan": [
+                    "vendor/bin/phpstan analyse src -l 9"
+                ],
                 "test-phpunit": [
                     "vendor/bin/phpunit tests/unit/"
                 ],
                 "test-phpunit-coverage": [
                     "vendor/bin/phpunit --coverage-html tests/coverage --coverage-filter src/ tests/unit/"
+                ],
+                "test": [
+                    "composer test-cs",
+                    "composer test-phpstan",
+                    "composer test-phpunit-coverage"
                 ]
             },
             "license": [
@@ -710,7 +718,7 @@
                 "source": "https://github.com/slashid/php/tree/main",
                 "issues": "https://github.com/slashid/php/issues"
             },
-            "time": "2024-03-05T18:05:27+00:00"
+            "time": "2024-04-01T08:00:31+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
