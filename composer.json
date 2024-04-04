@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "slashid/php": "^1"
+        "slashid/php": "^1.0.2"
     },
     "extra": {
         "laravel": {
