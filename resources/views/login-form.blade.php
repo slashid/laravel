@@ -1,7 +1,3 @@
-@if ($useBundled)
-    <link rel="stylesheet" href="{{ asset('vendor/slashid/bundled-form/style.css') }}">
-@endif
-
 @if (!empty($cssOverride))
     <style type="text/css">
         .sid-theme-root {
