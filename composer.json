@@ -29,12 +29,6 @@
             }
         }
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/slashid/php"
-        }
-    ],
     "require-dev": {
         "laravel/pint": "^1.14",
         "phpunit/phpunit": "^10.5",
