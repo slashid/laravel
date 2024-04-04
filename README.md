@@ -5,7 +5,7 @@
 1. Install the Laravel SlashID packaged with composer:
 
 ```
-composer require slashid/laravel-slashid
+composer require slashid/laravel
 ```
 
 2. Edit your environment file, `.env`, adding the following variables to the end of the file:
