@@ -29841,41 +29841,39 @@ const Uq = ({
   oid: n,
   initialToken: a,
   tokenStorage: o,
-  baseApiUrl: l,
-  sdkUrl: c,
-  analyticsEnabled: p,
-  themeProps: d,
+  environment: l,
+  analyticsEnabled: c,
+  themeProps: p,
   // overides
-  logo: v = /* @__PURE__ */ b.jsx(yy, {}),
-  factors: y,
-  text: C,
-  storeLastHandle: $,
-  defaultCountryCode: _ = "US",
+  logo: d = /* @__PURE__ */ b.jsx(yy, {}),
+  factors: v,
+  text: y,
+  storeLastHandle: C,
+  defaultCountryCode: $ = "US",
   // form
-  onSuccess: R,
-  onError: S,
-  middleware: k,
+  onSuccess: _,
+  onError: R,
+  middleware: S,
   // slots
-  slotSuccessIndeterminate: x
+  slotSuccessIndeterminate: k
 }) => /* @__PURE__ */ b.jsx("div", { style: { width: "440px", display: "block" }, children: /* @__PURE__ */ b.jsx(
   hI,
   {
     oid: n,
     initialToken: a,
-    themeProps: d,
-    baseApiUrl: l,
-    sdkUrl: c,
+    themeProps: p,
+    environment: l,
     tokenStorage: o,
-    analyticsEnabled: p,
+    analyticsEnabled: c,
     children: /* @__PURE__ */ b.jsx(
       r6,
       {
-        logo: v,
-        factors: y,
-        text: C,
-        storeLastHandle: $,
-        defaultCountryCode: _,
-        children: /* @__PURE__ */ b.jsx(jy, { onSuccess: R, onError: S, middleware: k, children: x ? /* @__PURE__ */ b.jsx(f6, { name: "success", children: /* @__PURE__ */ b.jsxs("article", { "data-testid": "sid-form-success-state", children: [
+        logo: d,
+        factors: v,
+        text: y,
+        storeLastHandle: C,
+        defaultCountryCode: $,
+        children: /* @__PURE__ */ b.jsx(jy, { onSuccess: _, onError: R, middleware: S, children: k ? /* @__PURE__ */ b.jsx(f6, { name: "success", children: /* @__PURE__ */ b.jsxs("article", { "data-testid": "sid-form-success-state", children: [
           /* @__PURE__ */ b.jsx(
             Vn,
             {
@@ -29903,10 +29901,9 @@ const Uq = ({
     oid: "string",
     initialToken: "string",
     tokenStorage: "string",
-    baseApiUrl: "string",
-    sdkUrl: "string",
     analyticsEnabled: "boolean",
     themeProps: "json",
+    environment: "string",
     // config provider
     logo: "string",
     text: "json",
