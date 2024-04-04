@@ -26,7 +26,7 @@ class LoginController
         $configuration = config('slashid.login_form_configuration');
         $configuration = array_merge([
             'oid' => $sdk->getOrganizationId(),
-            'base-api-url' => $sdk->getApiUrl(),
+            'environment' => $sdk->getEnvironment(),
             'text' => $strings,
             'token-storage' => 'memory',
             'on-success' => 'slashIdLoginSuccessCallback',
