@@ -117,6 +117,7 @@ class LoginControllerTest extends SlashIdTestCaseBase
                     'text' => '{"SlashID::initial.title":"Welcome"}',
                     'token-storage' => 'memory',
                     'on-success' => 'slashIdLoginSuccessCallback',
+                    'slot-success-indeterminate' => 'true',
                     'factors' => '[{"method":"webauthn"},{"method":"email_link"}]',
                     'analytics-enabled',
                 ],

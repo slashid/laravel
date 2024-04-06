@@ -16,7 +16,6 @@
             {{ $attributeName }}="{{ $attributeValue }}"
         @endif
     @endforeach
-    slot-success-indeterminate="true"
 ></slashid-form>
 
 <script>

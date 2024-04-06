@@ -30,6 +30,7 @@ class LoginController
             'text' => $strings,
             'token-storage' => 'memory',
             'on-success' => 'slashIdLoginSuccessCallback',
+            'slot-success-indeterminate' => 'true',
         ], $configuration);
 
         $configuration = array_map(fn ($option) => is_array($option) ? json_encode($option) : $option, $configuration);
