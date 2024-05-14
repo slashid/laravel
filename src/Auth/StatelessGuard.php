@@ -112,8 +112,6 @@ class StatelessGuard implements Guard
 
     /**
      * Set the current user.
-     *
-     * @return void
      */
     public function setUser(Authenticatable $user)
     {
@@ -123,5 +121,7 @@ class StatelessGuard implements Guard
 
         $this->user = $user;
         $this->authenticated = true;
+
+        return $this;
     }
 }

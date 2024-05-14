@@ -35,6 +35,11 @@ final class SlashIdUser extends Person implements Authenticatable
         return $this->id;
     }
 
+    public function getAuthPasswordName(): string
+    {
+        throw new \LogicException('getAuthPasswordName() should not be called on SlashIdUser, as SlashID does not expose passwords.');
+    }
+
     public function getAuthPassword()
     {
         throw new \LogicException('getAuthPassword() should not be called on SlashIdUser, as SlashID does not expose passwords.');
