@@ -20,7 +20,7 @@ class ImportUsers extends Command
     /**
      * {@inheritdoc}
      */
-    protected $description = 'Bulk import users from Laravel databse into Slash ID.';
+    protected $description = 'Bulk import users from Laravel database into SlashID.';
 
     /**
      * {@inheritdoc}
