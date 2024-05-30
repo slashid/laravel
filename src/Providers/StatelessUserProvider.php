@@ -50,6 +50,13 @@ class StatelessUserProvider implements UserProvider
     }
 
     /**
+     * @param mixed[] $credentials
+     */
+    public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false): void
+    {
+    }
+
+    /**
      * @param  string[]  $credentials  An array in the format ['token' => 'SOME.TOKEN'].
      * @return \SlashId\Laravel\SlashIdUser|null The user, if the token exists. Please note that the token is NOT
      *                                           validated, so do not trust the return without calling
