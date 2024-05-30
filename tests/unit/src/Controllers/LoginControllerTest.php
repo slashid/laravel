@@ -103,8 +103,8 @@ class LoginControllerTest extends SlashIdTestCaseBase
             ->willReturn('9999-9999-9999');
         $sdk
             ->expects($check ? $this->never() : $this->once())
-            ->method('getApiUrl')
-            ->willReturn('https://api.slashid.com');
+            ->method('getEnvironment')
+            ->willReturn(SlashIdSdk::ENVIRONMENT_PRODUCTION);
 
         $viewFactory = $this->mockViewFactory();
         $viewFactory
@@ -113,10 +113,11 @@ class LoginControllerTest extends SlashIdTestCaseBase
             ->with($this->identicalTo('slashid::login'), $this->identicalTo([
                 'configuration' => [
                     'oid' => '9999-9999-9999',
-                    'base-api-url' => 'https://api.slashid.com',
+                    'environment' => 'production',
                     'text' => '{"SlashID::initial.title":"Welcome"}',
                     'token-storage' => 'memory',
                     'on-success' => 'slashIdLoginSuccessCallback',
+                    'slot-success-indeterminate' => 'true',
                     'factors' => '[{"method":"webauthn"},{"method":"email_link"}]',
                     'analytics-enabled',
                 ],
